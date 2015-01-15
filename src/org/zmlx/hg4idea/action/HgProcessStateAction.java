@@ -15,18 +15,28 @@
  */
 package org.zmlx.hg4idea.action;
 
-import com.intellij.openapi.actionSystem.AnActionEvent;
 import org.zmlx.hg4idea.repo.HgRepository;
+import com.intellij.dvcs.repo.Repository;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 
-public abstract class HgProcessRebaseAction extends HgAbstractGlobalAction {
+public abstract class HgProcessStateAction extends HgAbstractGlobalSingleRepoAction
+{
+	final Repository.State myState;
 
-  protected static boolean isRebasing(AnActionEvent e) {
-    HgRepository repository = HgAbstractGlobalAction.getSelectedRepositoryFromEvent(e);
-    return repository != null && repository.getState() == HgRepository.State.REBASING;
-  }
+	protected HgProcessStateAction(Repository.State state)
+	{
+		myState = state;
+	}
 
-  @Override
-  public boolean isEnabled(AnActionEvent e) {
-    return super.isEnabled(e) && isRebasing(e);
-  }
+	protected boolean isRebasing(AnActionEvent e)
+	{
+		HgRepository repository = HgActionUtil.getSelectedRepositoryFromEvent(e);
+		return repository != null && repository.getState() == myState;
+	}
+
+	@Override
+	public boolean isEnabled(AnActionEvent e)
+	{
+		return super.isEnabled(e) && isRebasing(e);
+	}
 }

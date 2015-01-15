@@ -16,57 +16,67 @@
 
 package org.zmlx.hg4idea.repo;
 
-import com.intellij.dvcs.repo.Repository;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.vcs.log.Hash;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.zmlx.hg4idea.HgNameWithHashInfo;
-
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.zmlx.hg4idea.HgNameWithHashInfo;
+import com.intellij.dvcs.repo.Repository;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.vcs.log.Hash;
 
-public interface HgRepository extends Repository {
-  @NotNull String DEFAULT_BRANCH = "default";
 
-  @NotNull
-  VirtualFile getHgDir();
+public interface HgRepository extends Repository
+{
+	@NotNull
+	String DEFAULT_BRANCH = "default";
 
-  /**
-   * Returns the current branch of this Hg repository.
-   */
+	@NotNull
+	VirtualFile getHgDir();
 
-  @NotNull
-  String getCurrentBranch();
+	/**
+	 * Returns the current branch of this Hg repository.
+	 */
 
-  /**
-   * @return map with heavy branch names and appropriate set of head hashes
-   */
-  @NotNull
-  Map<String, Set<Hash>> getBranches();
+	@NotNull
+	String getCurrentBranch();
 
-  /**
-   * @return names of opened heavy branches
-   */
-  @NotNull
-  Set<String> getOpenedBranches();
+	/**
+	 * @return map with heavy branch names and appropriate set of head hashes
+	 */
+	@NotNull
+	Map<String, Set<Hash>> getBranches();
 
-  @NotNull
-  Collection<HgNameWithHashInfo> getBookmarks();
+	/**
+	 * @return names of opened heavy branches
+	 */
+	@NotNull
+	Set<String> getOpenedBranches();
 
-  @NotNull
-  Collection<HgNameWithHashInfo> getTags();
+	@NotNull
+	Collection<HgNameWithHashInfo> getBookmarks();
 
-  @NotNull
-  Collection<HgNameWithHashInfo> getLocalTags();
+	@NotNull
+	Collection<HgNameWithHashInfo> getTags();
 
-  @Nullable
-  String getCurrentBookmark();
+	@NotNull
+	Collection<HgNameWithHashInfo> getLocalTags();
 
-  @NotNull
-  HgConfig getRepositoryConfig();
+	@Nullable
+	String getCurrentBookmark();
 
-  void updateConfig();
+	@Nullable
+	String getTipRevision();
+
+	@NotNull
+	HgConfig getRepositoryConfig();
+
+	boolean hasSubrepos();
+
+	@NotNull
+	Collection<HgNameWithHashInfo> getSubrepos();
+
+	void updateConfig();
 }

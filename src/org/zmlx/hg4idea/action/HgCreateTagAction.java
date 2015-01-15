@@ -12,7 +12,8 @@
 // limitations under the License.
 package org.zmlx.hg4idea.action;
 
-import com.intellij.openapi.project.Project;
+import java.util.Collection;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.zmlx.hg4idea.command.HgTagCreateCommand;
@@ -22,38 +23,43 @@ import org.zmlx.hg4idea.execution.HgCommandResultHandler;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.ui.HgTagDialog;
 import org.zmlx.hg4idea.util.HgErrorUtil;
+import com.intellij.openapi.project.Project;
 
-import java.util.Collection;
+public class HgCreateTagAction extends HgAbstractGlobalSingleRepoAction
+{
 
-public class HgCreateTagAction extends HgAbstractGlobalAction {
+	public void execute(@NotNull final Project project,
+			@NotNull Collection<HgRepository> repositories,
+			@Nullable HgRepository selectedRepo,
+			@Nullable final String reference)
+	{
+		final HgTagDialog dialog = new HgTagDialog(project, repositories, selectedRepo);
+		if(dialog.showAndGet())
+		{
+			try
+			{
+				new HgTagCreateCommand(project, dialog.getRepository(), dialog.getTagName(), reference).execute(new HgCommandResultHandler()
+				{
+					@Override
+					public void process(@Nullable HgCommandResult result)
+					{
+						if(HgErrorUtil.hasErrorsInCommandExecution(result))
+						{
+							new HgCommandResultNotifier(project).notifyError(result, "Creation failed", "Tag creation [" + dialog.getTagName() + "] " +
+									"failed");
+						}
+					}
+				});
+			}
+			catch(HgCommandException e)
+			{
+				HgErrorUtil.handleException(project, e);
+			}
+		}
+	}
 
-  public void execute(@NotNull final Project project,
-                      @NotNull Collection<HgRepository> repositories,
-                      @Nullable HgRepository selectedRepo,
-                      @Nullable final String reference) {
-    final HgTagDialog dialog = new HgTagDialog(project, repositories, selectedRepo);
-    dialog.show();
-    if (dialog.isOK()) {
-      try {
-        new HgTagCreateCommand(project, dialog.getRepository(), dialog.getTagName(), reference).execute(new HgCommandResultHandler() {
-          @Override
-          public void process(@Nullable HgCommandResult result) {
-            if (HgErrorUtil.hasErrorsInCommandExecution(result)) {
-              new HgCommandResultNotifier(project)
-                .notifyError(result, "Creation failed", "Tag creation [" + dialog.getTagName() + "] failed");
-            }
-          }
-        });
-      }
-      catch (HgCommandException e) {
-        handleException(project, e);
-      }
-    }
-  }
-
-  protected void execute(@NotNull final Project project,
-                         @NotNull Collection<HgRepository> repositories,
-                         @Nullable HgRepository selectedRepo) {
-    execute(project, repositories, selectedRepo, null);
-  }
+	protected void execute(@NotNull final Project project, @NotNull Collection<HgRepository> repositories, @Nullable HgRepository selectedRepo)
+	{
+		execute(project, repositories, selectedRepo, null);
+	}
 }

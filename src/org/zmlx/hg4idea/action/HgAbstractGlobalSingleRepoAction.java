@@ -16,28 +16,34 @@
 package org.zmlx.hg4idea.action;
 
 import java.util.Collection;
+import java.util.List;
+
+import javax.swing.Icon;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.zmlx.hg4idea.command.HgMergeCommand;
 import org.zmlx.hg4idea.repo.HgRepository;
-import org.zmlx.hg4idea.ui.HgMergeDialog;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vcs.update.UpdatedFiles;
 
-public class HgMerge extends HgAbstractGlobalSingleRepoAction
+public abstract class HgAbstractGlobalSingleRepoAction extends HgAbstractGlobalAction
 {
 
-	@Override
-	public void execute(@NotNull final Project project, @NotNull final Collection<HgRepository> repos, @Nullable final HgRepository selectedRepo)
+	public HgAbstractGlobalSingleRepoAction(Icon icon)
 	{
-		final HgMergeDialog mergeDialog = new HgMergeDialog(project, repos, selectedRepo);
-		if(mergeDialog.showAndGet())
-		{
-			final String targetValue = StringUtil.escapeBackSlashes(mergeDialog.getTargetValue());
-			final HgRepository repo = mergeDialog.getRepository();
-			HgMergeCommand.mergeWith(repo, targetValue, UpdatedFiles.create());
-		}
+		super(icon);
 	}
+
+	public HgAbstractGlobalSingleRepoAction()
+	{
+		super();
+	}
+
+	@Override
+	protected void execute(@NotNull Project project, @NotNull Collection<HgRepository> repositories,
+			@NotNull List<HgRepository> selectedRepositories)
+	{
+		execute(project, repositories, selectedRepositories.isEmpty() ? null : selectedRepositories.get(0));
+	}
+
+	protected abstract void execute(@NotNull Project project, @NotNull Collection<HgRepository> repositories, @Nullable HgRepository selectedRepo);
 }

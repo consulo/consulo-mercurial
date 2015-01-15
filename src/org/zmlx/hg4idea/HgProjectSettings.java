@@ -12,78 +12,110 @@
 // limitations under the License.
 package org.zmlx.hg4idea;
 
+import org.jetbrains.annotations.NotNull;
+import com.intellij.dvcs.branch.DvcsSyncSettings;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.components.StoragePathMacros;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.changes.VcsAnnotationRefresher;
-import org.jetbrains.annotations.NotNull;
 
 @State(
-  name = "hg4idea.settings",
-  storages = @Storage(file = StoragePathMacros.WORKSPACE_FILE)
-)
-public class HgProjectSettings implements PersistentStateComponent<HgProjectSettings.State> {
+		name = "hg4idea.settings",
+		storages = @Storage(file = StoragePathMacros.WORKSPACE_FILE))
+public class HgProjectSettings implements PersistentStateComponent<HgProjectSettings.State>, DvcsSyncSettings
+{
 
-  @NotNull private final HgGlobalSettings myAppSettings;
-  @NotNull private final Project myProject;
+	@NotNull
+	private final HgGlobalSettings myAppSettings;
+	@NotNull
+	private final Project myProject;
 
-  private State myState = new State();
+	private State myState = new State();
 
-  public HgProjectSettings(@NotNull Project project, @NotNull HgGlobalSettings appSettings) {
-    myProject = project;
-    myAppSettings = appSettings;
-  }
+	public HgProjectSettings(@NotNull Project project, @NotNull HgGlobalSettings appSettings)
+	{
+		myProject = project;
+		myAppSettings = appSettings;
+	}
 
-  public static class State {
-    public boolean myCheckIncoming = true;
-    public boolean myCheckOutgoing = true;
-    public Boolean CHECK_INCOMING_OUTGOING = null;
-    public boolean myIgnoreWhitespacesInAnnotations = true;
-  }
+	public static class State
+	{
 
-  public State getState() {
-    return myState;
-  }
+		public boolean myCheckIncoming = true;
+		public boolean myCheckOutgoing = true;
+		public Boolean CHECK_INCOMING_OUTGOING = null;
+		public boolean myIgnoreWhitespacesInAnnotations = true;
+		public Value ROOT_SYNC = Value.NOT_DECIDED;
+	}
 
-  public void loadState(State state) {
-    myState = state;
-    if (state.CHECK_INCOMING_OUTGOING == null) {
-      state.CHECK_INCOMING_OUTGOING = state.myCheckIncoming || state.myCheckOutgoing;
-    }
-  }
+	@Override
+	public State getState()
+	{
+		return myState;
+	}
 
-  public boolean isCheckIncomingOutgoing() {
-    return myState.CHECK_INCOMING_OUTGOING != null && myState.CHECK_INCOMING_OUTGOING.booleanValue();
-  }
+	@Override
+	public void loadState(State state)
+	{
+		myState = state;
+		if(state.CHECK_INCOMING_OUTGOING == null)
+		{
+			state.CHECK_INCOMING_OUTGOING = state.myCheckIncoming || state.myCheckOutgoing;
+		}
+	}
 
-  public boolean isWhitespacesIgnoredInAnnotations() {
-    return myState.myIgnoreWhitespacesInAnnotations;
-  }
+	public boolean isCheckIncomingOutgoing()
+	{
+		return myState.CHECK_INCOMING_OUTGOING != null && myState.CHECK_INCOMING_OUTGOING.booleanValue();
+	}
 
-  public void setCheckIncomingOutgoing(boolean checkIncomingOutgoing) {
-    myState.CHECK_INCOMING_OUTGOING = checkIncomingOutgoing;
-  }
+	public boolean isWhitespacesIgnoredInAnnotations()
+	{
+		return myState.myIgnoreWhitespacesInAnnotations;
+	}
 
-  public void setIgnoreWhitespacesInAnnotations(boolean ignoreWhitespacesInAnnotations) {
-    final boolean changed = myState.myIgnoreWhitespacesInAnnotations != ignoreWhitespacesInAnnotations;
-    myState.myIgnoreWhitespacesInAnnotations = ignoreWhitespacesInAnnotations;
-    if (changed) {
-      myProject.getMessageBus().syncPublisher(VcsAnnotationRefresher.LOCAL_CHANGES_CHANGED).configurationChanged(HgVcs.getKey());
-    }
-  }
+	@Override
+	@NotNull
+	public Value getSyncSetting()
+	{
+		return myState.ROOT_SYNC;
+	}
 
-  public String getHgExecutable() {
-    return myAppSettings.getHgExecutable();
-  }
+	@Override
+	public void setSyncSetting(@NotNull Value syncSetting)
+	{
+		myState.ROOT_SYNC = syncSetting;
+	}
 
-  public void setHgExecutable(String text) {
-    myAppSettings.setHgExecutable(text);
-  }
+	public void setCheckIncomingOutgoing(boolean checkIncomingOutgoing)
+	{
+		myState.CHECK_INCOMING_OUTGOING = checkIncomingOutgoing;
+	}
 
-  @NotNull
-  public HgGlobalSettings getGlobalSettings() {
-    return myAppSettings;
-  }
+	public void setIgnoreWhitespacesInAnnotations(boolean ignoreWhitespacesInAnnotations)
+	{
+		if(myState.myIgnoreWhitespacesInAnnotations != ignoreWhitespacesInAnnotations)
+		{
+			myState.myIgnoreWhitespacesInAnnotations = ignoreWhitespacesInAnnotations;
+			myProject.getMessageBus().syncPublisher(VcsAnnotationRefresher.LOCAL_CHANGES_CHANGED).configurationChanged(HgVcs.getKey());
+		}
+	}
+
+	public String getHgExecutable()
+	{
+		return myAppSettings.getHgExecutable();
+	}
+
+	public void setHgExecutable(String text)
+	{
+		myAppSettings.setHgExecutable(text);
+	}
+
+	@NotNull
+	public HgGlobalSettings getGlobalSettings()
+	{
+		return myAppSettings;
+	}
 }

@@ -12,6 +12,34 @@
 // limitations under the License.
 package org.zmlx.hg4idea;
 
+import java.io.File;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import javax.swing.event.HyperlinkEvent;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.zmlx.hg4idea.provider.HgCachingCommittedChangesProvider;
+import org.zmlx.hg4idea.provider.HgChangeProvider;
+import org.zmlx.hg4idea.provider.HgCheckoutProvider;
+import org.zmlx.hg4idea.provider.HgDiffProvider;
+import org.zmlx.hg4idea.provider.HgHistoryProvider;
+import org.zmlx.hg4idea.provider.HgMergeProvider;
+import org.zmlx.hg4idea.provider.HgRollbackEnvironment;
+import org.zmlx.hg4idea.provider.annotate.HgAnnotationProvider;
+import org.zmlx.hg4idea.provider.commit.HgCheckinEnvironment;
+import org.zmlx.hg4idea.provider.commit.HgCloseBranchExecutor;
+import org.zmlx.hg4idea.provider.commit.HgCommitAndPushExecutor;
+import org.zmlx.hg4idea.provider.update.HgUpdateEnvironment;
+import org.zmlx.hg4idea.roots.HgIntegrationEnabler;
+import org.zmlx.hg4idea.status.HgRemoteStatusUpdater;
+import org.zmlx.hg4idea.status.ui.HgHideableWidget;
+import org.zmlx.hg4idea.status.ui.HgIncomingOutgoingWidget;
+import org.zmlx.hg4idea.status.ui.HgStatusWidget;
+import org.zmlx.hg4idea.util.HgUtil;
+import org.zmlx.hg4idea.util.HgVersion;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationListener;
@@ -30,7 +58,15 @@ import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
-import com.intellij.openapi.vcs.*;
+import com.intellij.openapi.vcs.AbstractVcs;
+import com.intellij.openapi.vcs.CalledInAwt;
+import com.intellij.openapi.vcs.CheckoutProvider;
+import com.intellij.openapi.vcs.CommittedChangesProvider;
+import com.intellij.openapi.vcs.ProjectLevelVcsManager;
+import com.intellij.openapi.vcs.VcsKey;
+import com.intellij.openapi.vcs.VcsNotifier;
+import com.intellij.openapi.vcs.VcsRoot;
+import com.intellij.openapi.vcs.VcsType;
 import com.intellij.openapi.vcs.annotate.AnnotationProvider;
 import com.intellij.openapi.vcs.changes.ChangeProvider;
 import com.intellij.openapi.vcs.changes.CommitExecutor;
@@ -48,443 +84,499 @@ import com.intellij.util.containers.ComparatorDelegate;
 import com.intellij.util.containers.Convertor;
 import com.intellij.util.messages.MessageBusConnection;
 import com.intellij.util.messages.Topic;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.zmlx.hg4idea.provider.*;
-import org.zmlx.hg4idea.provider.annotate.HgAnnotationProvider;
-import org.zmlx.hg4idea.provider.commit.HgCheckinEnvironment;
-import org.zmlx.hg4idea.provider.commit.HgCommitAndPushExecutor;
-import org.zmlx.hg4idea.provider.update.HgUpdateEnvironment;
-import org.zmlx.hg4idea.roots.HgIntegrationEnabler;
-import org.zmlx.hg4idea.status.HgRemoteStatusUpdater;
-import org.zmlx.hg4idea.status.ui.HgHideableWidget;
-import org.zmlx.hg4idea.status.ui.HgIncomingOutgoingWidget;
-import org.zmlx.hg4idea.status.ui.HgStatusWidget;
-import org.zmlx.hg4idea.util.HgUtil;
-import org.zmlx.hg4idea.util.HgVersion;
 
-import javax.swing.event.HyperlinkEvent;
-import java.io.File;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+public class HgVcs extends AbstractVcs<CommittedChangeList>
+{
 
-public class HgVcs extends AbstractVcs<CommittedChangeList> {
+	public static final Topic<HgUpdater> BRANCH_TOPIC = new Topic<HgUpdater>("hg4idea.branch", HgUpdater.class);
+	public static final Topic<HgUpdater> REMOTE_TOPIC = new Topic<HgUpdater>("hg4idea.remote", HgUpdater.class);
+	public static final Topic<HgUpdater> STATUS_TOPIC = new Topic<HgUpdater>("hg4idea.status", HgUpdater.class);
+	public static final Topic<HgHideableWidget> INCOMING_OUTGOING_CHECK_TOPIC = new Topic<HgHideableWidget>("hg4idea.incomingcheck",
+			HgHideableWidget.class);
+	private static final Logger LOG = Logger.getInstance(HgVcs.class);
 
-  public static final Topic<HgUpdater> BRANCH_TOPIC = new Topic<HgUpdater>("hg4idea.branch", HgUpdater.class);
-  public static final Topic<HgUpdater> REMOTE_TOPIC = new Topic<HgUpdater>("hg4idea.remote", HgUpdater.class);
-  public static final Topic<HgUpdater> STATUS_TOPIC = new Topic<HgUpdater>("hg4idea.status", HgUpdater.class);
-  public static final Topic<HgHideableWidget> INCOMING_OUTGOING_CHECK_TOPIC =
-    new Topic<HgHideableWidget>("hg4idea.incomingcheck", HgHideableWidget.class);
-  private static final Logger LOG = Logger.getInstance(HgVcs.class);
+	public static final String VCS_NAME = "hg4idea";
+	public static final String DISPLAY_NAME = "Mercurial";
+	private final static VcsKey ourKey = createKey(VCS_NAME);
+	private static final int MAX_CONSOLE_OUTPUT_SIZE = 10000;
 
-  public static final String VCS_NAME = "hg4idea";
-  public static final String DISPLAY_NAME = "Mercurial";
-  private final static VcsKey ourKey = createKey(VCS_NAME);
-  private static final int MAX_CONSOLE_OUTPUT_SIZE = 10000;
+	private static final String ORIG_FILE_PATTERN = "*.orig";
+	@Nullable
+	public static final String HGENCODING = System.getenv("HGENCODING");
 
-  private static final String ORIG_FILE_PATTERN = "*.orig";
-  @Nullable public static final String HGENCODING = System.getenv("HGENCODING");
+	private final HgChangeProvider changeProvider;
+	private final HgRollbackEnvironment rollbackEnvironment;
+	private final HgDiffProvider diffProvider;
+	private final HgHistoryProvider historyProvider;
+	private final HgCheckinEnvironment checkinEnvironment;
+	private final HgAnnotationProvider annotationProvider;
+	private final HgUpdateEnvironment updateEnvironment;
+	private final HgCachingCommittedChangesProvider committedChangesProvider;
+	private MessageBusConnection messageBusConnection;
+	@NotNull
+	private final HgGlobalSettings globalSettings;
+	@NotNull
+	private final HgProjectSettings projectSettings;
+	private final ProjectLevelVcsManager myVcsManager;
 
-  private final HgChangeProvider changeProvider;
-  private final HgRollbackEnvironment rollbackEnvironment;
-  private final HgDiffProvider diffProvider;
-  private final HgHistoryProvider historyProvider;
-  private final HgCheckinEnvironment checkinEnvironment;
-  private final HgAnnotationProvider annotationProvider;
-  private final HgUpdateEnvironment updateEnvironment;
-  private final HgCachingCommittedChangesProvider committedChangesProvider;
-  private MessageBusConnection messageBusConnection;
-  @NotNull private final HgGlobalSettings globalSettings;
-  @NotNull private final HgProjectSettings projectSettings;
-  private final ProjectLevelVcsManager myVcsManager;
+	private HgVFSListener myVFSListener;
+	private final HgMergeProvider myMergeProvider;
+	private HgExecutableValidator myExecutableValidator;
+	private final Object myExecutableValidatorLock = new Object();
+	private File myPromptHooksExtensionFile;
+	private final CommitExecutor myCommitAndPushExecutor;
+	private final HgCloseBranchExecutor myCloseBranchExecutor;
 
-  private HgVFSListener myVFSListener;
-  private final HgMergeProvider myMergeProvider;
-  private HgExecutableValidator myExecutableValidator;
-  private final Object myExecutableValidatorLock = new Object();
-  private File myPromptHooksExtensionFile;
-  private CommitExecutor myCommitAndPushExecutor;
+	private HgRemoteStatusUpdater myHgRemoteStatusUpdater;
+	private HgStatusWidget myStatusWidget;
+	private HgIncomingOutgoingWidget myIncomingWidget;
+	private HgIncomingOutgoingWidget myOutgoingWidget;
+	@NotNull
+	private HgVersion myVersion = HgVersion.NULL;  // version of Hg which this plugin uses.
 
-  private HgRemoteStatusUpdater myHgRemoteStatusUpdater;
-  private HgStatusWidget myStatusWidget;
-  private HgIncomingOutgoingWidget myIncomingWidget;
-  private HgIncomingOutgoingWidget myOutgoingWidget;
-  @NotNull private HgVersion myVersion = HgVersion.NULL;  // version of Hg which this plugin uses.
+	public HgVcs(@NotNull Project project,
+			@NotNull HgGlobalSettings globalSettings,
+			@NotNull HgProjectSettings projectSettings,
+			ProjectLevelVcsManager vcsManager)
+	{
+		super(project, VCS_NAME);
+		this.globalSettings = globalSettings;
+		this.projectSettings = projectSettings;
+		myVcsManager = vcsManager;
+		changeProvider = new HgChangeProvider(project, getKeyInstanceMethod());
+		rollbackEnvironment = new HgRollbackEnvironment(project);
+		diffProvider = new HgDiffProvider(project);
+		historyProvider = new HgHistoryProvider(project);
+		checkinEnvironment = new HgCheckinEnvironment(project);
+		annotationProvider = new HgAnnotationProvider(project);
+		updateEnvironment = new HgUpdateEnvironment(project);
+		committedChangesProvider = new HgCachingCommittedChangesProvider(project, this);
+		myMergeProvider = new HgMergeProvider(myProject);
+		myCommitAndPushExecutor = new HgCommitAndPushExecutor(checkinEnvironment);
+		myCloseBranchExecutor = new HgCloseBranchExecutor(checkinEnvironment);
+	}
 
-  public HgVcs(Project project,
-               @NotNull HgGlobalSettings globalSettings,
-               @NotNull HgProjectSettings projectSettings,
-               ProjectLevelVcsManager vcsManager) {
-    super(project, VCS_NAME);
-    this.globalSettings = globalSettings;
-    this.projectSettings = projectSettings;
-    myVcsManager = vcsManager;
-    changeProvider = new HgChangeProvider(project, getKeyInstanceMethod());
-    rollbackEnvironment = new HgRollbackEnvironment(project);
-    diffProvider = new HgDiffProvider(project);
-    historyProvider = new HgHistoryProvider(project);
-    checkinEnvironment = new HgCheckinEnvironment(project);
-    annotationProvider = new HgAnnotationProvider(project);
-    updateEnvironment = new HgUpdateEnvironment(project);
-    committedChangesProvider = new HgCachingCommittedChangesProvider(project, this);
-    myMergeProvider = new HgMergeProvider(myProject);
-    myCommitAndPushExecutor = new HgCommitAndPushExecutor(checkinEnvironment);
-  }
+	public String getDisplayName()
+	{
+		return DISPLAY_NAME;
+	}
 
-  public String getDisplayName() {
-    return DISPLAY_NAME;
-  }
+	public Configurable getConfigurable()
+	{
+		return new HgProjectConfigurable(getProject(), projectSettings);
+	}
 
-  public Configurable getConfigurable() {
-    return new HgProjectConfigurable(getProject(), projectSettings);
-  }
+	@NotNull
+	public HgProjectSettings getProjectSettings()
+	{
+		return projectSettings;
+	}
 
-  @NotNull
-  public HgProjectSettings getProjectSettings() {
-    return projectSettings;
-  }
+	@Override
+	public ChangeProvider getChangeProvider()
+	{
+		return changeProvider;
+	}
 
-  @Override
-  public ChangeProvider getChangeProvider() {
-    return changeProvider;
-  }
+	@Nullable
+	@Override
+	public RollbackEnvironment createRollbackEnvironment()
+	{
+		return rollbackEnvironment;
+	}
 
-  @Nullable
-  @Override
-  public RollbackEnvironment createRollbackEnvironment() {
-    return rollbackEnvironment;
-  }
+	@Override
+	public DiffProvider getDiffProvider()
+	{
+		return diffProvider;
+	}
 
-  @Override
-  public DiffProvider getDiffProvider() {
-    return diffProvider;
-  }
+	@Override
+	public VcsHistoryProvider getVcsHistoryProvider()
+	{
+		return historyProvider;
+	}
 
-  @Override
-  public VcsHistoryProvider getVcsHistoryProvider() {
-    return historyProvider;
-  }
+	@Override
+	public VcsHistoryProvider getVcsBlockHistoryProvider()
+	{
+		return getVcsHistoryProvider();
+	}
 
-  @Override
-  public VcsHistoryProvider getVcsBlockHistoryProvider() {
-    return getVcsHistoryProvider();
-  }
+	@Nullable
+	@Override
+	public CheckinEnvironment createCheckinEnvironment()
+	{
+		return checkinEnvironment;
+	}
 
-  @Nullable
-  @Override
-  public CheckinEnvironment createCheckinEnvironment() {
-    return checkinEnvironment;
-  }
+	@Override
+	public AnnotationProvider getAnnotationProvider()
+	{
+		return annotationProvider;
+	}
 
-  @Override
-  public AnnotationProvider getAnnotationProvider() {
-    return annotationProvider;
-  }
+	@Override
+	public MergeProvider getMergeProvider()
+	{
+		return myMergeProvider;
+	}
 
-  @Override
-  public MergeProvider getMergeProvider() {
-    return myMergeProvider;
-  }
+	@Nullable
+	@Override
+	public UpdateEnvironment createUpdateEnvironment()
+	{
+		return updateEnvironment;
+	}
 
-  @Nullable
-  @Override
-  public UpdateEnvironment createUpdateEnvironment() {
-    return updateEnvironment;
-  }
+	@Override
+	public UpdateEnvironment getIntegrateEnvironment()
+	{
+		return null;
+	}
 
-  @Override
-  public UpdateEnvironment getIntegrateEnvironment() {
-    return null;
-  }
+	@Override
+	public boolean fileListenerIsSynchronous()
+	{
+		return false;
+	}
 
-  @Override
-  public boolean fileListenerIsSynchronous() {
-    return false;
-  }
+	@Override
+	public CommittedChangesProvider getCommittedChangesProvider()
+	{
+		return committedChangesProvider;
+	}
 
-  @Override
-  public CommittedChangesProvider getCommittedChangesProvider() {
-    return committedChangesProvider;
-  }
+	@Override
+	public boolean allowsNestedRoots()
+	{
+		return true;
+	}
 
-  @Override
-  public boolean allowsNestedRoots() {
-    return true;
-  }
+	@Override
+	public <S> List<S> filterUniqueRoots(final List<S> in, final Convertor<S, VirtualFile> convertor)
+	{
+		Collections.sort(in, new ComparatorDelegate<S, VirtualFile>(convertor, FilePathComparator.getInstance()));
 
-  @Override
-  public <S> List<S> filterUniqueRoots(final List<S> in, final Convertor<S, VirtualFile> convertor) {
-    Collections.sort(in, new ComparatorDelegate<S, VirtualFile>(convertor, FilePathComparator.getInstance()));
+		for(int i = 1; i < in.size(); i++)
+		{
+			final S sChild = in.get(i);
+			final VirtualFile child = convertor.convert(sChild);
+			final VirtualFile childRoot = HgUtil.getHgRootOrNull(myProject, child);
+			if(childRoot == null)
+			{
+				continue;
+			}
+			for(int j = i - 1; j >= 0; --j)
+			{
+				final S sParent = in.get(j);
+				final VirtualFile parent = convertor.convert(sParent);
+				// if the parent is an ancestor of the child and that they share common root, the child is removed
+				if(VfsUtilCore.isAncestor(parent, child, false) && VfsUtilCore.isAncestor(childRoot, parent, false))
+				{
+					in.remove(i);
+					//noinspection AssignmentToForLoopParameter
+					--i;
+					break;
+				}
+			}
+		}
+		return in;
+	}
 
-    for (int i = 1; i < in.size(); i++) {
-      final S sChild = in.get(i);
-      final VirtualFile child = convertor.convert(sChild);
-      final VirtualFile childRoot = HgUtil.getHgRootOrNull(myProject, child);
-      if (childRoot == null) {
-        continue;
-      }
-      for (int j = i - 1; j >= 0; --j) {
-        final S sParent = in.get(j);
-        final VirtualFile parent = convertor.convert(sParent);
-        // if the parent is an ancestor of the child and that they share common root, the child is removed
-        if (VfsUtilCore.isAncestor(parent, child, false) && VfsUtilCore.isAncestor(childRoot, parent, false)) {
-          in.remove(i);
-          //noinspection AssignmentToForLoopParameter
-          --i;
-          break;
-        }
-      }
-    }
-    return in;
-  }
+	@Override
+	public RootsConvertor getCustomConvertor()
+	{
+		return HgRootsHandler.getInstance(myProject);
+	}
 
-  @Override
-  public RootsConvertor getCustomConvertor() {
-    return HgRootsHandler.getInstance(myProject);
-  }
+	@Override
+	public boolean isVersionedDirectory(VirtualFile dir)
+	{
+		return HgUtil.getNearestHgRoot(dir) != null;
+	}
 
-  @Override
-  public boolean isVersionedDirectory(VirtualFile dir) {
-    return HgUtil.getNearestHgRoot(dir) != null;
-  }
+	/**
+	 * @return the prompthooks.py extension used for capturing prompts from Mercurial and requesting IDEA's user about authentication.
+	 */
+	@NotNull
+	public File getPromptHooksExtensionFile()
+	{
+		if(myPromptHooksExtensionFile == null)
+		{
+			// check that hooks are available
+			myPromptHooksExtensionFile = HgUtil.getTemporaryPythonFile("prompthooks");
+			if(myPromptHooksExtensionFile == null || !myPromptHooksExtensionFile.exists())
+			{
+				LOG.error("prompthooks.py Mercurial extension is not found. Please reinstall " + ApplicationNamesInfo.getInstance().getProductName
+						());
+			}
+		}
+		return myPromptHooksExtensionFile;
+	}
 
-  /**
-   * @return the prompthooks.py extension used for capturing prompts from Mercurial and requesting IDEA's user about authentication.
-   */
-  @NotNull
-  public File getPromptHooksExtensionFile() {
-    if (myPromptHooksExtensionFile == null) {
-      // check that hooks are available
-      myPromptHooksExtensionFile = HgUtil.getTemporaryPythonFile("prompthooks");
-      if (myPromptHooksExtensionFile == null || !myPromptHooksExtensionFile.exists()) {
-        LOG.error(
-          "prompthooks.py Mercurial extension is not found. Please reinstall " + ApplicationNamesInfo.getInstance().getProductName());
-      }
-    }
-    return myPromptHooksExtensionFile;
-  }
+	@Override
+	public void activate()
+	{
+		// validate hg executable on start and update hg version
+		checkExecutableAndVersion();
 
-  @Override
-  public void activate() {
-    // validate hg executable on start and update hg version
-    checkExecutableAndVersion();
+		// status bar
+		myStatusWidget = new HgStatusWidget(this, getProject(), projectSettings);
+		myStatusWidget.activate();
 
-    // status bar
-    myStatusWidget = new HgStatusWidget(this, getProject(), projectSettings);
-    myStatusWidget.activate();
+		myIncomingWidget = new HgIncomingOutgoingWidget(this, getProject(), projectSettings, true);
+		myOutgoingWidget = new HgIncomingOutgoingWidget(this, getProject(), projectSettings, false);
 
-    myIncomingWidget = new HgIncomingOutgoingWidget(this, getProject(), projectSettings, true);
-    myOutgoingWidget = new HgIncomingOutgoingWidget(this, getProject(), projectSettings, false);
+		ApplicationManager.getApplication().invokeAndWait(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				myIncomingWidget.activate();
+				myOutgoingWidget.activate();
+			}
+		}, ModalityState.NON_MODAL);
 
-    ApplicationManager.getApplication().invokeAndWait(new Runnable() {
-      @Override
-      public void run() {
-        myIncomingWidget.activate();
-        myOutgoingWidget.activate();
-      }
-    }, ModalityState.NON_MODAL);
+		// updaters and listeners
+		myHgRemoteStatusUpdater = new HgRemoteStatusUpdater(this, myIncomingWidget.getChangesetStatus(), myOutgoingWidget.getChangesetStatus(),
+				projectSettings);
+		myHgRemoteStatusUpdater.activate();
 
-    // updaters and listeners
-    myHgRemoteStatusUpdater =
-      new HgRemoteStatusUpdater(this, myIncomingWidget.getChangesetStatus(), myOutgoingWidget.getChangesetStatus(),
-                                projectSettings);
-    myHgRemoteStatusUpdater.activate();
+		messageBusConnection = myProject.getMessageBus().connect();
+		messageBusConnection.subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, new FileEditorManagerAdapter()
+		{
+			@Override
+			public void selectionChanged(@NotNull FileEditorManagerEvent event)
+			{
+				Project project = event.getManager().getProject();
+				project.getMessageBus().syncPublisher(BRANCH_TOPIC).update(project, null);
+			}
+		});
 
-    messageBusConnection = myProject.getMessageBus().connect();
-    messageBusConnection.subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, new FileEditorManagerAdapter() {
-      @Override
-      public void selectionChanged(@NotNull FileEditorManagerEvent event) {
-        Project project = event.getManager().getProject();
-        project.getMessageBus().syncPublisher(BRANCH_TOPIC).update(project, null);
-      }
-    });
+		myVFSListener = new HgVFSListener(myProject, this);
 
-    myVFSListener = new HgVFSListener(myProject, this);
+		// ignore temporary files
+		final String ignoredPattern = FileTypeManager.getInstance().getIgnoredFilesList();
+		if(!ignoredPattern.contains(ORIG_FILE_PATTERN))
+		{
+			final String newPattern = ignoredPattern + (ignoredPattern.endsWith(";") ? "" : ";") + ORIG_FILE_PATTERN;
+			HgUtil.runWriteActionLater(new Runnable()
+			{
+				public void run()
+				{
+					FileTypeManager.getInstance().setIgnoredFilesList(newPattern);
+				}
+			});
+		}
 
-    // ignore temporary files
-    final String ignoredPattern = FileTypeManager.getInstance().getIgnoredFilesList();
-    if (!ignoredPattern.contains(ORIG_FILE_PATTERN)) {
-      final String newPattern = ignoredPattern + (ignoredPattern.endsWith(";") ? "" : ";") + ORIG_FILE_PATTERN;
-      HgUtil.runWriteActionLater(new Runnable() {
-        public void run() {
-          FileTypeManager.getInstance().setIgnoredFilesList(newPattern);
-        }
-      });
-    }
+		// Force a branch topic update
+		myProject.getMessageBus().syncPublisher(BRANCH_TOPIC).update(myProject, null);
+	}
 
-    // Force a branch topic update
-    myProject.getMessageBus().syncPublisher(BRANCH_TOPIC).update(myProject, null);
-  }
+	private void checkExecutableAndVersion()
+	{
+		if(!ApplicationManager.getApplication().isUnitTestMode() && getExecutableValidator().checkExecutableAndNotifyIfNeeded())
+		{
+			checkVersion();
+		}
+	}
 
-  private void checkExecutableAndVersion() {
-    if (!ApplicationManager.getApplication().isUnitTestMode() && getExecutableValidator().checkExecutableAndNotifyIfNeeded()) {
-      checkVersion();
-    }
-  }
+	@Override
+	public void deactivate()
+	{
+		if(myHgRemoteStatusUpdater != null)
+		{
+			myHgRemoteStatusUpdater.deactivate();
+			myHgRemoteStatusUpdater = null;
+		}
+		if(myStatusWidget != null)
+		{
+			myStatusWidget.deactivate();
+			myStatusWidget = null;
+		}
+		if(myIncomingWidget != null)
+		{
+			myIncomingWidget.deactivate();
+			myIncomingWidget = null;
+		}
+		if(myOutgoingWidget != null)
+		{
+			myOutgoingWidget.deactivate();
+			myOutgoingWidget = null;
+		}
+		if(messageBusConnection != null)
+		{
+			messageBusConnection.disconnect();
+		}
 
-  @Override
-  public void deactivate() {
-    if (myHgRemoteStatusUpdater != null) {
-      myHgRemoteStatusUpdater.deactivate();
-      myHgRemoteStatusUpdater = null;
-    }
-    if (myStatusWidget != null) {
-      myStatusWidget.deactivate();
-      myStatusWidget = null;
-    }
-    if (myIncomingWidget != null) {
-      myIncomingWidget.deactivate();
-      myIncomingWidget = null;
-    }
-    if (myOutgoingWidget != null) {
-      myOutgoingWidget.deactivate();
-      myOutgoingWidget = null;
-    }
-    if (messageBusConnection != null) {
-      messageBusConnection.disconnect();
-    }
+		if(myVFSListener != null)
+		{
+			Disposer.dispose(myVFSListener);
+			myVFSListener = null;
+		}
 
-    if (myVFSListener != null) {
-      Disposer.dispose(myVFSListener);
-      myVFSListener = null;
-    }
+		super.deactivate();
+	}
 
-    super.deactivate();
-  }
+	@Nullable
+	public static HgVcs getInstance(Project project)
+	{
+		if(project == null || project.isDisposed())
+		{
+			return null;
+		}
+		final ProjectLevelVcsManager vcsManager = ProjectLevelVcsManager.getInstance(project);
+		if(vcsManager == null)
+		{
+			return null;
+		}
+		return (HgVcs) vcsManager.findVcsByName(VCS_NAME);
+	}
 
-  @Nullable
-  public static HgVcs getInstance(Project project) {
-    if (project == null || project.isDisposed()) {
-      return null;
-    }
-    final ProjectLevelVcsManager vcsManager = ProjectLevelVcsManager.getInstance(project);
-    if (vcsManager == null) {
-      return null;
-    }
-    return (HgVcs)vcsManager.findVcsByName(VCS_NAME);
-  }
+	@NotNull
+	public HgGlobalSettings getGlobalSettings()
+	{
+		return globalSettings;
+	}
 
-  @NotNull
-  public HgGlobalSettings getGlobalSettings() {
-    return globalSettings;
-  }
+	public void showMessageInConsole(String message, final TextAttributes style)
+	{
+		if(message.length() > MAX_CONSOLE_OUTPUT_SIZE)
+		{
+			message = message.substring(0, MAX_CONSOLE_OUTPUT_SIZE);
+		}
+		myVcsManager.addMessageToConsoleWindow(message, style);
+	}
 
-  public void showMessageInConsole(String message, final TextAttributes style) {
-    if (message.length() > MAX_CONSOLE_OUTPUT_SIZE) {
-      message = message.substring(0, MAX_CONSOLE_OUTPUT_SIZE);
-    }
-    myVcsManager.addMessageToConsoleWindow(message, style);
-  }
+	public HgExecutableValidator getExecutableValidator()
+	{
+		synchronized(myExecutableValidatorLock)
+		{
+			if(myExecutableValidator == null)
+			{
+				myExecutableValidator = new HgExecutableValidator(myProject, this);
+			}
+			return myExecutableValidator;
+		}
+	}
 
-  public HgExecutableValidator getExecutableValidator() {
-    synchronized (myExecutableValidatorLock) {
-      if (myExecutableValidator == null) {
-        myExecutableValidator = new HgExecutableValidator(myProject, this);
-      }
-      return myExecutableValidator;
-    }
-  }
+	@Override
+	public boolean reportsIgnoredDirectories()
+	{
+		return false;
+	}
 
-  @Override
-  public boolean reportsIgnoredDirectories() {
-    return false;
-  }
+	@Override
+	public List<CommitExecutor> getCommitExecutors()
+	{
+		return Collections.singletonList(myCommitAndPushExecutor);
+	}
 
-  @Override
-  public List<CommitExecutor> getCommitExecutors() {
-    return Collections.singletonList(myCommitAndPushExecutor);
-  }
+	@NotNull
+	public HgCloseBranchExecutor getCloseBranchExecutor()
+	{
+		return myCloseBranchExecutor;
+	}
 
-  public static VcsKey getKey() {
-    return ourKey;
-  }
+	public static VcsKey getKey()
+	{
+		return ourKey;
+	}
 
-  @Override
-  public VcsType getType() {
-    return VcsType.distributed;
-  }
+	@Override
+	public VcsType getType()
+	{
+		return VcsType.distributed;
+	}
 
-  @Override
-  @CalledInAwt
-  public void enableIntegration() {
-    ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {
-      public void run() {
-        Collection<VcsRoot> roots = ServiceManager.getService(myProject, VcsRootDetector.class).detect();
-        new HgIntegrationEnabler(HgVcs.this).enable(roots);
-      }
-    });
-  }
+	@Override
+	@CalledInAwt
+	public void enableIntegration()
+	{
+		ApplicationManager.getApplication().executeOnPooledThread(new Runnable()
+		{
+			public void run()
+			{
+				Collection<VcsRoot> roots = ServiceManager.getService(myProject, VcsRootDetector.class).detect();
+				new HgIntegrationEnabler(HgVcs.this).enable(roots);
+			}
+		});
+	}
 
-  @Override
-  public CheckoutProvider getCheckoutProvider() {
-    return new HgCheckoutProvider();
-  }
+	@Override
+	public CheckoutProvider getCheckoutProvider()
+	{
+		return new HgCheckoutProvider();
+	}
 
-  /**
-   * Checks Hg version and updates the myVersion variable.
-   * In the case of nullable or unsupported version reports the problem.
-   */
-  public void checkVersion() {
-    final String executable = getGlobalSettings().getHgExecutable();
-    VcsNotifier vcsNotifier = VcsNotifier.getInstance(myProject);
-    final String SETTINGS_LINK = "settings";
-    final String UPDATE_LINK = "update";
-    NotificationListener linkAdapter = new NotificationListener.Adapter() {
-      @Override
-      protected void hyperlinkActivated(@NotNull Notification notification,
-                                        @NotNull HyperlinkEvent e) {
-        if (SETTINGS_LINK.equals(e.getDescription())) {
-          ShowSettingsUtil.getInstance()
-            .showSettingsDialog(myProject, getConfigurable().getDisplayName());
-        }
-        else if (UPDATE_LINK.equals(e.getDescription())) {
-          BrowserUtil.browse("http://mercurial.selenic.com");
-        }
-      }
-    };
-    try {
-      myVersion = HgVersion.identifyVersion(executable);
-      //if version is not supported, but have valid hg executable
-      if (!myVersion.isSupported()) {
-        LOG.info("Unsupported Hg version: " + myVersion);
-        String message = String.format("The <a href='" + SETTINGS_LINK + "'>configured</a> version of Hg is not supported: %s.<br/> " +
-                                       "The minimal supported version is %s. Please <a href='" + UPDATE_LINK + "'>update</a>.",
-                                       myVersion, HgVersion.MIN);
-        vcsNotifier.notifyError("Unsupported Hg version", message, linkAdapter);
-      }
-      else if (myVersion.hasUnsupportedExtensions()) {
-        String unsupportedExtensionsAsString = myVersion.getUnsupportedExtensions().toString();
-        LOG.warn("Unsupported Hg extensions: " + unsupportedExtensionsAsString);
-        String message = String.format("Some hg extensions %s are not found or not supported by your hg version and will be ignored.\n" +
-                                       "Please, update your hgrc or Mercurial.ini file", unsupportedExtensionsAsString);
-        vcsNotifier.notifyWarning("Unsupported Hg version", message);
-      }
-    }
-    catch (Exception e) {
-      if (getExecutableValidator().checkExecutableAndNotifyIfNeeded()) {
-        //sometimes not hg application has version command, but we couldn't parse an answer as valid hg,
-        // so parse(output) throw ParseException, but hg and git executable seems to be valid in this case
-        final String reason = (e.getCause() != null ? e.getCause() : e).getMessage();
-        String message = HgVcsMessages.message("hg4idea.unable.to.run.hg", executable);
-        vcsNotifier.notifyError(message,
-                                  String.format(
-                                    reason +
-                                    "<br/> Please check your hg executable path in <a href='" +
-                                    SETTINGS_LINK +
-                                    "'> settings </a>"
-                                  ),
-                                  linkAdapter
-        );
-      }
-    }
-  }
+	/**
+	 * Checks Hg version and updates the myVersion variable.
+	 * In the case of nullable or unsupported version reports the problem.
+	 */
+	public void checkVersion()
+	{
+		final String executable = getGlobalSettings().getHgExecutable();
+		VcsNotifier vcsNotifier = VcsNotifier.getInstance(myProject);
+		final String SETTINGS_LINK = "settings";
+		final String UPDATE_LINK = "update";
+		NotificationListener linkAdapter = new NotificationListener.Adapter()
+		{
+			@Override
+			protected void hyperlinkActivated(@NotNull Notification notification, @NotNull HyperlinkEvent e)
+			{
+				if(SETTINGS_LINK.equals(e.getDescription()))
+				{
+					ShowSettingsUtil.getInstance().showSettingsDialog(myProject, getConfigurable().getDisplayName());
+				}
+				else if(UPDATE_LINK.equals(e.getDescription()))
+				{
+					BrowserUtil.browse("http://mercurial.selenic.com");
+				}
+			}
+		};
+		try
+		{
+			myVersion = HgVersion.identifyVersion(executable);
+			//if version is not supported, but have valid hg executable
+			if(!myVersion.isSupported())
+			{
+				LOG.info("Unsupported Hg version: " + myVersion);
+				String message = String.format("The <a href='" + SETTINGS_LINK + "'>configured</a> version of Hg is not supported: %s.<br/> " +
+						"The minimal supported version is %s. Please <a href='" + UPDATE_LINK + "'>update</a>.", myVersion, HgVersion.MIN);
+				vcsNotifier.notifyError("Unsupported Hg version", message, linkAdapter);
+			}
+			else if(myVersion.hasUnsupportedExtensions())
+			{
+				String unsupportedExtensionsAsString = myVersion.getUnsupportedExtensions().toString();
+				LOG.warn("Unsupported Hg extensions: " + unsupportedExtensionsAsString);
+				String message = String.format("Some hg extensions %s are not found or not supported by your hg version and will be ignored.\n" +
+						"Please, update your hgrc or Mercurial.ini file", unsupportedExtensionsAsString);
+				vcsNotifier.notifyWarning("Unsupported Hg version", message);
+			}
+		}
+		catch(Exception e)
+		{
+			if(getExecutableValidator().checkExecutableAndNotifyIfNeeded())
+			{
+				//sometimes not hg application has version command, but we couldn't parse an answer as valid hg,
+				// so parse(output) throw ParseException, but hg and git executable seems to be valid in this case
+				final String reason = (e.getCause() != null ? e.getCause() : e).getMessage();
+				String message = HgVcsMessages.message("hg4idea.unable.to.run.hg", executable);
+				vcsNotifier.notifyError(message, reason +
+						"<br/> Please check your hg executable path in <a href='" +
+						SETTINGS_LINK +
+						"'> settings </a>", linkAdapter);
+			}
+		}
+	}
 
-  /**
-   * @return the version number of Hg, which is used by IDEA. Or {@link HgVersion#NULL} if version info is unavailable.
-   */
-  @NotNull
-  public HgVersion getVersion() {
-    return myVersion;
-  }
+	/**
+	 * @return the version number of Hg, which is used by IDEA. Or {@link HgVersion#NULL} if version info is unavailable.
+	 */
+	@NotNull
+	public HgVersion getVersion()
+	{
+		return myVersion;
+	}
 }

@@ -12,51 +12,64 @@
 // limitations under the License.
 package org.zmlx.hg4idea.command;
 
-import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.execution.HgCommandExecutor;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 import org.zmlx.hg4idea.repo.HgRepository;
+import com.intellij.dvcs.DvcsUtil;
+import com.intellij.openapi.application.AccessToken;
+import com.intellij.openapi.project.Project;
+import com.intellij.util.ArrayUtil;
+import com.intellij.util.containers.ContainerUtil;
 
-import java.util.Arrays;
-import java.util.Collections;
+public class HgRebaseCommand
+{
 
-public class HgRebaseCommand {
+	@NotNull
+	private final Project project;
+	@NotNull
+	private final HgRepository repo;
 
-  @NotNull private final Project project;
-  @NotNull private final HgRepository repo;
+	public HgRebaseCommand(@NotNull Project project, @NotNull HgRepository repo)
+	{
+		this.project = project;
+		this.repo = repo;
+	}
 
-  public HgRebaseCommand(@NotNull Project project, @NotNull HgRepository repo) {
-    this.project = project;
-    this.repo = repo;
-  }
+	@Nullable
+	public HgCommandResult startRebase()
+	{
+		return performRebase(ArrayUtil.EMPTY_STRING_ARRAY);
+	}
 
-  @Nullable
-  public HgCommandResult startRebase() {
-    HgCommandResult result =
-      new HgCommandExecutor(project).executeInCurrentThread(repo.getRoot(), "rebase", Collections.<String>emptyList(), null);
-    repo.update();
-    project.getMessageBus().syncPublisher(HgVcs.BRANCH_TOPIC).update(project, null);
-    return result;
-  }
+	@Nullable
+	public HgCommandResult continueRebase()
+	{
+		return performRebase("--continue");
+	}
 
-  @Nullable
-  public HgCommandResult continueRebase() {
-    HgCommandResult result =
-      new HgCommandExecutor(project).executeInCurrentThread(repo.getRoot(), "rebase", Arrays.asList("--continue"), null);
-    repo.update();
-    project.getMessageBus().syncPublisher(HgVcs.BRANCH_TOPIC).update(project, null);
-    return result;
-  }
+	@Nullable
+	public HgCommandResult abortRebase()
+	{
+		return performRebase("--abort");
+	}
 
-  @Nullable
-  public HgCommandResult abortRebase() {
-    HgCommandResult result =
-      new HgCommandExecutor(project).executeInCurrentThread(repo.getRoot(), "rebase", Arrays.asList("--abort"), null);
-    repo.update();
-    project.getMessageBus().syncPublisher(HgVcs.BRANCH_TOPIC).update(project, null);
-    return result;
-  }
+	@Nullable
+	private HgCommandResult performRebase(@NotNull String... args)
+	{
+		AccessToken token = DvcsUtil.workingTreeChangeStarted(project);
+		try
+		{
+			HgCommandResult result = new HgCommandExecutor(project).executeInCurrentThread(repo.getRoot(), "rebase", ContainerUtil.list(args));
+			repo.update();
+			project.getMessageBus().syncPublisher(HgVcs.BRANCH_TOPIC).update(project, null);
+			return result;
+		}
+		finally
+		{
+			DvcsUtil.workingTreeChangeFinished(project, token);
+		}
+	}
 }
