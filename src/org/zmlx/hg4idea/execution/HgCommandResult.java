@@ -12,62 +12,61 @@
 // limitations under the License.
 package org.zmlx.hg4idea.execution;
 
-import com.intellij.openapi.util.text.LineTokenizer;
-
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.List;
 
-public final class HgCommandResult {
+import com.intellij.openapi.util.text.LineTokenizer;
 
-  public static final HgCommandResult EMPTY = new HgCommandResult(new StringWriter(), new StringWriter(), 0);
-  public static final HgCommandResult CANCELLED = new HgCommandResult(new StringWriter(), new StringWriter(), 1);
+public final class HgCommandResult
+{
 
-  private final StringWriter out;
-  private final StringWriter err;
-  private final int exitValue;
+	public static final HgCommandResult CANCELLED = new HgCommandResult(new StringWriter(), new StringWriter(), 1);
 
-  private List<String> outLines;
-  private List<String> errLines;
-  private String warnings;
+	private final StringWriter out;
+	private final StringWriter err;
+	private final int exitValue;
 
-  public HgCommandResult(StringWriter out, StringWriter err, int exitValue) {
-    this.out = out;
-    this.err = err;
-    this.exitValue = exitValue;
-  }
+	private List<String> outLines;
+	private List<String> errLines;
 
-  public List<String> getOutputLines() {
-    if (outLines == null) {
-      outLines = Arrays.asList(LineTokenizer.tokenize(out.getBuffer(), false));
-    }
-    return outLines;
-  }
+	public HgCommandResult(StringWriter out, StringWriter err, int exitValue)
+	{
+		this.out = out;
+		this.err = err;
+		this.exitValue = exitValue;
+	}
 
-  public List<String> getErrorLines() {
-    if (errLines == null) {
-      errLines = Arrays.asList(LineTokenizer.tokenize(err.getBuffer(), false));
-    }
-    return errLines;
-  }
+	public List<String> getOutputLines()
+	{
+		if(outLines == null)
+		{
+			outLines = Arrays.asList(LineTokenizer.tokenize(out.getBuffer(), false));
+		}
+		return outLines;
+	}
 
-  public String getRawOutput() {
-    return out.toString();
-  }
-  
-  public String getRawError() {
-    return err.toString();
-  }
+	public List<String> getErrorLines()
+	{
+		if(errLines == null)
+		{
+			errLines = Arrays.asList(LineTokenizer.tokenize(err.getBuffer(), false));
+		}
+		return errLines;
+	}
 
-  public int getExitValue() {
-    return exitValue;
-  }
+	public String getRawOutput()
+	{
+		return out.toString();
+	}
 
-  void setWarnings(String warnings) {
-    this.warnings = warnings;
-  }
+	public String getRawError()
+	{
+		return err.toString();
+	}
 
-  public String getWarnings() {
-    return warnings;
-  }
+	public int getExitValue()
+	{
+		return exitValue;
+	}
 }

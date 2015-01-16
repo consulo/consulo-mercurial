@@ -12,66 +12,90 @@
 // limitations under the License.
 package org.zmlx.hg4idea;
 
-import com.intellij.openapi.options.ConfigurationException;
-import com.intellij.openapi.options.SearchableConfigurable;
-import com.intellij.openapi.project.Project;
+import javax.swing.JComponent;
+
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.zmlx.hg4idea.ui.HgConfigurationProjectPanel;
+import com.intellij.openapi.options.ConfigurationException;
+import com.intellij.openapi.options.SearchableConfigurable;
+import com.intellij.openapi.project.Project;
 
-import javax.swing.*;
+public class HgProjectConfigurable implements SearchableConfigurable
+{
+	public static final String DISPLAY_NAME = HgVcsMessages.message("hg4idea.mercurial");
 
-public class HgProjectConfigurable implements SearchableConfigurable {
+	private final HgConfigurationProjectPanel myPanel;
+	@NotNull
+	private final Project myProject;
 
-  private final HgConfigurationProjectPanel myPanel;
-  @NotNull private final Project myProject;
+	public HgProjectConfigurable(@NotNull Project project, HgProjectSettings projectSettings)
+	{
+		myProject = project;
+		myPanel = new HgConfigurationProjectPanel(projectSettings, myProject);
+	}
 
-  public HgProjectConfigurable(@NotNull Project project, HgProjectSettings projectSettings) {
-    myProject = project;
-    myPanel = new HgConfigurationProjectPanel(projectSettings, myProject);
-  }
+	@Override
+	@Nls
+	public String getDisplayName()
+	{
+		return DISPLAY_NAME;
+	}
 
-  @Nls
-  public String getDisplayName() {
-    return HgVcsMessages.message("hg4idea.mercurial");
-  }
+	@Override
+	public String getHelpTopic()
+	{
+		return "project.propVCSSupport.VCSs.Mercurial";
+	}
 
-  public String getHelpTopic() {
-    return "project.propVCSSupport.VCSs.Mercurial";
-  }
+	@Override
+	public JComponent createComponent()
+	{
+		return myPanel.getPanel();
+	}
 
-  public JComponent createComponent() {
-    return myPanel.getPanel();
-  }
+	@Override
+	public boolean isModified()
+	{
+		return myPanel.isModified();
+	}
 
-  public boolean isModified() {
-    return myPanel.isModified();
-  }
+	@Override
+	public void apply() throws ConfigurationException
+	{
+		myPanel.validate();
+		myPanel.saveSettings();
+		if(myPanel.getProjectSettings().isCheckIncomingOutgoing())
+		{
+			myProject.getMessageBus().syncPublisher(HgVcs.INCOMING_OUTGOING_CHECK_TOPIC).show();
+		}
+		else
+		{
+			myProject.getMessageBus().syncPublisher(HgVcs.INCOMING_OUTGOING_CHECK_TOPIC).hide();
+		}
+	}
 
-  public void apply() throws ConfigurationException {
-    myPanel.validate();
-    myPanel.saveSettings();
-    if (myPanel.getProjectSettings().isCheckIncomingOutgoing()) {
-      myProject.getMessageBus().syncPublisher(HgVcs.INCOMING_OUTGOING_CHECK_TOPIC).show();
-    }
-    else {
-      myProject.getMessageBus().syncPublisher(HgVcs.INCOMING_OUTGOING_CHECK_TOPIC).hide();
-    }
-  }
+	@Override
+	public void reset()
+	{
+		myPanel.loadSettings();
+	}
 
-  public void reset() {
-    myPanel.loadSettings();
-  }
+	@Override
+	public void disposeUIResources()
+	{
+	}
 
-  public void disposeUIResources() {
-  }
+	@Override
+	@NotNull
+	public String getId()
+	{
+		return "Mercurial.Project";
+	}
 
-  @NotNull
-  public String getId() {
-    return "Mercurial.Project";
-  }
-
-  public Runnable enableSearch(String option) {
-    return null;
-  }
+	@Override
+	public Runnable enableSearch(String option)
+	{
+		return null;
+	}
 }

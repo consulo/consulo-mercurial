@@ -12,36 +12,39 @@
 // limitations under the License.
 package org.zmlx.hg4idea;
 
-import com.intellij.execution.ExecutableValidator;
-import com.intellij.openapi.options.Configurable;
-import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.zmlx.hg4idea.util.HgUtil;
+import com.intellij.execution.ExecutableValidator;
+import com.intellij.openapi.project.Project;
 
-public class HgExecutableValidator extends ExecutableValidator {
+public class HgExecutableValidator extends ExecutableValidator
+{
 
-  private final HgVcs myVcs;
+	private final HgVcs myVcs;
 
-  public HgExecutableValidator(@NotNull Project project, @NotNull HgVcs vcs) {
-    super(project,
-          HgVcsMessages.message("hg4idea.executable.notification.title"),
-          HgVcsMessages.message("hg4idea.executable.notification.description"));
-    myVcs = vcs;
-  }
+	public HgExecutableValidator(@NotNull Project project, @NotNull HgVcs vcs)
+	{
+		super(project, HgVcsMessages.message("hg4idea.executable.notification.title"), HgVcsMessages.message("hg4idea.executable.notification" +
+				".description"));
+		myVcs = vcs;
+	}
 
-  @Override
-  protected String getCurrentExecutable() {
-    return myVcs.getGlobalSettings().getHgExecutable();
-  }
+	@Override
+	protected String getCurrentExecutable()
+	{
+		return myVcs.getGlobalSettings().getHgExecutable();
+	}
 
-  @NotNull
-  @Override
-  protected Configurable getConfigurable() {
-    return myVcs.getConfigurable();
-  }
+	@NotNull
+	@Override
+	protected String getConfigurableDisplayName()
+	{
+		return HgProjectConfigurable.DISPLAY_NAME;
+	}
 
-  @Override
-  public boolean isExecutableValid(@NotNull String executable) {
-    return HgUtil.isExecutableValid(executable);
-  }
+	@Override
+	public boolean isExecutableValid(@NotNull String executable)
+	{
+		return HgUtil.isExecutableValid(executable);
+	}
 }

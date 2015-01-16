@@ -12,85 +12,94 @@
 // limitations under the License.
 package org.zmlx.hg4idea.command;
 
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.VirtualFile;
-import org.jetbrains.annotations.Nullable;
-import org.zmlx.hg4idea.HgRevisionNumber;
-import org.zmlx.hg4idea.execution.HgCommandExecutor;
-import org.zmlx.hg4idea.execution.HgCommandResult;
-import org.zmlx.hg4idea.util.HgChangesetUtil;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+import org.zmlx.hg4idea.HgRevisionNumber;
+import org.zmlx.hg4idea.execution.HgCommandExecutor;
+import org.zmlx.hg4idea.execution.HgCommandResult;
+import org.zmlx.hg4idea.util.HgChangesetUtil;
+import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.openapi.vfs.VirtualFile;
+
 /**
  * Abstract base class for all commands that need to parse changeset information.
  */
-public abstract class HgChangesetsCommand {
+public abstract class HgChangesetsCommand
+{
 
-  private static final Logger LOG = Logger.getInstance(HgChangesetsCommand.class.getName());
+	private static final Logger LOG = Logger.getInstance(HgChangesetsCommand.class.getName());
 
-  protected final Project project;
-  protected final String command;
+	protected final Project project;
+	protected final String command;
 
-  public HgChangesetsCommand(Project project, String command) {
-    this.project = project;
-    this.command = command;
-  }
+	public HgChangesetsCommand(Project project, String command)
+	{
+		this.project = project;
+		this.command = command;
+	}
 
-  public List<HgRevisionNumber> execute(VirtualFile repo) {
-    return getRevisions(repo);
-  }
+	public List<HgRevisionNumber> execute(VirtualFile repo)
+	{
+		return getRevisions(repo);
+	}
 
-  protected List<HgRevisionNumber> getRevisions(VirtualFile repo) {
-    List<String> args = new ArrayList<String>(Arrays.asList(
-      "--template",
-      HgChangesetUtil.makeTemplate("{rev}", "{node}", "{author}", "{desc|firstline}"),
-      "--quiet"
-    ));
+	protected List<HgRevisionNumber> getRevisions(VirtualFile repo)
+	{
+		List<String> args = new ArrayList<String>(Arrays.asList("--template", HgChangesetUtil.makeTemplate("{rev}", "{node}", "{author}",
+				"{desc|firstline}"), "--quiet"));
 
-    addArguments(args);
+		addArguments(args);
 
-    HgCommandResult result = executeCommand(repo, args);
+		HgCommandResult result = executeCommand(repo, args);
 
-    if (result == null) {
-      return Collections.emptyList();
-    }
+		if(result == null)
+		{
+			return Collections.emptyList();
+		}
 
-    String output = result.getRawOutput();
-    if (StringUtil.isEmpty(output)) {
-      return Collections.emptyList();
-    }
-    
-    String[] changesets = output.split(HgChangesetUtil.CHANGESET_SEPARATOR);
-    List<HgRevisionNumber> revisions = new ArrayList<HgRevisionNumber>(changesets.length);
-    
-    for(String changeset: changesets) {
-      List<String> parts = StringUtil.split(changeset, HgChangesetUtil.ITEM_SEPARATOR);
-      if (parts.size() == 4) {
-        revisions.add(HgRevisionNumber.getInstance(parts.get(0), parts.get(1), parts.get(2), parts.get(3)));
-      } else {
-        LOG.warn("Could not parse changeset [" + changeset + "]");
-      }
-    }
-    
-    return revisions;
-  }
+		String output = result.getRawOutput();
+		if(StringUtil.isEmpty(output))
+		{
+			return Collections.emptyList();
+		}
 
-  @Nullable
-  protected HgCommandResult executeCommand(VirtualFile repo, List<String> args) {
-    final HgCommandExecutor executor = new HgCommandExecutor(project);
-    executor.setSilent(isSilentCommand());
-    return executor.executeInCurrentThread(repo, command, args);
-  }
+		String[] changesets = output.split(HgChangesetUtil.CHANGESET_SEPARATOR);
+		List<HgRevisionNumber> revisions = new ArrayList<HgRevisionNumber>(changesets.length);
 
-  protected boolean isSilentCommand() {
-    return false;
-  }
+		for(String changeset : changesets)
+		{
+			List<String> parts = StringUtil.split(changeset, HgChangesetUtil.ITEM_SEPARATOR);
+			if(parts.size() == 4)
+			{
+				revisions.add(HgRevisionNumber.getInstance(parts.get(0), parts.get(1), parts.get(2), parts.get(3)));
+			}
+			else
+			{
+				LOG.warn("Could not parse changeset [" + changeset + "]");
+			}
+		}
 
-  protected abstract void addArguments(List<String> args);
+		return revisions;
+	}
+
+	@Nullable
+	protected HgCommandResult executeCommand(VirtualFile repo, List<String> args)
+	{
+		final HgCommandExecutor executor = new HgCommandExecutor(project);
+		executor.setSilent(isSilentCommand());
+		return executor.executeInCurrentThread(repo, command, args);
+	}
+
+	protected boolean isSilentCommand()
+	{
+		return false;
+	}
+
+	protected abstract void addArguments(List<String> args);
 }

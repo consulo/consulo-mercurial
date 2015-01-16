@@ -12,19 +12,51 @@
 // limitations under the License.
 package org.zmlx.hg4idea.command;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.zmlx.hg4idea.execution.HgCommandResult;
+import org.zmlx.hg4idea.execution.HgRemoteCommandExecutor;
+import org.zmlx.hg4idea.log.HgHistoryUtil;
+import org.zmlx.hg4idea.util.HgUtil;
+import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.jetbrains.annotations.Nullable;
-import org.zmlx.hg4idea.util.HgUtil;
 
-public class HgOutgoingCommand extends HgRemoteChangesetsCommand {
+public class HgOutgoingCommand extends HgRemoteChangesetsCommand
+{
 
-  public HgOutgoingCommand(Project project) {
-    super(project, "outgoing");
-  }
+	public HgOutgoingCommand(Project project)
+	{
+		super(project, "outgoing");
+	}
 
-  @Nullable
-  protected String getRepositoryUrl(VirtualFile root) {
-    return HgUtil.getRepositoryDefaultPushPath(project, root);
-  }
+	@Override
+	@Nullable
+	protected String getRepositoryUrl(VirtualFile root)
+	{
+		return HgUtil.getRepositoryDefaultPushPath(project, root);
+	}
+
+	@Nullable
+	public HgCommandResult execute(@NotNull VirtualFile repo,
+			@NotNull String template,
+			@NotNull String source,
+			@NotNull String destination,
+			boolean doNotShowAuthorizationRequest)
+	{
+
+		List<String> arguments = new LinkedList<String>();
+		arguments.add("-n");
+		arguments.add("--template");
+		arguments.add(template);
+		arguments.add(HgHistoryUtil.prepareParameter("rev", source));
+		arguments.add(destination);
+		HgRemoteCommandExecutor commandExecutor = new HgRemoteCommandExecutor(project, destination, ModalityState.any(),
+				doNotShowAuthorizationRequest);
+		commandExecutor.setOutputAlwaysSuppressed(true);
+		return commandExecutor.executeInCurrentThread(repo, "outgoing", arguments);
+	}
 }
