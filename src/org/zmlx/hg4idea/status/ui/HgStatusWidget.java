@@ -26,6 +26,7 @@ import org.zmlx.hg4idea.branch.HgBranchPopup;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.util.HgUtil;
 import com.intellij.dvcs.DvcsUtil;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.FileEditorManagerEvent;
 import com.intellij.openapi.project.Project;
@@ -36,7 +37,6 @@ import com.intellij.openapi.wm.StatusBarWidget;
 import com.intellij.openapi.wm.impl.status.EditorBasedWidget;
 import com.intellij.util.Consumer;
 import com.intellij.util.messages.MessageBusConnection;
-import com.intellij.util.ui.UIUtil;
 
 /**
  * Widget to display basic hg status in the IJ status bar.
@@ -154,38 +154,38 @@ public class HgStatusWidget extends EditorBasedWidget implements StatusBarWidget
 	@Override
 	public void update(final Project project, @Nullable VirtualFile root)
 	{
-		update();
-	}
-
-	public void update(final Project project)
-	{
-		UIUtil.invokeLaterIfNeeded(new Runnable()
+		ApplicationManager.getApplication().invokeLater(new Runnable()
 		{
 			@Override
 			public void run()
 			{
-				if((project == null) || project.isDisposed())
-				{
-					emptyTextAndTooltip();
-					return;
-				}
-
-				final HgRepository repo = HgUtil.getCurrentRepository(project);
-				if(repo == null)
-				{ // the file is not under version control => display nothing
-					emptyTextAndTooltip();
-					return;
-				}
-				myTooltip = HgUtil.getDisplayableBranchOrBookmarkText(repo);
-				myText = StringUtil.shortenTextWithEllipsis(myTooltip, MAX_STRING.length(), 5);
-				if(!isDisposed() && myStatusBar != null)
-				{
-					myStatusBar.updateWidget(ID());
-				}
+				update();
 			}
 		});
 	}
 
+	private void update()
+	{
+		Project project = getProject();
+		if((project == null) || project.isDisposed())
+		{
+			emptyTextAndTooltip();
+			return;
+		}
+
+		final HgRepository repo = HgUtil.getCurrentRepository(project);
+		if(repo == null)
+		{ // the file is not under version control => display nothing
+			emptyTextAndTooltip();
+			return;
+		}
+		myTooltip = HgUtil.getDisplayableBranchOrBookmarkText(repo);
+		myText = StringUtil.shortenTextWithEllipsis(myTooltip, MAX_STRING.length(), 5);
+		if(!isDisposed() && myStatusBar != null)
+		{
+			myStatusBar.updateWidget(ID());
+		}
+	}
 
 	public void activate()
 	{
@@ -197,7 +197,6 @@ public class HgStatusWidget extends EditorBasedWidget implements StatusBarWidget
 
 		MessageBusConnection busConnection = project.getMessageBus().connect();
 		busConnection.subscribe(HgVcs.STATUS_TOPIC, this);
-		busConnection.subscribe(HgVcs.BRANCH_TOPIC, this);
 
 		DvcsUtil.installStatusBarWidget(myProject, this);
 	}
@@ -209,11 +208,6 @@ public class HgStatusWidget extends EditorBasedWidget implements StatusBarWidget
 			return;
 		}
 		DvcsUtil.removeStatusBarWidget(myProject, this);
-	}
-
-	private void update()
-	{
-		update(getProject());
 	}
 
 	public void dispose()

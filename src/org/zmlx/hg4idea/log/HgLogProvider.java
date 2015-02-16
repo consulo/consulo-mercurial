@@ -110,7 +110,6 @@ public class HgLogProvider implements VcsLogProvider
 	@NotNull
 	private Set<VcsRef> readAllRefs(@NotNull VirtualFile root) throws VcsException
 	{
-		myRepositoryManager.waitUntilInitialized();
 		if(myProject.isDisposed())
 		{
 			return Collections.emptySet();

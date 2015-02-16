@@ -21,7 +21,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.HgVcsMessages;
 import org.zmlx.hg4idea.action.HgCommandResultNotifier;
 import org.zmlx.hg4idea.execution.HgCommandResult;
@@ -202,7 +201,6 @@ public class HgUpdateCommand
 		}
 		getRepositoryManager(project).updateRepository(repository);
 		HgErrorUtil.markDirtyAndHandleErrors(project, repository);
-		project.getMessageBus().syncPublisher(HgVcs.BRANCH_TOPIC).update(project, repository);
 		return success;
 	}
 }
