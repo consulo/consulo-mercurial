@@ -25,6 +25,7 @@ import org.zmlx.hg4idea.HgProjectSettings;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.repo.HgRepositoryManager;
 import org.zmlx.hg4idea.util.HgUtil;
+import com.intellij.dvcs.DvcsUtil;
 import com.intellij.dvcs.branch.DvcsBranchPopup;
 import com.intellij.dvcs.repo.AbstractRepositoryManager;
 import com.intellij.dvcs.ui.RootAction;
@@ -75,7 +76,6 @@ public class HgBranchPopup extends DvcsBranchPopup<HgRepository>
 		super(currentRepository, repositoryManager, hgMultiRootBranchConfig, vcsSettings, preselectActionCondition);
 	}
 
-	@Override
 	protected void setCurrentBranchInfo()
 	{
 		String branchText = "Current branch : ";
@@ -114,13 +114,12 @@ public class HgBranchPopup extends DvcsBranchPopup<HgRepository>
 		}
 	}
 
-	@Override
 	@NotNull
 	protected DefaultActionGroup createRepositoriesActions()
 	{
 		DefaultActionGroup popupGroup = new DefaultActionGroup(null, false);
 		popupGroup.addSeparator("Repositories");
-		for(HgRepository repository : myRepositoryManager.getRepositories())
+		for(HgRepository repository : DvcsUtil.sortRepositories(myRepositoryManager.getRepositories()))
 		{
 			popupGroup.add(new RootAction<HgRepository>(repository, highlightCurrentRepo() ? myCurrentRepository : null,
 					new HgBranchPopupActions(repository.getProject(), repository).createActions(null), HgUtil.getDisplayableBranchOrBookmarkText
@@ -129,7 +128,6 @@ public class HgBranchPopup extends DvcsBranchPopup<HgRepository>
 		return popupGroup;
 	}
 
-	@Override
 	protected void fillPopupWithCurrentRepositoryActions(@NotNull DefaultActionGroup popupGroup, @Nullable DefaultActionGroup actions)
 	{
 		popupGroup.addAll(new HgBranchPopupActions(myProject, myCurrentRepository).createActions(actions));

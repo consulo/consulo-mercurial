@@ -12,18 +12,17 @@
 // limitations under the License.
 package org.zmlx.hg4idea.command;
 
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.zmlx.hg4idea.HgRevisionNumber;
+import org.zmlx.hg4idea.execution.HgCommandExecutor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vcs.FilePath;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.vcsUtil.VcsFileUtil;
-import org.zmlx.hg4idea.HgRevisionNumber;
-import org.zmlx.hg4idea.HgVcs;
-import org.zmlx.hg4idea.execution.HgCommandExecutor;
-
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
 public class HgRevertCommand {
 
@@ -54,6 +53,5 @@ public class HgRevertCommand {
       args.addAll(chunk);
       new HgCommandExecutor(project).executeInCurrentThread(repo, "revert", args);
     }
-    project.getMessageBus().syncPublisher(HgVcs.BRANCH_TOPIC).update(project, null);
   }
 }

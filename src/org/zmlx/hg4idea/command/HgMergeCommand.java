@@ -20,7 +20,6 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 import org.zmlx.hg4idea.execution.HgPromptCommandExecutor;
 import org.zmlx.hg4idea.provider.update.HgConflictResolver;
@@ -46,17 +45,17 @@ public class HgMergeCommand
 	@NotNull
 	private final Project project;
 	@NotNull
-	private final VirtualFile repo;
+	private final HgRepository repo;
 	@Nullable
 	private String revision;
 
-	public HgMergeCommand(@NotNull Project project, @NotNull VirtualFile repo)
+	public HgMergeCommand(@NotNull Project project, @NotNull HgRepository repo)
 	{
 		this.project = project;
 		this.repo = repo;
 	}
 
-	public void setRevision(@NotNull String revision)
+	private void setRevision(@NotNull String revision)
 	{
 		this.revision = revision;
 	}
@@ -75,8 +74,8 @@ public class HgMergeCommand
 		AccessToken token = DvcsUtil.workingTreeChangeStarted(project);
 		try
 		{
-			final HgCommandResult result = commandExecutor.executeInCurrentThread(repo, "merge", arguments);
-			project.getMessageBus().syncPublisher(HgVcs.BRANCH_TOPIC).update(project, null);
+			HgCommandResult result = commandExecutor.executeInCurrentThread(repo.getRoot(), "merge", arguments);
+			repo.update();
 			return result;
 		}
 		finally
@@ -91,7 +90,7 @@ public class HgMergeCommand
 		HgCommandResult commandResult = ensureSuccess(execute());
 		try
 		{
-			HgUtil.markDirectoryDirty(project, repo);
+			HgUtil.markDirectoryDirty(project, repo.getRoot());
 		}
 		catch(InvocationTargetException e)
 		{
@@ -117,7 +116,7 @@ public class HgMergeCommand
 	{
 		final Project project = repository.getProject();
 		final VirtualFile repositoryRoot = repository.getRoot();
-		final HgMergeCommand hgMergeCommand = new HgMergeCommand(project, repositoryRoot);
+		final HgMergeCommand hgMergeCommand = new HgMergeCommand(project, repository);
 		hgMergeCommand.setRevision(branchName);//there is no difference between branch or revision or bookmark as parameter to merge,
 		// we need just a string
 		new Task.Backgroundable(project, "Merging changes...")
