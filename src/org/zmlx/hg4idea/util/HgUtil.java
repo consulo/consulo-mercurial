@@ -34,15 +34,7 @@ import java.util.regex.Pattern;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.zmlx.hg4idea.HgChange;
-import org.zmlx.hg4idea.HgContentRevision;
-import org.zmlx.hg4idea.HgFile;
-import org.zmlx.hg4idea.HgFileRevision;
-import org.zmlx.hg4idea.HgFileStatusEnum;
-import org.zmlx.hg4idea.HgNameWithHashInfo;
-import org.zmlx.hg4idea.HgRevisionNumber;
-import org.zmlx.hg4idea.HgVcs;
-import org.zmlx.hg4idea.HgVcsMessages;
+import org.zmlx.hg4idea.*;
 import org.zmlx.hg4idea.command.HgRemoveCommand;
 import org.zmlx.hg4idea.command.HgStatusCommand;
 import org.zmlx.hg4idea.command.HgWorkingCopyRevisionsCommand;
@@ -729,8 +721,10 @@ public abstract class HgUtil
 	@Nullable
 	public static HgRepository getCurrentRepository(@NotNull Project project)
 	{
-		VirtualFile file = DvcsUtil.getSelectedFile(project);
-		return getRepositoryForFile(project, file);
+		if (project.isDisposed()) return null;
+		return DvcsUtil.guessRepositoryForFile(project, getRepositoryManager(project), HgVcs.getInstance(project),
+				DvcsUtil.getSelectedFile(project),
+				HgProjectSettings.getInstance(project).getRecentRootPath());
 	}
 
 	@Nullable

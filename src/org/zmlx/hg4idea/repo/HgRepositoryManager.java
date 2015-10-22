@@ -11,7 +11,7 @@ import com.intellij.dvcs.branch.DvcsSyncSettings;
 import com.intellij.dvcs.repo.AbstractRepositoryManager;
 import com.intellij.dvcs.repo.VcsRepositoryManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.util.ObjectUtils;
+import com.intellij.util.ObjectUtil;
 
 public class HgRepositoryManager extends AbstractRepositoryManager<HgRepository>
 {
@@ -21,7 +21,7 @@ public class HgRepositoryManager extends AbstractRepositoryManager<HgRepository>
 	public HgRepositoryManager(@NotNull Project project, @NotNull VcsRepositoryManager vcsRepositoryManager)
 	{
 		super(vcsRepositoryManager, HgVcs.getInstance(project), HgUtil.DOT_HG);
-		mySettings = ObjectUtils.assertNotNull(HgVcs.getInstance(project)).getProjectSettings();
+		mySettings = ObjectUtil.assertNotNull(HgVcs.getInstance(project)).getProjectSettings();
 	}
 
 	@Override

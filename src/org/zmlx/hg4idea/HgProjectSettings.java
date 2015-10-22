@@ -13,7 +13,9 @@
 package org.zmlx.hg4idea;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import com.intellij.dvcs.branch.DvcsSyncSettings;
+import com.intellij.lifecycle.PeriodicalTasksCloser;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
@@ -47,16 +49,15 @@ public class HgProjectSettings implements PersistentStateComponent<HgProjectSett
 		public boolean myCheckOutgoing = true;
 		public Boolean CHECK_INCOMING_OUTGOING = null;
 		public boolean myIgnoreWhitespacesInAnnotations = true;
+		public String RECENT_HG_ROOT_PATH = null;
 		public Value ROOT_SYNC = Value.NOT_DECIDED;
 	}
 
-	@Override
 	public State getState()
 	{
 		return myState;
 	}
 
-	@Override
 	public void loadState(State state)
 	{
 		myState = state;
@@ -64,6 +65,22 @@ public class HgProjectSettings implements PersistentStateComponent<HgProjectSett
 		{
 			state.CHECK_INCOMING_OUTGOING = state.myCheckIncoming || state.myCheckOutgoing;
 		}
+	}
+
+	public static HgProjectSettings getInstance(@NotNull Project project)
+	{
+		return PeriodicalTasksCloser.getInstance().safeGetService(project, HgProjectSettings.class);
+	}
+
+	@Nullable
+	public String getRecentRootPath()
+	{
+		return myState.RECENT_HG_ROOT_PATH;
+	}
+
+	public void setRecentRootPath(@NotNull String recentRootPath)
+	{
+		myState.RECENT_HG_ROOT_PATH = recentRootPath;
 	}
 
 	public boolean isCheckIncomingOutgoing()
@@ -76,14 +93,12 @@ public class HgProjectSettings implements PersistentStateComponent<HgProjectSett
 		return myState.myIgnoreWhitespacesInAnnotations;
 	}
 
-	@Override
 	@NotNull
 	public Value getSyncSetting()
 	{
 		return myState.ROOT_SYNC;
 	}
 
-	@Override
 	public void setSyncSetting(@NotNull Value syncSetting)
 	{
 		myState.ROOT_SYNC = syncSetting;
