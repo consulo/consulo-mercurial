@@ -15,15 +15,15 @@
  */
 package org.zmlx.hg4idea;
 
+import java.awt.datatransfer.StringSelection;
+
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.vcs.VcsDataKeys;
 import com.intellij.openapi.vcs.history.VcsFileRevision;
-import com.intellij.util.PlatformIcons;
-
-import java.awt.datatransfer.StringSelection;
 
 /**
  * @author Nadya Zabrodina
@@ -32,8 +32,7 @@ public class HgCopyHistoryRevisionNumberAction extends AnAction implements DumbA
 
   public HgCopyHistoryRevisionNumberAction() {
     super(HgVcsMessages.message("hg4idea.history.copy.revision.number"),
-          HgVcsMessages.message("hg4idea.history.copy.revision.number"),
-          PlatformIcons.COPY_ICON);
+          HgVcsMessages.message("hg4idea.history.copy.revision.number"), AllIcons.Actions.Copy);
   }
 
   @Override

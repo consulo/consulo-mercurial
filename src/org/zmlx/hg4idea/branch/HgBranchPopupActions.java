@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mustbe.consulo.RequiredDispatchThread;
 import org.zmlx.hg4idea.HgNameWithHashInfo;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.action.HgCommandResultNotifier;
@@ -64,7 +65,6 @@ import com.intellij.openapi.vcs.changes.LocalChangeList;
 import com.intellij.openapi.vcs.changes.ui.CommitChangeListDialog;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.Function;
-import com.intellij.util.PlatformIcons;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.vcs.log.Hash;
 import com.intellij.vcs.log.impl.HashImpl;
@@ -103,7 +103,7 @@ public class HgBranchPopupActions
 			AnAction bookmarkAction = new BookmarkActions(myProject, Collections.singletonList(myRepository), bookmark);
 			if(bookmark.equals(currentBookmark))
 			{
-				bookmarkAction.getTemplatePresentation().setIcon(PlatformIcons.CHECK_ICON);
+				bookmarkAction.getTemplatePresentation().setIcon(AllIcons.Actions.Checked);
 			}
 			popupGroup.add(bookmarkAction);
 		}
@@ -186,6 +186,7 @@ public class HgBranchPopupActions
 			myPreselectedRepo = preselectedRepo;
 		}
 
+		@RequiredDispatchThread
 		@Override
 		public void actionPerformed(AnActionEvent e)
 		{
@@ -222,6 +223,7 @@ public class HgBranchPopupActions
 					(closeBranchExecutor), false, vcs, "Close Branch", null, false);
 		}
 
+		@RequiredDispatchThread
 		@Override
 		public void update(AnActionEvent e)
 		{
@@ -250,6 +252,7 @@ public class HgBranchPopupActions
 			myPreselectedRepo = preselectedRepo;
 		}
 
+		@RequiredDispatchThread
 		@Override
 		public void update(AnActionEvent e)
 		{
@@ -260,6 +263,7 @@ public class HgBranchPopupActions
 			}
 		}
 
+		@RequiredDispatchThread
 		@Override
 		public void actionPerformed(AnActionEvent e)
 		{
@@ -333,6 +337,7 @@ public class HgBranchPopupActions
 			return ContainerUtil.toArray(branchHeadActions, new AnAction[branchHeadActions.size()]);
 		}
 
+		@RequiredDispatchThread
 		@Override
 		public void update(final AnActionEvent e)
 		{
@@ -373,6 +378,7 @@ public class HgBranchPopupActions
 				super(project, "Delete", repositories, branchName);
 			}
 
+			@RequiredDispatchThread
 			@Override
 			public void actionPerformed(AnActionEvent e)
 			{

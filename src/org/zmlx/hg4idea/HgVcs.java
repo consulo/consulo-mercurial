@@ -21,6 +21,7 @@ import javax.swing.event.HyperlinkEvent;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mustbe.consulo.RequiredDispatchThread;
 import org.zmlx.hg4idea.provider.HgCachingCommittedChangesProvider;
 import org.zmlx.hg4idea.provider.HgChangeProvider;
 import org.zmlx.hg4idea.provider.HgCheckoutProvider;
@@ -56,7 +57,6 @@ import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.vcs.AbstractVcs;
-import com.intellij.openapi.vcs.CalledInAwt;
 import com.intellij.openapi.vcs.CheckoutProvider;
 import com.intellij.openapi.vcs.CommittedChangesProvider;
 import com.intellij.openapi.vcs.ProjectLevelVcsManager;
@@ -474,7 +474,7 @@ public class HgVcs extends AbstractVcs<CommittedChangeList>
 	}
 
 	@Override
-	@CalledInAwt
+	@RequiredDispatchThread
 	public void enableIntegration()
 	{
 		ApplicationManager.getApplication().executeOnPooledThread(new Runnable()
