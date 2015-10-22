@@ -32,7 +32,7 @@ import com.intellij.dvcs.repo.RepositoryManager;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.AbstractVcs;
-import com.intellij.util.ObjectUtils;
+import com.intellij.util.ObjectUtil;
 
 public class HgPushSupport extends PushSupport<HgRepository, HgPushSource, HgTarget>
 {
@@ -49,7 +49,7 @@ public class HgPushSupport extends PushSupport<HgRepository, HgPushSource, HgTar
 	public HgPushSupport(@NotNull Project project)
 	{
 		myProject = project;
-		myVcs = ObjectUtils.assertNotNull(HgVcs.getInstance(myProject));
+		myVcs = ObjectUtil.assertNotNull(HgVcs.getInstance(myProject));
 		mySettings = myVcs.getProjectSettings();
 		myCommonPushSettings = ServiceManager.getService(project, PushSettings.class);
 	}
