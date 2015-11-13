@@ -25,8 +25,11 @@ import org.zmlx.hg4idea.util.HgUtil;
 import com.intellij.dvcs.DvcsUtil;
 import com.intellij.dvcs.push.PushTargetPanel;
 import com.intellij.dvcs.push.VcsError;
+import com.intellij.dvcs.push.ui.PushTargetEditorListener;
 import com.intellij.dvcs.push.ui.PushTargetTextField;
 import com.intellij.dvcs.push.ui.VcsEditableTextComponent;
+import com.intellij.openapi.editor.event.DocumentAdapter;
+import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.ui.ColoredTreeCellRenderer;
@@ -56,8 +59,14 @@ public class HgPushTargetPanel extends PushTargetPanel<HgTarget>
 	}
 
 	@Override
-	public void render(@NotNull ColoredTreeCellRenderer renderer, boolean isSelected, boolean isActive)
+	public void render(@NotNull ColoredTreeCellRenderer renderer, boolean isSelected, boolean isActive, @Nullable String forceRenderedText)
 	{
+		if(forceRenderedText != null)
+		{
+			myDestTargetPanel.setText(forceRenderedText);
+			renderer.append(forceRenderedText);
+			return;
+		}
 		String targetText = myDestTargetPanel.getText();
 		if(StringUtil.isEmptyOrSpaces(targetText))
 		{
@@ -69,7 +78,7 @@ public class HgPushTargetPanel extends PushTargetPanel<HgTarget>
 	}
 
 	@Override
-	@NotNull
+	@Nullable
 	public HgTarget getValue()
 	{
 		return createValidPushTarget();
@@ -107,5 +116,19 @@ public class HgPushTargetPanel extends PushTargetPanel<HgTarget>
 	public void setFireOnChangeAction(@NotNull Runnable action)
 	{
 		// no extra changing components => ignore
+	}
+
+	@Override
+	public void addTargetEditorListener(@NotNull final PushTargetEditorListener listener)
+	{
+		myDestTargetPanel.addDocumentListener(new DocumentAdapter()
+		{
+			@Override
+			public void documentChanged(DocumentEvent e)
+			{
+				super.documentChanged(e);
+				listener.onTargetInEditModeChanged(myDestTargetPanel.getText());
+			}
+		});
 	}
 }
