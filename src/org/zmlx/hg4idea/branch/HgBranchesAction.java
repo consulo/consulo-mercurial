@@ -15,23 +15,20 @@
  */
 package org.zmlx.hg4idea.branch;
 
-import java.util.Collection;
-
+import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.zmlx.hg4idea.action.HgAbstractGlobalSingleRepoAction;
 import org.zmlx.hg4idea.repo.HgRepository;
-import com.intellij.openapi.project.Project;
 
-public class HgBranchesAction extends HgAbstractGlobalSingleRepoAction
-{
+import java.util.Collection;
 
-	@Override
-	protected void execute(@NotNull Project project, @NotNull Collection<HgRepository> repositories, @Nullable HgRepository selectedRepo)
-	{
-		if(selectedRepo != null)
-		{
-			HgBranchPopup.getInstance(project, selectedRepo).asListPopup().showInFocusCenter();
-		}
-	}
+public class HgBranchesAction extends HgAbstractGlobalSingleRepoAction {
+
+  @Override
+  protected void execute(@NotNull Project project, @NotNull Collection<HgRepository> repositories, @Nullable HgRepository selectedRepo) {
+    if (selectedRepo != null) {
+      HgBranchPopup.getInstance(project, selectedRepo).asListPopup().showInFocusCenter();
+    }
+  }
 }

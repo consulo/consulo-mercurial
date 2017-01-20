@@ -12,61 +12,56 @@
 // limitations under the License.
 package org.zmlx.hg4idea.execution;
 
-import java.io.StringWriter;
-import java.util.Arrays;
+import com.intellij.execution.process.ProcessOutput;
+import com.intellij.util.ArrayUtil;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
-import com.intellij.openapi.util.text.LineTokenizer;
+public final class HgCommandResult {
 
-public final class HgCommandResult
-{
+  //should be deleted and use ProcessOutput without wrapper
 
-	public static final HgCommandResult CANCELLED = new HgCommandResult(new StringWriter(), new StringWriter(), 1);
+  public static final HgCommandResult CANCELLED = new HgCommandResult(new ProcessOutput(1));
 
-	private final StringWriter out;
-	private final StringWriter err;
-	private final int exitValue;
+  @NotNull private final ProcessOutput myProcessOutput;
+  @NotNull private final byte[] myByteArrayOutput;
 
-	private List<String> outLines;
-	private List<String> errLines;
+  public HgCommandResult(@NotNull ProcessOutput processOutput) {
+    this(processOutput, ArrayUtil.EMPTY_BYTE_ARRAY);
+  }
 
-	public HgCommandResult(StringWriter out, StringWriter err, int exitValue)
-	{
-		this.out = out;
-		this.err = err;
-		this.exitValue = exitValue;
-	}
+  public HgCommandResult(@NotNull ProcessOutput processOutput, @NotNull byte[] byteArrayOutput) {
+    myProcessOutput = processOutput;
+    myByteArrayOutput = byteArrayOutput;
+  }
 
-	public List<String> getOutputLines()
-	{
-		if(outLines == null)
-		{
-			outLines = Arrays.asList(LineTokenizer.tokenize(out.getBuffer(), false));
-		}
-		return outLines;
-	}
+  @NotNull
+  public List<String> getOutputLines() {
+    return myProcessOutput.getStdoutLines();
+  }
 
-	public List<String> getErrorLines()
-	{
-		if(errLines == null)
-		{
-			errLines = Arrays.asList(LineTokenizer.tokenize(err.getBuffer(), false));
-		}
-		return errLines;
-	}
+  @NotNull
+  public List<String> getErrorLines() {
+    return myProcessOutput.getStderrLines();
+  }
 
-	public String getRawOutput()
-	{
-		return out.toString();
-	}
+  @NotNull
+  public String getRawOutput() {
+    return myProcessOutput.getStdout();
+  }
 
-	public String getRawError()
-	{
-		return err.toString();
-	}
+  @NotNull
+  public String getRawError() {
+    return myProcessOutput.getStderr();
+  }
 
-	public int getExitValue()
-	{
-		return exitValue;
-	}
+  @NotNull
+  public byte[] getBytesOutput() {
+    return myByteArrayOutput;
+  }
+
+  public int getExitValue() {
+    return myProcessOutput.getExitCode();
+  }
 }

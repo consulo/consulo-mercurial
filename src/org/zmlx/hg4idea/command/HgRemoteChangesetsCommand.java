@@ -26,8 +26,8 @@ import org.jetbrains.annotations.Nullable;
 import org.zmlx.hg4idea.HgProjectSettings;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.action.HgCommandResultNotifier;
-import org.zmlx.hg4idea.execution.HgCommandExecutor;
 import org.zmlx.hg4idea.execution.HgCommandResult;
+import org.zmlx.hg4idea.execution.HgRemoteCommandExecutor;
 import org.zmlx.hg4idea.util.HgErrorUtil;
 import org.zmlx.hg4idea.util.HgUtil;
 
@@ -62,13 +62,13 @@ public abstract class HgRemoteChangesetsCommand extends HgChangesetsCommand {
   }
 
   @Override
-  protected HgCommandResult executeCommand(VirtualFile repo, List<String> args) {
+  protected HgCommandResult executeCommandInCurrentThread(VirtualFile repo, List<String> args) {
     String repositoryURL = getRepositoryUrl(repo);
     if (repositoryURL == null) {
       LOG.info("executeCommand no default path configured");
       return null;
     }
-    HgCommandExecutor executor = new HgCommandExecutor(project, repositoryURL);
+    HgRemoteCommandExecutor executor = new HgRemoteCommandExecutor(project, repositoryURL);
     HgCommandResult result = executor.executeInCurrentThread(repo, command, args);
     if (result == HgCommandResult.CANCELLED || HgErrorUtil.isAuthorizationError(result)) {
       final HgVcs vcs = HgVcs.getInstance(project);

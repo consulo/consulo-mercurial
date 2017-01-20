@@ -12,36 +12,30 @@
 // limitations under the License.
 package org.zmlx.hg4idea.provider;
 
-import org.jetbrains.annotations.NotNull;
-import org.zmlx.hg4idea.HgFile;
 import com.intellij.openapi.vcs.changes.CurrentBinaryContentRevision;
 import com.intellij.openapi.vcs.history.VcsRevisionNumber;
 import com.intellij.openapi.vfs.VirtualFile;
+import org.jetbrains.annotations.NotNull;
+import org.zmlx.hg4idea.HgFile;
 
-final public class HgCurrentBinaryContentRevision extends CurrentBinaryContentRevision
-{
-	@NotNull
-	private VcsRevisionNumber myRevisionNumber;
-	@NotNull
-	private VirtualFile myRepositoryRoot;
+final public class HgCurrentBinaryContentRevision extends CurrentBinaryContentRevision {
+  @NotNull private VcsRevisionNumber myRevisionNumber;
+  @NotNull private VirtualFile myRepositoryRoot;
 
-	HgCurrentBinaryContentRevision(@NotNull HgFile hgFile, @NotNull VcsRevisionNumber revisionNumber)
-	{
-		super(hgFile.toFilePath());
-		myRepositoryRoot = hgFile.getRepo();
-		myRevisionNumber = revisionNumber;
-	}
+  HgCurrentBinaryContentRevision(@NotNull HgFile hgFile, @NotNull VcsRevisionNumber revisionNumber) {
+    super(hgFile.toFilePath());
+    myRepositoryRoot = hgFile.getRepo();
+    myRevisionNumber = revisionNumber;
+  }
 
-	@NotNull
-	@Override
-	public VcsRevisionNumber getRevisionNumber()
-	{
-		return myRevisionNumber;
-	}
+  @NotNull
+  @Override
+  public VcsRevisionNumber getRevisionNumber() {
+    return myRevisionNumber;
+  }
 
-	@NotNull
-	public VirtualFile getRepositoryRoot()
-	{
-		return myRepositoryRoot;
-	}
+  @NotNull
+  public VirtualFile getRepositoryRoot() {
+    return myRepositoryRoot;
+  }
 }

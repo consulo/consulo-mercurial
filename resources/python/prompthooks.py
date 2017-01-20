@@ -17,12 +17,11 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+import socket
+import struct
 import urllib2
 from mercurial import  ui, util
-import struct
-import socket
 from mercurial.i18n import _
-
 
 try:
     from mercurial.url import passwordmgr
@@ -37,8 +36,8 @@ def send( client, data ):
     if data is None:
         sendInt(client, 0)
     else:
-        sendInt(client, len(data))
-        client.sendall( data )
+        # we need to send data length and data together because it may produce read problems, see org.zmlx.hg4idea.execution.SocketServer
+        client.sendall(struct.pack('>L', len(data)) + data)
     
 def receiveIntWithMessage(client, message):
     requiredLength = struct.calcsize('>L')
@@ -133,8 +132,10 @@ original_warn = ui.ui.warn
 @monkeypatch_method(ui.ui)
 def warn(self, *msg):
     original_warn(self, *msg)
-    
-    port = int(self.config( 'hg4ideawarn', 'port', None, True))
+    hg4ideaWarnConfig = self.config('hg4ideawarn', 'port', None, True)
+    if hg4ideaWarnConfig is None:
+        return
+    port = int(hg4ideaWarnConfig)
   
     if not port:
         raise util.Abort("No port was specified")
@@ -203,16 +204,23 @@ def find_user_password(self, realm, authuri):
                 else:
                     return None
 
-        user, password = urllib2.HTTPPasswordMgrWithDefaultRealm.find_user_password(self, realm, authuri)
+        # After mercurial 3.8.3 urllib2.HTTPPasswordmgrwithdefaultrealm.find_user_password etc were changed to appropriate methods
+        # in util.urlreq module with slightly different semantics
+        newMerc = False if isinstance(self, urllib2.HTTPPasswordMgrWithDefaultRealm) else True
+        if newMerc:
+            user, password = util.urlreq.httppasswordmgrwithdefaultrealm().find_user_password(realm, authuri)
+        else:
+            user, password = urllib2.HTTPPasswordMgrWithDefaultRealm.find_user_password(self, realm, authuri)
         if user is None:
             auth = read_hgrc_authtoken(self.ui, authuri)
             if auth:
                 user = auth.get("username")
 
-        reduced_uri, path= self.reduce_uri(authuri, False)
+        pmWithRealm = util.urlreq.httppasswordmgrwithdefaultrealm() if newMerc else self
+        reduced_uri, path = pmWithRealm.reduce_uri(authuri, False)
         retrievedPass = retrieve_pass_from_server(self.ui, reduced_uri, path, user)
         if retrievedPass is None:
             raise util.Abort(_('http authorization required'))
         user, passwd = retrievedPass
-        self.add_password(realm, authuri, user, passwd)
+        pmWithRealm.add_password(realm, authuri, user, passwd)
         return retrievedPass

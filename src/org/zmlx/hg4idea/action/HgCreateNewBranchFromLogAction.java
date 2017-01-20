@@ -15,45 +15,38 @@
  */
 package org.zmlx.hg4idea.action;
 
-import static org.zmlx.hg4idea.util.HgUtil.getNewBranchNameFromUser;
-
-import java.util.Collections;
-
-import org.jetbrains.annotations.NotNull;
-import org.zmlx.hg4idea.HgVcsMessages;
-import org.zmlx.hg4idea.branch.HgBranchPopupActions;
-import org.zmlx.hg4idea.command.HgUpdateCommand;
-import org.zmlx.hg4idea.repo.HgRepository;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.vcs.log.Hash;
-import com.intellij.vcs.log.VcsFullCommitDetails;
+import org.jetbrains.annotations.NotNull;
+import org.zmlx.hg4idea.HgVcsMessages;
+import org.zmlx.hg4idea.branch.HgBranchPopupActions;
+import org.zmlx.hg4idea.command.HgUpdateCommand;
+import org.zmlx.hg4idea.repo.HgRepository;
 
-public class HgCreateNewBranchFromLogAction extends HgLogSingleCommitAction
-{
-	@Override
-	protected void actionPerformed(@NotNull final HgRepository repository, @NotNull VcsFullCommitDetails commit)
-	{
-		final Hash revisionHash = commit.getId();
-		final Project project = repository.getProject();
-		FileDocumentManager.getInstance().saveAllDocuments();
-		String shortHash = revisionHash.toShortString();
-		final String name = getNewBranchNameFromUser(repository, "Create New Branch From " + shortHash);
-		if(name != null)
-		{
-			new Task.Backgroundable(project, HgVcsMessages.message("hg4idea.progress.updatingTo", shortHash))
-			{
-				@Override
-				public void run(@NotNull ProgressIndicator indicator)
-				{
-					if(HgUpdateCommand.updateRepoToInCurrentThread(project, repository.getRoot(), revisionHash.asString(), false))
-					{
-						new HgBranchPopupActions.HgNewBranchAction(project, Collections.singletonList(repository), repository).createNewBranch(name);
-					}
-				}
-			}.queue();
-		}
-	}
+import java.util.Collections;
+
+import static org.zmlx.hg4idea.util.HgUtil.getNewBranchNameFromUser;
+
+public class HgCreateNewBranchFromLogAction extends HgLogSingleCommitAction {
+  @Override
+  protected void actionPerformed(@NotNull final HgRepository repository, @NotNull final Hash commit) {
+    final Project project = repository.getProject();
+    FileDocumentManager.getInstance().saveAllDocuments();
+    String shortHash = commit.toShortString();
+    final String name = getNewBranchNameFromUser(repository, "Create New Branch From " + shortHash);
+    if (name != null) {
+      new Task.Backgroundable(project, HgVcsMessages.message("hg4idea.progress.updatingTo", shortHash)) {
+        @Override
+        public void run(@NotNull ProgressIndicator indicator) {
+          if (HgUpdateCommand.updateRepoToInCurrentThread(project, repository.getRoot(), commit.asString(), false)) {
+            new HgBranchPopupActions.HgNewBranchAction(project, Collections.singletonList(repository), repository)
+              .createNewBranchInCurrentThread(name);
+          }
+        }
+      }.queue();
+    }
+  }
 }

@@ -53,23 +53,24 @@ public class HgFileRevisionLogParser extends HgBaseLogParser<HgFileRevision> {
     int numAttributes = attributes.size();
     String commitMessage = parseAdditionalStringAttribute(attributes, MESSAGE_INDEX);
     String branchName = parseAdditionalStringAttribute(attributes, BRANCH_INDEX);
-    final HgRevisionNumber vcsRevisionNumber = new HgRevisionNumber(rev, changeset, author, commitMessage, parents);
+    final HgRevisionNumber vcsRevisionNumber = new HgRevisionNumber(rev, changeset, author, email, commitMessage, parents);
 
     Set<String> filesAdded = Collections.emptySet();
     Set<String> filesModified = Collections.emptySet();
     Set<String> filesDeleted = Collections.emptySet();
     Map<String, String> copies = Collections.emptyMap();
     boolean shouldParseOldTemplate = !myVersion.isBuiltInFunctionSupported();
+    String separator = shouldParseOldTemplate ? " " : HgChangesetUtil.FILE_SEPARATOR;
     // At least in the case of the long template, it's OK that we don't have everything...for example, if there were no
     //  deleted or copied files, then we won't get any attributes for them...
     if (numAttributes > FILES_ADDED_INDEX) {
-      filesAdded = parseFileList(attributes.get(FILES_ADDED_INDEX));
+      filesAdded = parseFileList(attributes.get(FILES_ADDED_INDEX), separator);
 
       if (numAttributes > FILES_MODIFIED_INDEX) {
-        filesModified = parseFileList(attributes.get(FILES_MODIFIED_INDEX));
+        filesModified = parseFileList(attributes.get(FILES_MODIFIED_INDEX), separator);
 
         if (numAttributes > FILES_DELETED_INDEX) {
-          filesDeleted = parseFileList(attributes.get(FILES_DELETED_INDEX));
+          filesDeleted = parseFileList(attributes.get(FILES_DELETED_INDEX), separator);
 
           if (numAttributes > FILES_COPIED_INDEX) {
             copies = shouldParseOldTemplate
@@ -91,17 +92,14 @@ public class HgFileRevisionLogParser extends HgBaseLogParser<HgFileRevision> {
         }
       }
     }
-    return new HgFileRevision(myProject, myHgFile, vcsRevisionNumber, branchName, revisionDate, author, commitMessage,
+    return new HgFileRevision(myProject, myHgFile, vcsRevisionNumber, branchName, revisionDate, vcsRevisionNumber.getAuthor(), commitMessage,
                               filesModified, filesAdded, filesDeleted, copies);
   }
 
-  private static Set<String> parseFileList(@Nullable String fileListString) {
-    if (StringUtil.isEmpty(fileListString)) {
-      return Collections.emptySet();
-    }
-    else {
-      return new HashSet<String>(StringUtil.split(fileListString," "));
-    }
+  private static Set<String> parseFileList(@Nullable String fileListString, @NotNull String separator) {
+    return StringUtil.isEmpty(fileListString)
+           ? Collections.<String>emptySet()
+           : new HashSet<>(StringUtil.split(fileListString, separator));
   }
 
   @NotNull
@@ -109,7 +107,7 @@ public class HgFileRevisionLogParser extends HgBaseLogParser<HgFileRevision> {
     if (StringUtil.isEmpty(fileListString)) {
       return Collections.emptyMap();
     }
-    Map<String, String> copies = new HashMap<String, String>();
+    Map<String, String> copies = new HashMap<>();
     List<String> filesList = StringUtil.split(fileListString, HgChangesetUtil.FILE_SEPARATOR);
 
     for (String pairOfFiles : filesList) {
@@ -129,7 +127,7 @@ public class HgFileRevisionLogParser extends HgBaseLogParser<HgFileRevision> {
       return Collections.emptyMap();
     }
     else {
-      Map<String, String> copies = new HashMap<String, String>();
+      Map<String, String> copies = new HashMap<>();
       //hg copied files output looks like: "target1 (source1)target2 (source2)target3 ....  (target_n)"
       //so we should split i-1 source from i target.
       // If some sources or targets contains '(' we suppose that it has Regular Bracket sequence and perform appropriate string parsing.

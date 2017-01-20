@@ -31,7 +31,7 @@ public class HgRemoteCommandExecutor extends HgCommandExecutor
 {
 
 	@Nullable
-	private ModalityState myState;
+	private final ModalityState myState;
 	final boolean myIgnoreAuthorizationRequest;
 
 	public HgRemoteCommandExecutor(@NotNull Project project, @Nullable String destination)
@@ -39,15 +39,7 @@ public class HgRemoteCommandExecutor extends HgCommandExecutor
 		this(project, destination, null, false);
 	}
 
-	public HgRemoteCommandExecutor(@NotNull Project project, @Nullable String destination, boolean ignoreAuthorizationRequest)
-	{
-		this(project, destination, null, ignoreAuthorizationRequest);
-	}
-
-	public HgRemoteCommandExecutor(@NotNull Project project,
-			@Nullable String destination,
-			@Nullable ModalityState state,
-			boolean ignoreAuthorizationRequest)
+	public HgRemoteCommandExecutor(@NotNull Project project, @Nullable String destination, @Nullable ModalityState state, boolean ignoreAuthorizationRequest)
 	{
 		super(project, destination);
 		myState = state;
@@ -55,9 +47,7 @@ public class HgRemoteCommandExecutor extends HgCommandExecutor
 	}
 
 	@Nullable
-	public HgCommandResult executeInCurrentThread(@Nullable final VirtualFile repo,
-			@NotNull final String operation,
-			@Nullable final List<String> arguments)
+	public HgCommandResult executeInCurrentThread(@Nullable final VirtualFile repo, @NotNull final String operation, @Nullable final List<String> arguments)
 	{
 
 
@@ -66,8 +56,8 @@ public class HgRemoteCommandExecutor extends HgCommandExecutor
 		{
 			if(HgErrorUtil.hasAuthorizationInDestinationPath(myDestination))
 			{
-				new HgCommandResultNotifier(myProject).notifyError(result, "Authorization failed", "Your hgrc file settings have wrong username or " +
-						"password in [paths].\n" + "Please, update your .hg/hgrc file.");
+				new HgCommandResultNotifier(myProject).notifyError(result, "Authorization failed", "Your hgrc file settings have wrong username or password in [paths].\n" + "Please, update your " +
+						".hg/hgrc file.");
 				return null;
 			}
 			result = executeInCurrentThread(repo, operation, arguments, true);
@@ -76,10 +66,7 @@ public class HgRemoteCommandExecutor extends HgCommandExecutor
 	}
 
 	@Nullable
-	private HgCommandResult executeInCurrentThread(@Nullable final VirtualFile repo,
-			@NotNull final String operation,
-			@Nullable final List<String> arguments,
-			boolean forceAuthorization)
+	private HgCommandResult executeInCurrentThread(@Nullable final VirtualFile repo, @NotNull final String operation, @Nullable final List<String> arguments, boolean forceAuthorization)
 	{
 
 		PassReceiver passReceiver = new PassReceiver(myProject, forceAuthorization, myIgnoreAuthorizationRequest, myState);
@@ -132,10 +119,10 @@ public class HgRemoteCommandExecutor extends HgCommandExecutor
 	{
 		private final Project myProject;
 		private HgCommandAuthenticator myAuthenticator;
-		private boolean myForceAuthorization;
-		private boolean mySilentMode;
+		private final boolean myForceAuthorization;
+		private final boolean mySilentMode;
 		@Nullable
-		private ModalityState myState;
+		private final ModalityState myState;
 
 		private PassReceiver(Project project, boolean forceAuthorization, boolean silent, @Nullable ModalityState state)
 		{

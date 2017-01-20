@@ -12,26 +12,26 @@
 // limitations under the License.
 package org.zmlx.hg4idea;
 
+import java.io.File;
+import java.util.Map;
+
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.components.PersistentStateComponent;
+import com.intellij.openapi.components.RoamingType;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.components.StoragePathMacros;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.util.containers.HashMap;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.io.File;
-import java.util.Map;
 
 @State(
   name = "HgGlobalSettings",
-  storages = @Storage( file = StoragePathMacros.APP_CONFIG + "/vcs.xml")
+  storages = @Storage( file = StoragePathMacros.APP_CONFIG + "/hg.xml", roamingType = RoamingType.PER_PLATFORM)
 )
 public class HgGlobalSettings implements PersistentStateComponent<HgGlobalSettings.State> {
-
   @NonNls private static final String[] DEFAULT_WINDOWS_PATHS = {"C:\\Program Files\\Mercurial",
     "C:\\Program Files (x86)\\Mercurial",
     "C:\\cygwin\\bin"};
@@ -47,16 +47,20 @@ public class HgGlobalSettings implements PersistentStateComponent<HgGlobalSettin
 
   private State myState = new State();
 
+  private String myDetectedHgExecutable;
+
   public static class State {
     public String myHgExecutable = null;
     // visited URL -> login for this URL. Passwords are remembered in the PasswordSafe.
-    public Map<String, String> myRememberedUserNames = new HashMap<String, String>();
+    public Map<String, String> myRememberedUserNames = new HashMap<>();
   }
 
+  @Override
   public State getState() {
     return myState;
   }
 
+  @Override
   public void loadState(State state) {
     myState = state;
   }
@@ -66,7 +70,12 @@ public class HgGlobalSettings implements PersistentStateComponent<HgGlobalSettin
    */
   @NotNull
   public String defaultHgExecutable() {
-    if (myState.myHgExecutable == null) {
+    String hgExecutable = myState.myHgExecutable;
+    if (hgExecutable != null) {
+      return hgExecutable;
+    }
+
+    if (myDetectedHgExecutable == null) {
       String[] paths;
       String programName;
       if (SystemInfo.isWindows) {
@@ -81,15 +90,16 @@ public class HgGlobalSettings implements PersistentStateComponent<HgGlobalSettin
       for (String p : paths) {
         File f = new File(p, programName);
         if (f.exists()) {
-          myState.myHgExecutable = f.getAbsolutePath();
+          myDetectedHgExecutable = f.getAbsolutePath();
           break;
         }
       }
-      if (myState.myHgExecutable == null) { // otherwise, take the first variant and hope it's in $PATH
-        myState.myHgExecutable = programName;
+      if (myDetectedHgExecutable == null) {
+        // otherwise, take the first variant and hope it's in $PATH
+        myDetectedHgExecutable = programName;
       }
     }
-    return myState.myHgExecutable;
+    return myDetectedHgExecutable;
   }
 
   /**

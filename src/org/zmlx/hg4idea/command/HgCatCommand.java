@@ -12,66 +12,50 @@
 // limitations under the License.
 package org.zmlx.hg4idea.command;
 
-import java.nio.charset.Charset;
-import java.util.LinkedList;
-import java.util.List;
-
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.text.StringUtil;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.zmlx.hg4idea.HgFile;
 import org.zmlx.hg4idea.HgRevisionNumber;
 import org.zmlx.hg4idea.execution.HgCommandExecutor;
 import org.zmlx.hg4idea.execution.HgCommandResult;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.text.StringUtil;
 
-public class HgCatCommand
-{
+import java.nio.charset.Charset;
+import java.util.LinkedList;
+import java.util.List;
 
-	private final Project myProject;
+public class HgCatCommand {
 
-	public HgCatCommand(Project project)
-	{
-		myProject = project;
-	}
+  private final Project myProject;
 
-	@Nullable
-	public String execute(HgFile hgFile, HgRevisionNumber vcsRevisionNumber, Charset charset)
-	{
-		final List<String> arguments = createArguments(vcsRevisionNumber, hgFile.getRelativePath());
-		final HgCommandExecutor executor = new HgCommandExecutor(myProject);
-		executor.setSilent(true);
-		executor.setOutputAlwaysSuppressed(true);
-		executor.setCharset(charset);
-		final HgCommandResult result = executor.executeInCurrentThread(hgFile.getRepo(), "cat", arguments);
+  public HgCatCommand(Project project) {
+    myProject = project;
+  }
 
-		if(result == null)
-		{ // in case of error
-			return null;
-		}
-		if(result.getExitValue() == 1)
-		{ // file not found in given revision
-			return null;
-		}
-		return result.getRawOutput();
-	}
+  @Nullable
+  public HgCommandResult execute(@NotNull HgFile hgFile, @Nullable HgRevisionNumber vcsRevisionNumber, @Nullable Charset charset) {
+    final List<String> arguments = createArguments(vcsRevisionNumber, hgFile.getRelativePath());
+    final HgCommandExecutor executor = new HgCommandExecutor(myProject);
+    executor.setSilent(true);
+    executor.setOutputAlwaysSuppressed(true);
+    executor.setCharset(charset);
+    executor.setBinary(true);
+    return executor.executeInCurrentThread(hgFile.getRepo(), "cat", arguments);
+  }
 
-	private static List<String> createArguments(HgRevisionNumber vcsRevisionNumber, String fileName)
-	{
-		final List<String> arguments = new LinkedList<String>();
-		if(vcsRevisionNumber != null)
-		{
-			arguments.add("--rev");
-			if(!StringUtil.isEmptyOrSpaces(vcsRevisionNumber.getChangeset()))
-			{
-				arguments.add(vcsRevisionNumber.getChangeset());
-			}
-			else
-			{
-				arguments.add(vcsRevisionNumber.getRevision());
-			}
-		}
-		arguments.add(fileName);
-		return arguments;
-	}
+  private static List<String> createArguments(HgRevisionNumber vcsRevisionNumber, String fileName) {
+    final List<String> arguments = new LinkedList<>();
+    if (vcsRevisionNumber != null) {
+      arguments.add("--rev");
+      if (!StringUtil.isEmptyOrSpaces(vcsRevisionNumber.getChangeset())) {
+        arguments.add(vcsRevisionNumber.getChangeset());
+      } else {
+        arguments.add(vcsRevisionNumber.getRevision());
+      }
+    }
+    arguments.add(fileName);
+    return arguments;
+  }
 
 }

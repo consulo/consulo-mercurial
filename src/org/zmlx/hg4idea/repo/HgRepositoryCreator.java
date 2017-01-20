@@ -15,35 +15,30 @@
  */
 package org.zmlx.hg4idea.repo;
 
-import org.jetbrains.annotations.NotNull;
-import org.zmlx.hg4idea.HgVcs;
-import org.zmlx.hg4idea.util.HgUtil;
 import com.intellij.dvcs.repo.Repository;
 import com.intellij.dvcs.repo.VcsRepositoryCreator;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.VcsKey;
 import com.intellij.openapi.vfs.VirtualFile;
+import org.jetbrains.annotations.NotNull;
+import org.zmlx.hg4idea.HgVcs;
+import org.zmlx.hg4idea.util.HgUtil;
 
-public class HgRepositoryCreator extends VcsRepositoryCreator
-{
-	@NotNull
-	private final Project myProject;
+public class HgRepositoryCreator extends VcsRepositoryCreator {
+  @NotNull private final Project myProject;
 
-	public HgRepositoryCreator(@NotNull Project project)
-	{
-		myProject = project;
-	}
+  public HgRepositoryCreator(@NotNull Project project) {
+    myProject = project;
+  }
 
-	@Override
-	public Repository createRepositoryIfValid(@NotNull VirtualFile root)
-	{
-		return HgUtil.isHgRoot(root) ? HgRepositoryImpl.getInstance(root, myProject, myProject) : null;
-	}
+  @Override
+  public Repository createRepositoryIfValid(@NotNull VirtualFile root) {
+    return HgUtil.isHgRoot(root) ? HgRepositoryImpl.getInstance(root, myProject, myProject) : null;
+  }
 
-	@NotNull
-	@Override
-	public VcsKey getVcsKey()
-	{
-		return HgVcs.getKey();
-	}
+  @NotNull
+  @Override
+  public VcsKey getVcsKey() {
+    return HgVcs.getKey();
+  }
 }

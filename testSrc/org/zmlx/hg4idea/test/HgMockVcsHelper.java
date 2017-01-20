@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2010 JetBrains s.r.o.
+ * Copyright 2000-2014 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import com.intellij.openapi.vcs.changes.CommitResultHandler;
 import com.intellij.openapi.vcs.changes.LocalChangeList;
 import com.intellij.openapi.vcs.history.VcsFileRevision;
 import com.intellij.openapi.vcs.history.VcsHistoryProvider;
+import com.intellij.openapi.vcs.history.VcsRevisionNumber;
 import com.intellij.openapi.vcs.merge.MergeDialogCustomizer;
 import com.intellij.openapi.vcs.merge.MergeProvider;
 import com.intellij.openapi.vcs.versionBrowser.ChangeBrowserSettings;
@@ -49,7 +50,7 @@ import java.util.Map;
  */
 public class HgMockVcsHelper extends AbstractVcsHelper {
 
-  private Collection<VcsHelperListener> myListeners = new THashSet<VcsHelperListener>();
+  private Collection<VcsHelperListener> myListeners = new THashSet<>();
 
   public HgMockVcsHelper(@NotNull Project project) {
     super(project);
@@ -66,6 +67,10 @@ public class HgMockVcsHelper extends AbstractVcsHelper {
   @Override
   public List<VcsException> runTransactionRunnable(AbstractVcs vcs, TransactionRunnable runnable, Object vcsParameters) {
     return null;
+  }
+
+  @Override
+  public void showAnnotation(FileAnnotation annotation, VirtualFile file, AbstractVcs vcs, int line) {
   }
 
   @Override
@@ -124,15 +129,15 @@ public class HgMockVcsHelper extends AbstractVcsHelper {
   }
 
   @Override
-  public void showFileHistory(VcsHistoryProvider vcsHistoryProvider, FilePath path, AbstractVcs vcs, String repositoryPath) {
+  public void showFileHistory(@NotNull VcsHistoryProvider historyProvider, @NotNull FilePath path, @NotNull AbstractVcs vcs, String repositoryPath) {
   }
 
   @Override
-  public void showFileHistory(VcsHistoryProvider vcsHistoryProvider,
+  public void showFileHistory(@NotNull VcsHistoryProvider historyProvider,
                               AnnotationProvider annotationProvider,
-                              FilePath path,
+                              @NotNull FilePath path,
                               String repositoryPath,
-                              AbstractVcs vcs) {
+                              @NotNull AbstractVcs vcs) {
   }
 
   @Override
@@ -167,6 +172,16 @@ public class HgMockVcsHelper extends AbstractVcsHelper {
   public boolean commitChanges(@NotNull Collection<Change> changes, @NotNull LocalChangeList initialChangeList,
                                @NotNull String commitMessage, @Nullable CommitResultHandler customResultHandler) {
     throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void loadAndShowCommittedChangesDetails(@NotNull Project project,
+                                                 @NotNull VcsRevisionNumber revision,
+                                                 @NotNull VirtualFile file,
+                                                 @NotNull VcsKey key,
+                                                 @Nullable RepositoryLocation location,
+                                                 boolean local) {
+
   }
 
   public void addListener(VcsHelperListener listener) {

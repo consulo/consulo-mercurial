@@ -15,51 +15,43 @@
  */
 package org.zmlx.hg4idea.provider.commit;
 
-import java.util.Collection;
-
+import com.intellij.openapi.vcs.changes.CommitExecutorBase;
+import com.intellij.openapi.vcs.changes.CommitSession;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.zmlx.hg4idea.repo.HgRepository;
-import com.intellij.openapi.vcs.changes.CommitExecutorBase;
-import com.intellij.openapi.vcs.changes.CommitSession;
 
-public class HgCloseBranchExecutor extends CommitExecutorBase
-{
+import java.util.Collection;
 
-	@NotNull
-	private final HgCheckinEnvironment myCheckinEnvironment;
-	@NotNull
-	private static final String CLOSE_BRANCH_TITLE = "Commit And &Close";
+public class HgCloseBranchExecutor extends CommitExecutorBase {
+
+  @NotNull private final HgCheckinEnvironment myCheckinEnvironment;
+  @NotNull private static final String CLOSE_BRANCH_TITLE = "Commit And Close";
 
 
-	public HgCloseBranchExecutor(@NotNull HgCheckinEnvironment environment)
-	{
-		myCheckinEnvironment = environment;
-	}
+  public HgCloseBranchExecutor(@NotNull HgCheckinEnvironment environment) {
+    myCheckinEnvironment = environment;
+  }
 
-	@Override
-	public boolean areChangesRequired()
-	{
-		return false;
-	}
+  @Override
+  public boolean areChangesRequired() {
+    return false;
+  }
 
-	@Nls
-	@Override
-	public String getActionText()
-	{
-		return CLOSE_BRANCH_TITLE;
-	}
+  @Nls
+  @Override
+  public String getActionText() {
+    return CLOSE_BRANCH_TITLE;
+  }
 
-	@NotNull
-	@Override
-	public CommitSession createCommitSession()
-	{
-		myCheckinEnvironment.setCloseBranch(true);
-		return CommitSession.VCS_COMMIT;
-	}
+  @NotNull
+  @Override
+  public CommitSession createCommitSession() {
+    myCheckinEnvironment.setCloseBranch(true);
+    return CommitSession.VCS_COMMIT;
+  }
 
-	public void setRepositories(@NotNull Collection<HgRepository> repositories)
-	{
-		myCheckinEnvironment.setRepos(repositories);
-	}
+  public void setRepositories(@NotNull Collection<HgRepository> repositories) {
+    myCheckinEnvironment.setRepos(repositories);
+  }
 }

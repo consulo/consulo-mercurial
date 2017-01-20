@@ -12,52 +12,41 @@
 // limitations under the License.
 package org.zmlx.hg4idea.action;
 
-import java.util.Collection;
-
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.zmlx.hg4idea.command.HgPullCommand;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.ui.HgPullDialog;
 import org.zmlx.hg4idea.util.HgErrorUtil;
-import com.intellij.icons.AllIcons;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.project.Project;
 
-public class HgPullAction extends HgAbstractGlobalSingleRepoAction
-{
-	public HgPullAction()
-	{
-		super(AllIcons.Actions.CheckOut);
-	}
+import java.util.Collection;
 
-	@Override
-	protected void execute(@NotNull final Project project, @NotNull Collection<HgRepository> repos, @Nullable HgRepository selectedRepo)
-	{
-		final HgPullDialog dialog = new HgPullDialog(project, repos, selectedRepo);
-		if(dialog.showAndGet())
-		{
-			final String source = dialog.getSource();
-			final HgRepository hgRepository = dialog.getRepository();
-			new Task.Backgroundable(project, "Pulling changes from " + source, false)
-			{
+public class HgPullAction extends HgAbstractGlobalSingleRepoAction {
 
-				@Override
-				public void run(@NotNull ProgressIndicator indicator)
-				{
-					executePull(project, hgRepository, source);
-					HgErrorUtil.markDirtyAndHandleErrors(project, hgRepository.getRoot());
-				}
-			}.queue();
-		}
-	}
+  @Override
+  protected void execute(@NotNull final Project project, @NotNull Collection<HgRepository> repos, @Nullable HgRepository selectedRepo) {
+    final HgPullDialog dialog = new HgPullDialog(project, repos, selectedRepo);
+    if (dialog.showAndGet()) {
+      final String source = dialog.getSource();
+      final HgRepository hgRepository = dialog.getRepository();
+      new Task.Backgroundable(project, "Pulling changes from " + source, false) {
 
-	private static void executePull(final Project project, final HgRepository hgRepository, final String source)
-	{
-		final HgPullCommand command = new HgPullCommand(project, hgRepository.getRoot());
-		command.setSource(source);
-		command.execute();
-		hgRepository.update();
-	}
+        @Override
+        public void run(@NotNull ProgressIndicator indicator) {
+          executePull(project, hgRepository, source);
+          HgErrorUtil.markDirtyAndHandleErrors(project, hgRepository.getRoot());
+        }
+      }.queue();
+    }
+  }
+
+  private static void executePull(final Project project, final HgRepository hgRepository, final String source) {
+    final HgPullCommand command = new HgPullCommand(project, hgRepository.getRoot());
+    command.setSource(source);
+    command.executeInCurrentThread();
+    hgRepository.update();
+  }
 }

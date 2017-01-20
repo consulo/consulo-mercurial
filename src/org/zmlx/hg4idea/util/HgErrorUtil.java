@@ -12,183 +12,170 @@
 // limitations under the License.
 package org.zmlx.hg4idea.util;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.swing.event.HyperlinkEvent;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.zmlx.hg4idea.action.HgCommandResultNotifier;
-import org.zmlx.hg4idea.execution.HgCommandResult;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationListener;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vcs.VcsBundle;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.util.containers.ContainerUtil;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.zmlx.hg4idea.action.HgCommandResultNotifier;
+import org.zmlx.hg4idea.execution.HgCommandResult;
 
-public final class HgErrorUtil
-{
+import javax.swing.event.HyperlinkEvent;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-	private static final Logger LOG = Logger.getInstance(HgErrorUtil.class.getName());
+public final class HgErrorUtil {
 
-	public static final String SETTINGS_LINK = "settings";
-	public static final String MAPPING_ERROR_MESSAGE = String.format("Please, ensure that your project base dir is hg root directory or specify full" +
-			" repository path in  <a href='" +
-			SETTINGS_LINK +
-			"'>directory mappings panel</a>.");
+  private static final Logger LOG = Logger.getInstance(HgErrorUtil.class.getName());
 
-	private HgErrorUtil()
-	{
-	}
+  private static final String SETTINGS_LINK = "settings";
+  public static final String MAPPING_ERROR_MESSAGE =
+    "Please, ensure that your project base dir is hg root directory or specify full repository path in  <a href='" +
+    SETTINGS_LINK + "'>directory mappings panel</a>.";
+  private static final String MERGE_WITH_ANCESTOR_ERROR = "merging with a working directory ancestor has no effect";
+  private static final String NOTHING_TO_REBASE_WARNING = "nothing to rebase";
 
-	public static boolean isAbort(@Nullable HgCommandResult result)
-	{
-		if(result == null)
-		{
-			return true;
-		}
-		final List<String> errorLines = result.getErrorLines();
-		for(String line : errorLines)
-		{
-			if(isAbortLine(line))
-			{
-				return true;
-			}
-		}
-		return false;
-	}
+  private HgErrorUtil() {
+  }
 
-	public static boolean isAuthorizationError(@Nullable HgCommandResult result)
-	{
-		if(result == null)
-		{
-			return false;
-		}
-		String line = getLastErrorLine(result);
-		return isAuthorizationError(line);
-	}
+  public static boolean isAbort(@Nullable HgCommandResult result) {
+    return result == null || getAbortLine(result) != null;
+  }
 
-	@Nullable
-	private static String getLastErrorLine(@Nullable HgCommandResult result)
-	{
-		if(result == null)
-		{
-			return null;
-		}
-		final List<String> errorLines = result.getErrorLines();
-		if(errorLines.isEmpty())
-		{
-			return null;
-		}
-		return errorLines.get(errorLines.size() - 1);
-	}
+  @Nullable
+  private static String getAbortLine(@NotNull HgCommandResult result) {
+    final List<String> errorLines = result.getErrorLines();
+    return ContainerUtil.find(errorLines, new Condition<String>() {
+      @Override
+      public boolean value(String s) {
+        return isAbortLine(s);
+      }
+    });
+  }
 
-	//unresolved conflict errors included
-	public static boolean hasErrorsInCommandExecution(@Nullable HgCommandResult result)
-	{
-		return isAbort(result) || result.getExitValue() != 0;
-	}
+  public static boolean isAncestorMergeError(@Nullable HgCommandResult result) {
+    if (result == null) return false;
+    String errorLine = getAbortLine(result);
+    return errorLine != null && StringUtil.contains(errorLine, MERGE_WITH_ANCESTOR_ERROR);
+  }
 
-	//todo should be modified and/or merged with HgErrorHandler
-	public static boolean isCommandExecutionFailed(@Nullable HgCommandResult result)
-	{
-		return isAbort(result) || result.getExitValue() > 1;
-	}
+  public static boolean isNothingToRebase(@Nullable HgCommandResult result) {
+    if (result == null) return false;
+    return ContainerUtil.exists(result.getOutputLines(), new Condition<String>() {
+      @Override
+      public boolean value(String s) {
+        return StringUtil.contains(s, NOTHING_TO_REBASE_WARNING);
+      }
+    });
+  }
 
-	public static boolean hasAuthorizationInDestinationPath(@Nullable String destinationPath)
-	{
-		if(StringUtil.isEmptyOrSpaces(destinationPath))
-		{
-			return false;
-		}
-		return HgUtil.URL_WITH_PASSWORD.matcher(destinationPath).matches();
-	}
+  public static boolean isAuthorizationError(@Nullable HgCommandResult result) {
+    if (result == null) {
+      return false;
+    }
+    String line = getLastErrorLine(result);
+    return isAuthorizationError(line);
+  }
 
-	@NotNull
-	public static NotificationListener getMappingErrorNotificationListener(@NotNull final Project project)
-	{
-		return new NotificationListener.Adapter()
-		{
-			@Override
-			protected void hyperlinkActivated(@NotNull Notification notification, @NotNull HyperlinkEvent e)
-			{
-				if(SETTINGS_LINK.equals(e.getDescription()))
-				{
-					ShowSettingsUtil.getInstance().showSettingsDialog(project, VcsBundle.message("version.control.main.configurable.name"));
-				}
-			}
-		};
-	}
+  @Nullable
+  private static String getLastErrorLine(@Nullable HgCommandResult result) {
+    if (result == null) {
+      return null;
+    }
+    final List<String> errorLines = result.getErrorLines();
+    if (errorLines.isEmpty()) {
+      return null;
+    }
+    return errorLines.get(errorLines.size() - 1);
+  }
 
-	public static boolean isUnknownEncodingError(@Nullable HgCommandResult result)
-	{
-		if(result == null)
-		{
-			return false;
-		}
-		List<String> errorLines = result.getErrorLines();
-		if(errorLines.isEmpty())
-		{
-			return false;
-		}
-		String line = errorLines.get(0);
-		return !StringUtil.isEmptyOrSpaces(line) && (line.contains("abort") && line.contains("unknown encoding"));
-	}
+  //unresolved conflict errors included
+  public static boolean hasErrorsInCommandExecution(@Nullable HgCommandResult result) {
+    return isAbort(result) || result.getExitValue() != 0;
+  }
 
-	//during update  or revert action with  uncommitted merges/changes
-	public static boolean hasUncommittedChangesConflict(@Nullable HgCommandResult result)
-	{
-		if(result == null)
-		{
-			return false;
-		}
-		// error messages from mercurial after update command failed: "abort: outstanding uncommitted merges", "abort: uncommitted changes";
-		//after revert command failed: abort: "uncommitted merge"
-		final Pattern UNCOMMITTED_PATTERN = Pattern.compile(".*abort.*uncommitted\\s*(change|merge).*", Pattern.DOTALL);
-		Matcher matcher = UNCOMMITTED_PATTERN.matcher(result.getRawError());
-		return matcher.matches();
-	}
+  //todo should be modified and/or merged with HgErrorHandler
+  public static boolean isCommandExecutionFailed(@Nullable HgCommandResult result) {
+    return isAbort(result) || result.getExitValue() > 1;
+  }
 
-	public static boolean isAuthorizationError(String line)
-	{
-		return !StringUtil.isEmptyOrSpaces(line) && (line.contains("authorization required") || line.contains("authorization failed"));
-	}
+  public static boolean hasAuthorizationInDestinationPath(@Nullable String destinationPath) {
+    if (StringUtil.isEmptyOrSpaces(destinationPath)) {
+      return false;
+    }
+    return HgUtil.URL_WITH_PASSWORD.matcher(destinationPath).matches();
+  }
 
-	public static boolean isAbortLine(String line)
-	{
-		return !StringUtil.isEmptyOrSpaces(line) && line.trim().startsWith("abort:");
-	}
+  @NotNull
+  public static NotificationListener getMappingErrorNotificationListener(@NotNull final Project project) {
+    return new NotificationListener.Adapter() {
+      @Override
+      protected void hyperlinkActivated(@NotNull Notification notification,
+                                        @NotNull HyperlinkEvent e) {
+        if (SETTINGS_LINK.equals(e.getDescription())) {
+          ShowSettingsUtil.getInstance()
+            .showSettingsDialog(project, VcsBundle.message("version.control.main.configurable.name"));
+        }
+      }
+    };
+  }
 
-	public static void handleException(@Nullable Project project, @NotNull Exception e)
-	{
-		handleException(project, "Error", e);
-	}
+  public static boolean isUnknownEncodingError(@Nullable HgCommandResult result) {
+    if (result == null) {
+      return false;
+    }
+    List<String> errorLines = result.getErrorLines();
+    if (errorLines.isEmpty()) {
+      return false;
+    }
+    String line = errorLines.get(0);
+    return !StringUtil.isEmptyOrSpaces(line) && (line.contains("abort") && line.contains("unknown encoding"));
+  }
 
-	public static void handleException(@Nullable Project project, @NotNull String title, @NotNull Exception e)
-	{
-		LOG.info(e);
-		new HgCommandResultNotifier(project).notifyError(null, title, e.getMessage());
-	}
+  //during update  or revert action with  uncommitted merges/changes
+  public static boolean hasUncommittedChangesConflict(@Nullable HgCommandResult result) {
+    if (result == null) {
+      return false;
+    }
+    // error messages from mercurial after update command failed: "abort: outstanding uncommitted merges", "abort: uncommitted changes";
+    //after revert command failed: abort: "uncommitted merge"
+    final Pattern UNCOMMITTED_PATTERN = Pattern.compile(".*abort.*uncommitted\\s*(change|merge).*", Pattern.DOTALL);
+    Matcher matcher = UNCOMMITTED_PATTERN.matcher(result.getRawError());
+    return matcher.matches();
+  }
 
-	public static void markDirtyAndHandleErrors(Project project, VirtualFile repository)
-	{
-		try
-		{
-			HgUtil.markDirectoryDirty(project, repository);
-		}
-		catch(InvocationTargetException e)
-		{
-			handleException(project, e);
-		}
-		catch(InterruptedException e)
-		{
-			handleException(project, e);
-		}
-	}
+  public static boolean isAuthorizationError(String line) {
+    return !StringUtil.isEmptyOrSpaces(line) && (line.contains("authorization required") || line.contains("authorization failed"));
+  }
+
+  public static boolean isAbortLine(String line) {
+    return !StringUtil.isEmptyOrSpaces(line) && line.trim().startsWith("abort:");
+  }
+
+  public static void handleException(@Nullable Project project, @NotNull Exception e) {
+    handleException(project, "Error", e);
+  }
+
+  public static void handleException(@Nullable Project project, @NotNull String title, @NotNull Exception e) {
+    LOG.info(e);
+    new HgCommandResultNotifier(project).notifyError(null, title, e.getMessage());
+  }
+
+  public static void markDirtyAndHandleErrors(Project project, VirtualFile repository) {
+    try {
+      HgUtil.markDirectoryDirty(project, repository);
+    }
+    catch (InvocationTargetException | InterruptedException e) {
+      handleException(project, e);
+    }
+  }
 }

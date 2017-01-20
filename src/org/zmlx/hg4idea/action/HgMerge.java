@@ -15,29 +15,28 @@
  */
 package org.zmlx.hg4idea.action;
 
-import java.util.Collection;
-
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.openapi.vcs.update.UpdatedFiles;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.zmlx.hg4idea.command.HgMergeCommand;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.ui.HgMergeDialog;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vcs.update.UpdatedFiles;
 
-public class HgMerge extends HgAbstractGlobalSingleRepoAction
-{
+import java.util.Collection;
 
-	@Override
-	public void execute(@NotNull final Project project, @NotNull final Collection<HgRepository> repos, @Nullable final HgRepository selectedRepo)
-	{
-		final HgMergeDialog mergeDialog = new HgMergeDialog(project, repos, selectedRepo);
-		if(mergeDialog.showAndGet())
-		{
-			final String targetValue = StringUtil.escapeBackSlashes(mergeDialog.getTargetValue());
-			final HgRepository repo = mergeDialog.getRepository();
-			HgMergeCommand.mergeWith(repo, targetValue, UpdatedFiles.create());
-		}
-	}
+public class HgMerge extends HgAbstractGlobalSingleRepoAction {
+
+  @Override
+  public void execute(@NotNull final Project project,
+                      @NotNull final Collection<HgRepository> repos,
+                      @Nullable final HgRepository selectedRepo) {
+    final HgMergeDialog mergeDialog = new HgMergeDialog(project, repos, selectedRepo);
+    if (mergeDialog.showAndGet()) {
+      final String targetValue = StringUtil.escapeBackSlashes(mergeDialog.getTargetValue());
+      final HgRepository repo = mergeDialog.getRepository();
+      HgMergeCommand.mergeWith(repo, targetValue, UpdatedFiles.create());
+    }
+  }
 }

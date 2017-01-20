@@ -12,32 +12,31 @@
 // limitations under the License.
 package org.zmlx.hg4idea.action;
 
-import java.util.Collection;
-
+import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.zmlx.hg4idea.command.HgUpdateCommand;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.ui.HgUpdateToDialog;
-import com.intellij.openapi.fileEditor.FileDocumentManager;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.VirtualFile;
 
-public class HgUpdateToAction extends HgAbstractGlobalSingleRepoAction
-{
+import java.util.Collection;
 
-	@Override
-	protected void execute(@NotNull final Project project, @NotNull final Collection<HgRepository> repositories, @Nullable HgRepository selectedRepo)
-	{
-		final HgUpdateToDialog dialog = new HgUpdateToDialog(project, repositories, selectedRepo);
-		if(dialog.showAndGet())
-		{
-			FileDocumentManager.getInstance().saveAllDocuments();
-			final String updateToValue = StringUtil.escapeBackSlashes(dialog.getTargetValue());
-			final boolean clean = dialog.isRemoveLocalChanges();
-			final VirtualFile root = dialog.getRepository().getRoot();
-			HgUpdateCommand.updateRepoTo(project, root, updateToValue, clean, null);
-		}
-	}
+public class HgUpdateToAction extends HgAbstractGlobalSingleRepoAction {
+
+  @Override
+  protected void execute(@NotNull final Project project,
+                         @NotNull final Collection<HgRepository> repositories,
+                         @Nullable HgRepository selectedRepo) {
+    final HgUpdateToDialog dialog = new HgUpdateToDialog(project, repositories, selectedRepo);
+    if (dialog.showAndGet()) {
+      FileDocumentManager.getInstance().saveAllDocuments();
+      final String updateToValue = StringUtil.escapeBackSlashes(dialog.getTargetValue());
+      final boolean clean = dialog.isRemoveLocalChanges();
+      final VirtualFile root = dialog.getRepository().getRoot();
+      HgUpdateCommand.updateRepoTo(project, root, updateToValue, clean, null);
+    }
+  }
 }

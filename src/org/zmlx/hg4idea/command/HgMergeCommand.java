@@ -12,19 +12,6 @@
 // limitations under the License.
 package org.zmlx.hg4idea.command;
 
-import static org.zmlx.hg4idea.HgErrorHandler.ensureSuccess;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.zmlx.hg4idea.execution.HgCommandResult;
-import org.zmlx.hg4idea.execution.HgPromptCommandExecutor;
-import org.zmlx.hg4idea.provider.update.HgConflictResolver;
-import org.zmlx.hg4idea.repo.HgRepository;
-import org.zmlx.hg4idea.util.HgUtil;
 import com.intellij.dvcs.DvcsUtil;
 import com.intellij.openapi.application.AccessToken;
 import com.intellij.openapi.diagnostic.Logger;
@@ -36,122 +23,116 @@ import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vcs.VcsNotifier;
 import com.intellij.openapi.vcs.update.UpdatedFiles;
 import com.intellij.openapi.vfs.VirtualFile;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.zmlx.hg4idea.execution.HgCommandResult;
+import org.zmlx.hg4idea.execution.HgPromptCommandExecutor;
+import org.zmlx.hg4idea.provider.update.HgConflictResolver;
+import org.zmlx.hg4idea.repo.HgRepository;
+import org.zmlx.hg4idea.util.HgErrorUtil;
+import org.zmlx.hg4idea.util.HgUtil;
 
-public class HgMergeCommand
-{
+import java.lang.reflect.InvocationTargetException;
+import java.util.LinkedList;
+import java.util.List;
 
-	private static final Logger LOG = Logger.getInstance(HgMergeCommand.class.getName());
+import static org.zmlx.hg4idea.HgErrorHandler.ensureSuccess;
 
-	@NotNull
-	private final Project project;
-	@NotNull
-	private final HgRepository repo;
-	@Nullable
-	private String revision;
+public class HgMergeCommand {
 
-	public HgMergeCommand(@NotNull Project project, @NotNull HgRepository repo)
-	{
-		this.project = project;
-		this.repo = repo;
-	}
+  private static final Logger LOG = Logger.getInstance(HgMergeCommand.class.getName());
 
-	private void setRevision(@NotNull String revision)
-	{
-		this.revision = revision;
-	}
+  @NotNull private final Project project;
+  @NotNull private final HgRepository repo;
+  @Nullable private String revision;
 
-	@Nullable
-	private HgCommandResult execute()
-	{
-		HgPromptCommandExecutor commandExecutor = new HgPromptCommandExecutor(project);
-		commandExecutor.setShowOutput(true);
-		List<String> arguments = new LinkedList<String>();
-		if(!StringUtil.isEmptyOrSpaces(revision))
-		{
-			arguments.add("--rev");
-			arguments.add(revision);
-		}
-		AccessToken token = DvcsUtil.workingTreeChangeStarted(project);
-		try
-		{
-			HgCommandResult result = commandExecutor.executeInCurrentThread(repo.getRoot(), "merge", arguments);
-			repo.update();
-			return result;
-		}
-		finally
-		{
-			DvcsUtil.workingTreeChangeFinished(project, token);
-		}
-	}
+  public HgMergeCommand(@NotNull Project project, @NotNull HgRepository repo) {
+    this.project = project;
+    this.repo = repo;
+  }
 
-	@Nullable
-	public HgCommandResult merge() throws VcsException
-	{
-		HgCommandResult commandResult = ensureSuccess(execute());
-		try
-		{
-			HgUtil.markDirectoryDirty(project, repo.getRoot());
-		}
-		catch(InvocationTargetException e)
-		{
-			throwException(e);
-		}
-		catch(InterruptedException e)
-		{
-			throwException(e);
-		}
+  private void setRevision(@NotNull String revision) {
+    this.revision = revision;
+  }
 
-		return commandResult;
-	}
+  @Nullable
+  private HgCommandResult executeInCurrentThread() {
+    HgPromptCommandExecutor commandExecutor = new HgPromptCommandExecutor(project);
+    commandExecutor.setShowOutput(true);
+    List<String> arguments = new LinkedList<>();
+    if (!StringUtil.isEmptyOrSpaces(revision)) {
+      arguments.add("--rev");
+      arguments.add(revision);
+    }
+    AccessToken token = DvcsUtil.workingTreeChangeStarted(project);
+    try {
+      HgCommandResult result = commandExecutor.executeInCurrentThread(repo.getRoot(), "merge", arguments);
+      repo.update();
+      return result;
+    }
+    finally {
+      DvcsUtil.workingTreeChangeFinished(project, token);
+    }
+  }
 
-	public static void mergeWith(@NotNull final HgRepository repository, @NotNull final String branchName, @NotNull final UpdatedFiles updatedFiles)
-	{
-		mergeWith(repository, branchName, updatedFiles, null);
-	}
+  @Nullable
+  public HgCommandResult mergeSynchronously() throws VcsException {
+    HgCommandResult commandResult = ensureSuccess(executeInCurrentThread());
+    try {
+      HgUtil.markDirectoryDirty(project, repo.getRoot());
+    }
+    catch (InvocationTargetException | InterruptedException e) {
+      throwException(e);
+    }
 
-	public static void mergeWith(@NotNull final HgRepository repository,
-			@NotNull final String branchName,
-			@NotNull final UpdatedFiles updatedFiles,
-			@Nullable final Runnable onSuccessHandler)
-	{
-		final Project project = repository.getProject();
-		final VirtualFile repositoryRoot = repository.getRoot();
-		final HgMergeCommand hgMergeCommand = new HgMergeCommand(project, repository);
-		hgMergeCommand.setRevision(branchName);//there is no difference between branch or revision or bookmark as parameter to merge,
-		// we need just a string
-		new Task.Backgroundable(project, "Merging changes...")
-		{
-			@Override
-			public void run(@NotNull ProgressIndicator indicator)
-			{
-				try
-				{
-					hgMergeCommand.merge();
-					new HgConflictResolver(project, updatedFiles).resolve(repositoryRoot);
-					if(HgConflictResolver.findConflicts(project, repositoryRoot).isEmpty() && onSuccessHandler != null)
-					{
-						onSuccessHandler.run();    // for example commit changes
-					}
-				}
-				catch(VcsException exception)
-				{
-					if(exception.isWarning())
-					{
-						VcsNotifier.getInstance(project).notifyWarning("Warning during merge", exception.getMessage());
-					}
-					else
-					{
-						VcsNotifier.getInstance(project).notifyError("Exception during merge", exception.getMessage());
-					}
-				}
-			}
-		}.queue();
-	}
+    return commandResult;
+  }
 
-	private static void throwException(@NotNull Exception e) throws VcsException
-	{
-		String msg = "Exception during marking directory dirty: " + e;
-		LOG.info(msg, e);
-		throw new VcsException(msg);
-	}
+  public static void mergeWith(@NotNull final HgRepository repository,
+                               @NotNull final String branchName,
+                               @NotNull final UpdatedFiles updatedFiles) {
+    mergeWith(repository, branchName, updatedFiles, null);
+  }
+
+  public static void mergeWith(@NotNull final HgRepository repository,
+                               @NotNull final String branchName,
+                               @NotNull final UpdatedFiles updatedFiles, @Nullable final Runnable onSuccessHandler) {
+    final Project project = repository.getProject();
+    final VirtualFile repositoryRoot = repository.getRoot();
+    final HgMergeCommand hgMergeCommand = new HgMergeCommand(project, repository);
+    hgMergeCommand.setRevision(branchName);//there is no difference between branch or revision or bookmark as parameter to merge,
+    // we need just a string
+    new Task.Backgroundable(project, "Merging Changes...") {
+      @Override
+      public void run(@NotNull ProgressIndicator indicator) {
+        try {
+          HgCommandResult result = hgMergeCommand.mergeSynchronously();
+          if (HgErrorUtil.isAncestorMergeError(result)) {
+            //skip and notify
+            VcsNotifier.getInstance(project).notifyMinorWarning("Merging is skipped for " + repositoryRoot.getPresentableName(),
+                                                                "Merging with a working directory ancestor has no effect");
+            return;
+          }
+          new HgConflictResolver(project, updatedFiles).resolve(repositoryRoot);
+          if (!HgConflictResolver.hasConflicts(project, repositoryRoot) && onSuccessHandler != null) {
+            onSuccessHandler.run();    // for example commit changes
+          }
+        }
+        catch (VcsException exception) {
+          if (exception.isWarning()) {
+            VcsNotifier.getInstance(project).notifyWarning("Warning during merge", exception.getMessage());
+          }
+          else {
+            VcsNotifier.getInstance(project).notifyError("Exception during merge", exception.getMessage());
+          }
+        }
+      }
+    }.queue();
+  }
+
+  private static void throwException(@NotNull Exception e) throws VcsException {
+    String msg = "Exception during marking directory dirty: " + e;
+    LOG.info(msg, e);
+    throw new VcsException(msg);
+  }
 }

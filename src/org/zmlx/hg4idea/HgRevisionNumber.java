@@ -12,17 +12,19 @@
 // limitations under the License.
 package org.zmlx.hg4idea;
 
-import com.google.common.base.Objects;
-import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.vcs.history.VcsRevisionNumber;
+import com.intellij.vcs.log.util.VcsUserUtil;
 import org.jetbrains.annotations.NotNull;
+import org.zmlx.hg4idea.log.HgBaseLogParser;
 import org.zmlx.hg4idea.util.HgUtil;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class HgRevisionNumber implements VcsRevisionNumber {
 
+  private static final int SHORT_HASH_SIZE = 12;
   @NotNull private final String revision;
   @NotNull private final String changeset;
   @NotNull private final String commitMessage;
@@ -67,16 +69,24 @@ public class HgRevisionNumber implements VcsRevisionNumber {
                           @NotNull String authorInfo,
                           @NotNull String commitMessage,
                           @NotNull List<HgRevisionNumber> parents) {
+    this(revision, changeset, HgUtil.parseUserNameAndEmail(authorInfo).getFirst(), HgUtil.parseUserNameAndEmail(authorInfo).getSecond(),
+         commitMessage, parents);
+  }
+
+  public HgRevisionNumber(@NotNull String revision,
+                          @NotNull String changeset,
+                          @NotNull String author,
+                          @NotNull String email,
+                          @NotNull String commitMessage,
+                          @NotNull List<HgRevisionNumber> parents) {
     this.commitMessage = commitMessage;
-    Pair<String, String> authorArgs = HgUtil.parseUserNameAndEmail(authorInfo);
-    this.author = authorArgs.getFirst();
-    this.email = authorArgs.getSecond();
+    this.author = author;
+    this.email = email;
     this.parents = parents;
     this.revision = revision.trim();
     this.changeset = changeset.trim();
     isWorkingVersion = changeset.endsWith("+");
-    int subjectIndex = commitMessage.indexOf('\n');
-    mySubject = subjectIndex == -1 ? commitMessage : commitMessage.substring(0, subjectIndex);
+    mySubject = HgBaseLogParser.extractSubject(commitMessage);
   }
 
   @NotNull
@@ -99,8 +109,18 @@ public class HgRevisionNumber implements VcsRevisionNumber {
   }
 
   @NotNull
-  public String getAuthor() {
+  public String getName() {
     return author;
+  }
+
+  @NotNull
+  public String getEmail() {
+    return email;
+  }
+
+  @NotNull
+  public String getAuthor() {
+    return VcsUserUtil.getUserName(author, email);
   }
 
   public boolean isWorkingVersion() {
@@ -145,12 +165,20 @@ public class HgRevisionNumber implements VcsRevisionNumber {
     if (revCompare != 0) {
       return revCompare;
     }
+    else if (getShortHash(changeset).equals(getShortHash(other.changeset))) {
+      //if local revision numbers are equal then it's enough to compare 12 symbols hash; collisions couldn't occur
+      return 0;
+    }
     // If they are equal, the working revision is greater.
     if (isWorkingVersion) {
       return other.isWorkingVersion ? 0 : 1;
     } else {
       return other.isWorkingVersion ? -1 : 0;
     }
+  }
+
+  private static String getShortHash(@NotNull String changeset) {
+    return changeset.substring(0, SHORT_HASH_SIZE);
   }
 
   /**
@@ -165,7 +193,8 @@ public class HgRevisionNumber implements VcsRevisionNumber {
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(revision, changeset);
+    // if short revision number is not empty, then short changeset is enough, a.e. annotations
+    return Objects.hash(revision, revision.isEmpty() ? changeset : getShortHash(changeset));
   }
 
   @Override
@@ -188,10 +217,5 @@ public class HgRevisionNumber implements VcsRevisionNumber {
   @NotNull
   public String getSubject() {
     return mySubject;
-  }
-
-  @NotNull
-  public String getEmail() {
-    return email;
   }
 }

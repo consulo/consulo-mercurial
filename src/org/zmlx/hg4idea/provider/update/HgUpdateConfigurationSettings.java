@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2016 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,58 +27,46 @@ import com.intellij.openapi.components.StoragePathMacros;
 		storages = @Storage(file = StoragePathMacros.WORKSPACE_FILE))
 public class HgUpdateConfigurationSettings implements PersistentStateComponent<HgUpdateConfigurationSettings.State>
 {
+  private State myState = new State();
 
+  public static class State {
+    public boolean shouldPull = true;
+    @NotNull public HgUpdateType updateType = HgUpdateType.ONLY_UPDATE;
+    public boolean shouldCommitAfterMerge = false;
+  }
 
-	private State myState = new State();
+  public void setShouldPull(boolean shouldPull) {
+    myState.shouldPull = shouldPull;
+  }
 
-	public static class State
-	{
-		public boolean shouldPull = true;
-		@NotNull
-		public HgUpdateType updateType = HgUpdateType.ONLY_UPDATE;
-		public boolean shouldCommitAfterMerge = false;
-	}
+  public void setUpdateType(@NotNull HgUpdateType updateType) {
+    myState.updateType = updateType;
+  }
 
-	public void setShouldPull(boolean shouldPull)
-	{
-		myState.shouldPull = shouldPull;
-	}
+  public void setShouldCommitAfterMerge(boolean shouldCommitAfterMerge) {
+    myState.shouldCommitAfterMerge = shouldCommitAfterMerge;
+  }
 
-	public void setUpdateType(@NotNull HgUpdateType updateType)
-	{
-		myState.updateType = updateType;
-	}
+  public boolean shouldPull() {
+    return myState.shouldPull;
+  }
 
-	public void setShouldCommitAfterMerge(boolean shouldCommitAfterMerge)
-	{
-		myState.shouldCommitAfterMerge = shouldCommitAfterMerge;
-	}
+  public HgUpdateType getUpdateType() {
+    return myState.updateType;
+  }
 
-	public boolean shouldPull()
-	{
-		return myState.shouldPull;
-	}
+  public boolean shouldCommitAfterMerge() {
+    return myState.updateType == HgUpdateType.MERGE && myState.shouldCommitAfterMerge;
+  }
 
-	public HgUpdateType getUpdateType()
-	{
-		return myState.updateType;
-	}
+  @Nullable
+  @Override
+  public HgUpdateConfigurationSettings.State getState() {
+    return myState;
+  }
 
-	public boolean shouldCommitAfterMerge()
-	{
-		return myState.updateType == HgUpdateType.MERGE && myState.shouldCommitAfterMerge;
-	}
-
-	@Nullable
-	@Override
-	public HgUpdateConfigurationSettings.State getState()
-	{
-		return myState;
-	}
-
-	@Override
-	public void loadState(HgUpdateConfigurationSettings.State state)
-	{
-		myState = state;
-	}
+  @Override
+  public void loadState(HgUpdateConfigurationSettings.State state) {
+    myState = state;
+  }
 }

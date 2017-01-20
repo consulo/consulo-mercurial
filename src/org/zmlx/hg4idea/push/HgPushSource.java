@@ -15,29 +15,24 @@
  */
 package org.zmlx.hg4idea.push;
 
-import org.jetbrains.annotations.NotNull;
 import com.intellij.dvcs.push.PushSource;
+import org.jetbrains.annotations.NotNull;
 
-public class HgPushSource implements PushSource
-{
-	@NotNull
-	private String myBranch;
+public class HgPushSource implements PushSource {
+  @NotNull private String myBranch;
 
-	public HgPushSource(@NotNull String branch)
-	{
-		myBranch = branch;
-	}
+  public HgPushSource(@NotNull String branch) {
+    myBranch = branch;
+  }
 
-	@NotNull
-	@Override
-	public String getPresentation()
-	{
-		return myBranch;
-	}
+  @NotNull
+  @Override
+  public String getPresentation() {
+    return myBranch;
+  }
 
-	@NotNull
-	public String getBranch()
-	{
-		return myBranch;   // presentation may differ from branch
-	}
+  @NotNull
+  public String getBranch() {
+    return myBranch;   // presentation may differ from branch
+  }
 }

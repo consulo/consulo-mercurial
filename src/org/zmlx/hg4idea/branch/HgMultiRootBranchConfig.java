@@ -15,42 +15,36 @@
  */
 package org.zmlx.hg4idea.branch;
 
-import java.util.Collection;
-
+import com.intellij.dvcs.branch.DvcsMultiRootBranchConfig;
 import org.jetbrains.annotations.NotNull;
 import org.zmlx.hg4idea.repo.HgRepository;
-import com.intellij.dvcs.branch.DvcsMultiRootBranchConfig;
 
-public class HgMultiRootBranchConfig extends DvcsMultiRootBranchConfig<HgRepository>
-{
+import java.util.Collection;
 
-	public HgMultiRootBranchConfig(@NotNull Collection<HgRepository> repositories)
-	{
-		super(repositories);
-	}
+public class HgMultiRootBranchConfig extends DvcsMultiRootBranchConfig<HgRepository> {
 
-	@NotNull
-	@Override
-	public Collection<String> getLocalBranchNames()
-	{
-		return HgBranchUtil.getCommonBranches(myRepositories);
-	}
+  public HgMultiRootBranchConfig(@NotNull Collection<HgRepository> repositories) {
+    super(repositories);
+  }
 
-	@NotNull
-	Collection<String> getBookmarkNames()
-	{
-		return HgBranchUtil.getCommonBookmarks(myRepositories);
-	}
+  @NotNull
+  @Override
+  public Collection<String> getLocalBranchNames() {
+    return HgBranchUtil.getCommonBranches(myRepositories);
+  }
 
-	@Override
-	public String toString()
-	{
-		StringBuilder sb = new StringBuilder();
-		for(HgRepository repository : myRepositories)
-		{
-			sb.append(repository.getPresentableUrl()).append(":").append(repository.getCurrentBranchName()).append(":").append(repository.getState
-					());
-		}
-		return sb.toString();
-	}
+  @NotNull
+  Collection<String> getBookmarkNames() {
+    return HgBranchUtil.getCommonBookmarks(myRepositories);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    for (HgRepository repository : myRepositories) {
+      sb.append(repository.getPresentableUrl()).append(":").append(repository.getCurrentBranchName()).append(":")
+        .append(repository.getState());
+    }
+    return sb.toString();
+  }
 }

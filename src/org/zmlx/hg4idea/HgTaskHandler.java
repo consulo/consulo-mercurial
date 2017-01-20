@@ -15,9 +15,15 @@
  */
 package org.zmlx.hg4idea;
 
-import java.util.Collection;
-import java.util.List;
-
+import com.intellij.dvcs.branch.DvcsTaskHandler;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vcs.VcsException;
+import com.intellij.openapi.vcs.VcsNotifier;
+import com.intellij.openapi.vcs.update.UpdatedFiles;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.util.Function;
+import com.intellij.util.containers.ContainerUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.zmlx.hg4idea.branch.HgBranchUtil;
@@ -29,82 +35,95 @@ import org.zmlx.hg4idea.execution.HgCommandException;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.repo.HgRepositoryManager;
 import org.zmlx.hg4idea.util.HgErrorUtil;
+import org.zmlx.hg4idea.util.HgReferenceValidator;
 import org.zmlx.hg4idea.util.HgUtil;
-import com.intellij.dvcs.branch.DvcsTaskHandler;
-import com.intellij.openapi.fileEditor.FileDocumentManager;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.VcsException;
-import com.intellij.openapi.vcs.VcsNotifier;
-import com.intellij.openapi.vcs.update.UpdatedFiles;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.containers.ContainerUtil;
 
-public class HgTaskHandler extends DvcsTaskHandler<HgRepository>
-{
+import java.util.Collections;
+import java.util.List;
 
-	public HgTaskHandler(@NotNull HgRepositoryManager repositoryManager, @NotNull Project project)
-	{
-		super(repositoryManager, project, "bookmark");
-	}
+public class HgTaskHandler extends DvcsTaskHandler<HgRepository> {
 
-	@Override
-	protected void checkout(@NotNull String taskName, @NotNull List<HgRepository> repos, @Nullable Runnable callInAwtLater)
-	{
-		HgUpdateCommand.updateTo(!HgBranchUtil.getCommonBookmarks(repos).contains(taskName) ? "head() and not bookmark() and branch(" + taskName +
-				")" : taskName, repos, callInAwtLater);
-	}
+  private HgReferenceValidator myNameValidator;
 
-	@Override
-	protected void checkoutAsNewBranch(@NotNull String name, @NotNull List<HgRepository> repositories)
-	{
-		HgBookmarkCommand.createBookmark(repositories, name, true);
-	}
+  public HgTaskHandler(@NotNull HgRepositoryManager repositoryManager,
+                       @NotNull Project project) {
+    super(repositoryManager, project, "bookmark");
+    myNameValidator = HgReferenceValidator.getInstance();
+  }
 
-	@NotNull
-	@Override
-	protected Collection<String> getCommonBranchNames(@NotNull List<HgRepository> repositories)
-	{
-		//be careful with equality names of branches/bookmarks =(
-		return ContainerUtil.concat(HgBranchUtil.getCommonBookmarks(repositories), HgBranchUtil.getCommonBranches(repositories));
-	}
+  @Override
+  protected void checkout(@NotNull String taskName, @NotNull List<HgRepository> repos, @Nullable Runnable callInAwtLater) {
+    HgUpdateCommand.updateTo(
+      !HgBranchUtil.getCommonBookmarks(repos).contains(taskName) ? "head() and not bookmark() and branch(\"" + taskName + "\")" : taskName,
+      repos, callInAwtLater);
+  }
 
-	@Override
-	protected void mergeAndClose(@NotNull final String branch, @NotNull final List<HgRepository> repositories)
-	{
-		String bookmarkRevisionArg = "bookmark(\"" + branch + "\")";
-		FileDocumentManager.getInstance().saveAllDocuments();
-		final UpdatedFiles updatedFiles = UpdatedFiles.create();
-		for(final HgRepository repository : repositories)
-		{
-			HgMergeCommand.mergeWith(repository, bookmarkRevisionArg, updatedFiles, new Runnable()
-			{
+  @Override
+  protected void checkoutAsNewBranch(@NotNull String name, @NotNull List<HgRepository> repositories) {
+    HgBookmarkCommand.createBookmarkAsynchronously(repositories, name, true);
+  }
 
-				@Override
-				public void run()
-				{
-					Project project = repository.getProject();
-					VirtualFile repositoryRoot = repository.getRoot();
-					try
-					{
-						new HgCommitCommand(project, repository, "Automated merge with " + branch).execute();
-						new HgBookmarkCommand(project, repositoryRoot, branch).deleteBookmark();
-					}
-					catch(HgCommandException e)
-					{
-						HgErrorUtil.handleException(project, e);
-					}
-					catch(VcsException e)
-					{
-						VcsNotifier.getInstance(project).notifyError("Exception during merge commit with " + branch, e.getMessage());
-					}
-				}
-			});
-		}
-	}
+  @Override
+  protected String getActiveBranch(HgRepository repository) {
+    String bookmark = repository.getCurrentBookmark();
+    return bookmark == null ? repository.getCurrentBranch() : bookmark;
+  }
 
-	@Override
-	protected boolean hasBranch(@NotNull HgRepository repository, @NotNull String name)
-	{
-		return HgUtil.getNamesWithoutHashes(repository.getBookmarks()).contains(name) || repository.getOpenedBranches().contains(name);
-	}
+  @NotNull
+  @Override
+  protected Iterable<TaskInfo> getAllBranches(@NotNull HgRepository repository) {
+    //be careful with equality names of branches/bookmarks =(
+    Iterable<String> names =
+      ContainerUtil.concat(HgUtil.getSortedNamesWithoutHashes(repository.getBookmarks()), repository.getOpenedBranches());
+    return ContainerUtil.map(names, new Function<String, TaskInfo>() {
+      @Override
+      public TaskInfo fun(String s) {
+        return new TaskInfo(s, Collections.singleton(repository.getPresentableUrl()));
+      }
+    });
+  }
+
+  @Override
+  protected void mergeAndClose(@NotNull final String branch, @NotNull final List<HgRepository> repositories) {
+    String bookmarkRevisionArg = "bookmark(\"" + branch + "\")";
+    FileDocumentManager.getInstance().saveAllDocuments();
+    final UpdatedFiles updatedFiles = UpdatedFiles.create();
+    for (final HgRepository repository : repositories) {
+      HgMergeCommand.mergeWith(repository, bookmarkRevisionArg, updatedFiles, new Runnable() {
+
+        @Override
+        public void run() {
+          Project project = repository.getProject();
+          VirtualFile repositoryRoot = repository.getRoot();
+          try {
+            new HgCommitCommand(project, repository, "Automated merge with " + branch).executeInCurrentThread();
+            HgBookmarkCommand.deleteBookmarkSynchronously(project, repositoryRoot, branch);
+          }
+          catch (HgCommandException e) {
+              HgErrorUtil.handleException(project, e);
+          }
+          catch (VcsException e) {
+            VcsNotifier.getInstance(project)
+              .notifyError("Exception during merge commit with " + branch, e.getMessage());
+          }
+        }
+      });
+    }
+  }
+
+  @Override
+  protected boolean hasBranch(@NotNull HgRepository repository, @NotNull TaskInfo name) {
+    return HgUtil.getNamesWithoutHashes(repository.getBookmarks()).contains(name.getName()) || repository.getOpenedBranches().contains(name.getName());
+  }
+
+  @Override
+  public boolean isBranchNameValid(@NotNull String branchName) {
+    return myNameValidator.checkInput(branchName);
+  }
+
+  @NotNull
+  @Override
+  public String cleanUpBranchName(@NotNull String suggestedName) {
+    return myNameValidator.cleanUpBranchName(suggestedName);
+  }
 }

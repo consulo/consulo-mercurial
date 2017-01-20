@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2013 JetBrains s.r.o.
+ * Copyright 2000-2016 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,10 @@ package hg4idea.test;
 import com.intellij.openapi.application.PluginPathManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.openapi.vcs.changes.ChangeListManager;
+import com.intellij.openapi.vcs.changes.ChangeListManagerImpl;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.testFramework.PlatformTestCase;
-import com.intellij.testFramework.UsefulTestCase;
-import com.intellij.testFramework.fixtures.IdeaProjectTestFixture;
-import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory;
+import com.intellij.vcs.test.VcsPlatformTest;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.zmlx.hg4idea.HgVcs;
@@ -46,52 +45,45 @@ import static hg4idea.test.HgExecutor.hg;
  * or create another one.</li>
  * <li>Initially one repository is created with the project dir as its root. I. e. all project is under Mercurial.</li>
  * </ul>
- *
- * @author Kirill Likhodedov
  */
-public abstract class HgPlatformTest extends UsefulTestCase {
+public abstract class HgPlatformTest extends VcsPlatformTest {
 
-  protected Project myProject;
-  protected VirtualFile myProjectRoot;
   protected VirtualFile myRepository;
   protected VirtualFile myChildRepo;
   protected HgVcs myVcs;
 
   protected static final String COMMIT_MESSAGE = "text";
 
-  private IdeaProjectTestFixture myProjectFixture;
-
-
-  @SuppressWarnings("JUnitTestCaseWithNonTrivialConstructors")
-  protected HgPlatformTest() {
-    PlatformTestCase.initPlatformLangPrefix();
-  }
-
   @Override
-  protected void setUp() throws Exception {
+  public void setUp() throws Exception {
     super.setUp();
-    myProjectFixture = IdeaTestFixtureFactory.getFixtureFactory().createFixtureBuilder(getTestName(true)).getFixture();
-    myProjectFixture.setUp();
-
-    myProject = myProjectFixture.getProject();
-    myProjectRoot = myProject.getBaseDir();
 
     cd(myProjectRoot);
-    hg("version");
-
-    createRepository(myProjectRoot);
     myVcs = HgVcs.getInstance(myProject);
     assertNotNull(myVcs);
     myVcs.getGlobalSettings().setHgExecutable(HgExecutor.getHgExecutable());
+    myVcs.getProjectSettings().setCheckIncomingOutgoing(false);
     myVcs.checkVersion();
+    hg("version");
+    createRepository(myProjectRoot);
     myRepository = myProjectRoot;
     setUpHgrc(myRepository);
   }
 
   @Override
   protected void tearDown() throws Exception {
-    myProjectFixture.tearDown();
-    super.tearDown();
+    try {
+      ((ChangeListManagerImpl)ChangeListManager.getInstance(myProject)).waitEverythingDoneInTestMode();
+    }
+    finally {
+      myVcs.getGlobalSettings().setHgExecutable(null);
+      try {
+        clearFields(this);
+      }
+      finally {
+        super.tearDown();
+      }
+    }
   }
 
   private static void setUpHgrc(@NotNull VirtualFile repositoryRoot) throws IOException {
@@ -102,6 +94,7 @@ public abstract class HgPlatformTest extends UsefulTestCase {
     File hgrc = new File(new File(repositoryRoot.getPath(), ".hg"), "hgrc");
     FileUtil.appendToFile(hgrc, FileUtil.loadFile(hgrcFile));
     assertTrue(hgrc.exists());
+    repositoryRoot.refresh(false, true);
   }
 
   protected static void appendToHgrc(@NotNull VirtualFile repositoryRoot, @NotNull String text) throws IOException {
@@ -109,7 +102,8 @@ public abstract class HgPlatformTest extends UsefulTestCase {
     File hgrc = new File(new File(repositoryRoot.getPath(), ".hg"), "hgrc");
     FileUtil.appendToFile(hgrc, text);
     assertTrue(hgrc.exists());
-    repositoryRoot.refresh(false,true);
+    repositoryRoot.refresh(false, true);
+    cd(repositoryRoot);
   }
 
 
@@ -119,16 +113,16 @@ public abstract class HgPlatformTest extends UsefulTestCase {
     hgRepository.updateConfig();
   }
 
-  protected void createRepository(VirtualFile root) {
+  private static void createRepository(VirtualFile root) {
     initRepo(root.getPath());
   }
 
-  private static void initRepo(String repoRoot) {
+  public static void initRepo(String repoRoot) {
     cd(repoRoot);
     hg("init");
     touch("file.txt");
     hg("add file.txt");
-    hg("commit -m initial");
+    hg("commit -m initial -u asd");
   }
 
   public void prepareSecondRepository() throws IOException {

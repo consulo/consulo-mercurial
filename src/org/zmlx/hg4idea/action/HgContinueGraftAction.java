@@ -15,47 +15,42 @@
  */
 package org.zmlx.hg4idea.action;
 
-import java.util.Collection;
-
+import com.intellij.dvcs.repo.Repository;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.zmlx.hg4idea.command.HgGraftCommand;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.util.HgErrorUtil;
-import com.intellij.dvcs.repo.Repository;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.project.Project;
 
-public class HgContinueGraftAction extends HgProcessStateAction
-{
+import java.util.Collection;
 
-	public HgContinueGraftAction()
-	{
-		super(Repository.State.GRAFTING);
-	}
+public class HgContinueGraftAction extends HgProcessStateAction {
 
-	@Override
-	protected void execute(@NotNull final Project project, @NotNull Collection<HgRepository> repositories, @Nullable final HgRepository selectedRepo)
-	{
+  public HgContinueGraftAction() {
+    super(Repository.State.GRAFTING);
+  }
 
-		new Task.Backgroundable(project, "Continue Grafting...")
-		{
-			@Override
-			public void run(@NotNull ProgressIndicator indicator)
-			{
-				if(selectedRepo != null)
-				{
-					HgGraftCommand graftCommand = new HgGraftCommand(project, selectedRepo);
-					HgCommandResult result = graftCommand.continueGrafting();
-					if(HgErrorUtil.isAbort(result))
-					{
-						new HgCommandResultNotifier(project).notifyError(result, "Hg Error", "Couldn't continue grafting");
-					}
-					HgErrorUtil.markDirtyAndHandleErrors(project, selectedRepo.getRoot());
-				}
-			}
-		}.queue();
-	}
+  @Override
+  protected void execute(@NotNull final Project project,
+                         @NotNull Collection<HgRepository> repositories,
+                         @Nullable final HgRepository selectedRepo) {
+
+    new Task.Backgroundable(project, "Continue Grafting...") {
+      @Override
+      public void run(@NotNull ProgressIndicator indicator) {
+        if (selectedRepo != null) {
+          HgGraftCommand graftCommand = new HgGraftCommand(project, selectedRepo);
+          HgCommandResult result = graftCommand.continueGrafting();
+          if (HgErrorUtil.isAbort(result)) {
+            new HgCommandResultNotifier(project).notifyError(result, "Hg Error", "Couldn't continue grafting");
+          }
+          HgErrorUtil.markDirtyAndHandleErrors(project, selectedRepo.getRoot());
+        }
+      }
+    }.queue();
+  }
 }

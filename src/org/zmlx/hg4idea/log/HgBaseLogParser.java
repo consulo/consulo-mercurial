@@ -17,11 +17,12 @@ package org.zmlx.hg4idea.log;
 
 
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.util.Pair;
+import com.intellij.openapi.util.Couple;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.Function;
 import com.intellij.util.SmartList;
+import com.intellij.util.containers.ContainerUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.zmlx.hg4idea.HgRevisionNumber;
@@ -29,8 +30,6 @@ import org.zmlx.hg4idea.util.HgChangesetUtil;
 import org.zmlx.hg4idea.util.HgUtil;
 import org.zmlx.hg4idea.util.HgVersion;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -59,9 +58,6 @@ public abstract class HgBaseLogParser<CommitT> implements Function<String, Commi
   protected static final int FILES_DELETED_INDEX = 9;
   protected static final int FILES_COPIED_INDEX = 10;
 
-  private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
-
-
   @Nullable
   public CommitT convert(@NotNull String line) {
 
@@ -78,14 +74,14 @@ public abstract class HgBaseLogParser<CommitT> implements Function<String, Commi
       String parentsString = attributes.get(PARENTS_INDEX);
 
       SmartList<HgRevisionNumber> parents = parseParentRevisions(parentsString, revisionString);
-
-      Date revisionDate = DATE_FORMAT.parse(attributes.get(DATE_INDEX));
-      Pair<String, String> authorAndEmail = HgUtil.parseUserNameAndEmail(attributes.get(AUTHOR_INDEX));
+      String unixTimeStamp = ContainerUtil.getFirstItem(StringUtil.split(attributes.get(DATE_INDEX), " "));
+      if (unixTimeStamp == null) {
+        LOG.warn("Error parsing date in line " + line);
+        return null;
+      }
+      Date revisionDate = new Date(Long.parseLong(unixTimeStamp.trim()) * 1000);
+      Couple<String> authorAndEmail = HgUtil.parseUserNameAndEmail(attributes.get(AUTHOR_INDEX));
       return convertDetails(revisionString, changeset, parents, revisionDate, authorAndEmail.first, authorAndEmail.second, attributes);
-    }
-    catch (ParseException e) {
-      LOG.warn("Error parsing date in line " + line);
-      return null;
     }
     catch (NumberFormatException e) {
       LOG.warn("Error parsing rev in line " + line);
@@ -109,7 +105,7 @@ public abstract class HgBaseLogParser<CommitT> implements Function<String, Commi
 
   @NotNull
   public static List<String> constructDefaultTemplate(HgVersion currentVersion) {
-    List<String> templates = new ArrayList<String>();
+    List<String> templates = new ArrayList<>();
     templates.add("{rev}");
     templates.add("{node}");
     if (currentVersion.isParentRevisionTemplateSupported()) {
@@ -118,13 +114,13 @@ public abstract class HgBaseLogParser<CommitT> implements Function<String, Commi
     else {
       templates.add("{parents}");
     }
-    templates.addAll(Arrays.asList("{date|isodatesec}", "{author}"));
+    templates.addAll(Arrays.asList("{date|hgdate}", "{author}"));
     return templates;
   }
 
   @NotNull
   public static String[] constructFullTemplateArgument(boolean includeFiles, @NotNull HgVersion currentVersion) {
-    List<String> templates = new ArrayList<String>();
+    List<String> templates = new ArrayList<>();
     templates.add("{rev}");
     templates.add("{node}");
     if (currentVersion.isParentRevisionTemplateSupported()) {
@@ -133,19 +129,24 @@ public abstract class HgBaseLogParser<CommitT> implements Function<String, Commi
     else {
       templates.add("{parents}");
     }
-    templates.addAll(Arrays.asList("{date|isodatesec}", "{author}", "{desc}", "{branch}"));
+    templates.addAll(Arrays.asList("{date|hgdate}", "{author}", "{desc}", "{branch}"));
     if (!includeFiles) {
       return ArrayUtil.toStringArray(templates);
     }
-    templates.addAll(Arrays.asList("{file_adds}", "{file_mods}", "{file_dels}"));
-    templates
-      .add(currentVersion.isBuiltInFunctionSupported() ? "{join(file_copies,'" + HgChangesetUtil.FILE_SEPARATOR + "')}" : "{file_copies}");
+    List<String> fileTemplates = ContainerUtil.newArrayList("file_adds", "file_mods", "file_dels", "file_copies");
+    templates.addAll(wrapIn(fileTemplates, currentVersion));
     return ArrayUtil.toStringArray(templates);
   }
 
   @NotNull
+  private static List<String> wrapIn(@NotNull List<String> fileTemplates, @NotNull HgVersion currentVersion) {
+    final boolean supported = currentVersion.isBuiltInFunctionSupported();
+    return ContainerUtil.map(fileTemplates, s -> supported ? "{join(" + s + ",'" + HgChangesetUtil.FILE_SEPARATOR + "')}" : "{" + s + "}");
+  }
+
+  @NotNull
   protected static SmartList<HgRevisionNumber> parseParentRevisions(@NotNull String parentsString, @NotNull String currentRevisionString) {
-    SmartList<HgRevisionNumber> parents = new SmartList<HgRevisionNumber>();
+    SmartList<HgRevisionNumber> parents = new SmartList<>();
     if (StringUtil.isEmptyOrSpaces(parentsString)) {
       // parents shouldn't be empty  only if not supported
       Long revision = Long.valueOf(currentRevisionString);
@@ -174,6 +175,12 @@ public abstract class HgBaseLogParser<CommitT> implements Function<String, Commi
     }
     LOG.warn("Couldn't parse hg log commit info attribute " + index);
     return "";
+  }
+
+  @NotNull
+  public static String extractSubject(@NotNull String message) {
+    int subjectIndex = message.indexOf('\n');
+    return subjectIndex == -1 ? message : message.substring(0, subjectIndex);
   }
 }
 

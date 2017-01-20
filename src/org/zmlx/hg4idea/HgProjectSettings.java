@@ -29,108 +29,91 @@ import com.intellij.openapi.vcs.changes.VcsAnnotationRefresher;
 public class HgProjectSettings implements PersistentStateComponent<HgProjectSettings.State>, DvcsSyncSettings
 {
 
-	@NotNull
-	private final HgGlobalSettings myAppSettings;
-	@NotNull
-	private final Project myProject;
+  @NotNull private final HgGlobalSettings myAppSettings;
+  @NotNull private final Project myProject;
 
-	private State myState = new State();
+  private State myState = new State();
 
-	public HgProjectSettings(@NotNull Project project, @NotNull HgGlobalSettings appSettings)
-	{
-		myProject = project;
-		myAppSettings = appSettings;
-	}
+  public HgProjectSettings(@NotNull Project project, @NotNull HgGlobalSettings appSettings) {
+    myProject = project;
+    myAppSettings = appSettings;
+  }
 
-	public static class State
-	{
+  public static class State {
 
-		public boolean myCheckIncoming = true;
-		public boolean myCheckOutgoing = true;
-		public Boolean CHECK_INCOMING_OUTGOING = null;
-		public boolean myIgnoreWhitespacesInAnnotations = true;
-		public String RECENT_HG_ROOT_PATH = null;
-		public Value ROOT_SYNC = Value.NOT_DECIDED;
-	}
+    public boolean myCheckIncoming = true;
+    public boolean myCheckOutgoing = true;
+    public Boolean CHECK_INCOMING_OUTGOING = null;
+    public boolean myIgnoreWhitespacesInAnnotations = true;
+    public String RECENT_HG_ROOT_PATH = null;
+    public Value ROOT_SYNC = Value.NOT_DECIDED;
+  }
 
-	public State getState()
-	{
-		return myState;
-	}
+  public State getState() {
+    return myState;
+  }
 
-	public void loadState(State state)
-	{
-		myState = state;
-		if(state.CHECK_INCOMING_OUTGOING == null)
-		{
-			state.CHECK_INCOMING_OUTGOING = state.myCheckIncoming || state.myCheckOutgoing;
-		}
-	}
+  public void loadState(State state) {
+    myState = state;
+    if (state.CHECK_INCOMING_OUTGOING == null) {
+      state.CHECK_INCOMING_OUTGOING = state.myCheckIncoming || state.myCheckOutgoing;
+    }
+  }
 
-	public static HgProjectSettings getInstance(@NotNull Project project)
-	{
-		return PeriodicalTasksCloser.getInstance().safeGetService(project, HgProjectSettings.class);
-	}
+  public static HgProjectSettings getInstance(@NotNull Project project) {
+    return PeriodicalTasksCloser.getInstance().safeGetService(project, HgProjectSettings.class);
+  }
 
-	@Nullable
-	public String getRecentRootPath()
-	{
-		return myState.RECENT_HG_ROOT_PATH;
-	}
+  @Nullable
+  public String getRecentRootPath() {
+    return myState.RECENT_HG_ROOT_PATH;
+  }
 
-	public void setRecentRootPath(@NotNull String recentRootPath)
-	{
-		myState.RECENT_HG_ROOT_PATH = recentRootPath;
-	}
+  public void setRecentRootPath(@NotNull String recentRootPath) {
+    myState.RECENT_HG_ROOT_PATH = recentRootPath;
+  }
 
-	public boolean isCheckIncomingOutgoing()
-	{
-		return myState.CHECK_INCOMING_OUTGOING != null && myState.CHECK_INCOMING_OUTGOING.booleanValue();
-	}
+  public boolean isCheckIncomingOutgoing() {
+    if (myState.CHECK_INCOMING_OUTGOING == null) {
+      return myState.myCheckIncoming || myState.myCheckOutgoing;
+    }
+    return myState.CHECK_INCOMING_OUTGOING.booleanValue();
+  }
 
-	public boolean isWhitespacesIgnoredInAnnotations()
-	{
-		return myState.myIgnoreWhitespacesInAnnotations;
-	}
+  public boolean isWhitespacesIgnoredInAnnotations() {
+    return myState.myIgnoreWhitespacesInAnnotations;
+  }
 
-	@NotNull
-	public Value getSyncSetting()
-	{
-		return myState.ROOT_SYNC;
-	}
+  @NotNull
+  public Value getSyncSetting() {
+    return myState.ROOT_SYNC;
+  }
 
-	public void setSyncSetting(@NotNull Value syncSetting)
-	{
-		myState.ROOT_SYNC = syncSetting;
-	}
+  public void setSyncSetting(@NotNull Value syncSetting) {
+    myState.ROOT_SYNC = syncSetting;
+  }
 
-	public void setCheckIncomingOutgoing(boolean checkIncomingOutgoing)
-	{
-		myState.CHECK_INCOMING_OUTGOING = checkIncomingOutgoing;
-	}
+  public void setCheckIncomingOutgoing(boolean checkIncomingOutgoing) {
+    myState.CHECK_INCOMING_OUTGOING = checkIncomingOutgoing;
+  }
 
-	public void setIgnoreWhitespacesInAnnotations(boolean ignoreWhitespacesInAnnotations)
-	{
-		if(myState.myIgnoreWhitespacesInAnnotations != ignoreWhitespacesInAnnotations)
-		{
-			myState.myIgnoreWhitespacesInAnnotations = ignoreWhitespacesInAnnotations;
-			myProject.getMessageBus().syncPublisher(VcsAnnotationRefresher.LOCAL_CHANGES_CHANGED).configurationChanged(HgVcs.getKey());
-		}
-	}
+  public void setIgnoreWhitespacesInAnnotations(boolean ignoreWhitespacesInAnnotations) {
+    if (myState.myIgnoreWhitespacesInAnnotations != ignoreWhitespacesInAnnotations) {
+      myState.myIgnoreWhitespacesInAnnotations = ignoreWhitespacesInAnnotations;
+      myProject.getMessageBus().syncPublisher(VcsAnnotationRefresher.LOCAL_CHANGES_CHANGED).configurationChanged(HgVcs.getKey());
+    }
+  }
 
-	public String getHgExecutable()
-	{
-		return myAppSettings.getHgExecutable();
-	}
+  public String getHgExecutable() {
+    return myAppSettings.getHgExecutable();
+  }
 
-	public void setHgExecutable(String text)
-	{
-		myAppSettings.setHgExecutable(text);
-	}
+  public void setHgExecutable(String text) {
+    myAppSettings.setHgExecutable(text);
+  }
 
-	@NotNull
-	public HgGlobalSettings getGlobalSettings()
-	{
-		return myAppSettings;
-	}
+  @NotNull
+  public HgGlobalSettings getGlobalSettings() {
+    return myAppSettings;
+  }
 }

@@ -15,30 +15,24 @@
  */
 package org.zmlx.hg4idea.branch;
 
-import java.util.List;
-
-import org.jetbrains.annotations.NotNull;
-import org.zmlx.hg4idea.repo.HgRepository;
 import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.project.Project;
+import org.jetbrains.annotations.NotNull;
+import org.zmlx.hg4idea.repo.HgRepository;
 
-public abstract class HgBranchAbstractAction extends DumbAwareAction
-{
-	@NotNull
-	protected final Project myProject;
-	@NotNull
-	protected final List<HgRepository> myRepositories;
-	@NotNull
-	protected final String myBranchName;
+import java.util.List;
 
-	public HgBranchAbstractAction(@NotNull Project project,
-			@NotNull String title,
-			@NotNull List<HgRepository> repositories,
-			@NotNull String branchName)
-	{
-		super(title);
-		myProject = project;
-		myRepositories = repositories;
-		myBranchName = branchName;
-	}
+public abstract class HgBranchAbstractAction extends DumbAwareAction {
+  @NotNull protected final Project myProject;
+  @NotNull protected final List<HgRepository> myRepositories;
+  @NotNull protected final String myBranchName;
+
+  public HgBranchAbstractAction(@NotNull Project project, @NotNull String title,
+                                @NotNull List<HgRepository> repositories,
+                                @NotNull String branchName) {
+    super(title);
+    myProject = project;
+    myRepositories = repositories;
+    myBranchName = branchName;
+  }
 }

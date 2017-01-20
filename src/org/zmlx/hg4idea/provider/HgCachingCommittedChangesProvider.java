@@ -12,36 +12,6 @@
 // limitations under the License.
 package org.zmlx.hg4idea.provider;
 
-import java.awt.datatransfer.StringSelection;
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.zmlx.hg4idea.HgContentRevision;
-import org.zmlx.hg4idea.HgFile;
-import org.zmlx.hg4idea.HgFileRevision;
-import org.zmlx.hg4idea.HgRevisionNumber;
-import org.zmlx.hg4idea.HgVcs;
-import org.zmlx.hg4idea.HgVcsMessages;
-import org.zmlx.hg4idea.action.HgCommandResultNotifier;
-import org.zmlx.hg4idea.command.HgLogCommand;
-import org.zmlx.hg4idea.execution.HgCommandException;
-import org.zmlx.hg4idea.ui.HgVersionFilterComponent;
-import org.zmlx.hg4idea.util.HgUtil;
-import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.ide.CopyPasteManager;
@@ -49,15 +19,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Comparing;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vcs.CachingCommittedChangesProvider;
-import com.intellij.openapi.vcs.ChangeListColumn;
-import com.intellij.openapi.vcs.FilePath;
-import com.intellij.openapi.vcs.FilePathImpl;
-import com.intellij.openapi.vcs.FileStatus;
-import com.intellij.openapi.vcs.RepositoryLocation;
-import com.intellij.openapi.vcs.VcsConfiguration;
-import com.intellij.openapi.vcs.VcsDataKeys;
-import com.intellij.openapi.vcs.VcsException;
+import com.intellij.openapi.vcs.*;
 import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vcs.changes.ChangeList;
 import com.intellij.openapi.vcs.changes.committed.DecoratorManager;
@@ -69,7 +31,24 @@ import com.intellij.openapi.vcs.versionBrowser.ChangesBrowserSettingsEditor;
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.AsynchConsumer;
+import com.intellij.util.PlatformIcons;
+import com.intellij.util.containers.ContainerUtil;
 import com.intellij.vcsUtil.VcsUtil;
+import org.jetbrains.annotations.Nls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.zmlx.hg4idea.*;
+import org.zmlx.hg4idea.command.HgLogCommand;
+import org.zmlx.hg4idea.ui.HgVersionFilterComponent;
+import org.zmlx.hg4idea.util.HgUtil;
+
+import java.awt.datatransfer.StringSelection;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class HgCachingCommittedChangesProvider implements CachingCommittedChangesProvider<CommittedChangeList, ChangeBrowserSettings> {
 
@@ -93,7 +72,7 @@ public class HgCachingCommittedChangesProvider implements CachingCommittedChange
     String comment = dataInput.readUTF();
     Date commitDate = new Date(dataInput.readLong());
     int changesCount = dataInput.readInt();
-    List<Change> changes = new ArrayList<Change>();
+    List<Change> changes = new ArrayList<>();
     for (int i = 0; i < changesCount; i++) {
       HgContentRevision beforeRevision = readRevision(repositoryLocation, dataInput);
       HgContentRevision afterRevision = readRevision(repositoryLocation, dataInput);
@@ -104,7 +83,7 @@ public class HgCachingCommittedChangesProvider implements CachingCommittedChange
 
   public void writeChangeList(DataOutput dataOutput, CommittedChangeList committedChangeList) throws IOException {
     HgCommittedChangeList changeList = (HgCommittedChangeList)committedChangeList;
-    writeRevisionNumber(dataOutput, changeList.getRevision());
+    writeRevisionNumber(dataOutput, changeList.getRevisionNumber());
     dataOutput.writeUTF(changeList.getBranch());
     dataOutput.writeUTF(changeList.getCommitterName());
     dataOutput.writeUTF(changeList.getComment());
@@ -122,7 +101,7 @@ public class HgCachingCommittedChangesProvider implements CachingCommittedChange
 
     if (!StringUtil.isEmpty(revisionPath)) {
       VirtualFile root = ((HgRepositoryLocation)repositoryLocation).getRoot();
-      return new HgContentRevision(project, new HgFile(root, new File(revisionPath)), revisionNumber);
+      return HgContentRevision.create(project, new HgFile(root, new File(revisionPath)), revisionNumber);
     }
     else {
       return null;
@@ -230,7 +209,7 @@ public class HgCachingCommittedChangesProvider implements CachingCommittedChange
 
     HgFile hgFile = new HgFile(root, VcsUtil.getFilePath(root.getPath()));
 
-    List<CommittedChangeList> result = new LinkedList<CommittedChangeList>();
+    List<CommittedChangeList> result = new LinkedList<>();
     HgLogCommand hgLogCommand = new HgLogCommand(project);
     hgLogCommand.setLogFile(false);
     List<String> args = null;
@@ -242,13 +221,7 @@ public class HgCachingCommittedChangesProvider implements CachingCommittedChange
       }
     }
     final List<HgFileRevision> localRevisions;
-    try {
-      localRevisions = hgLogCommand.execute(hgFile, maxCount == 0 ? -1 : maxCount, true, args);
-    }
-    catch (HgCommandException e) {
-      new HgCommandResultNotifier(project).notifyError(null, HgVcsMessages.message("hg4idea.error.log.command.execution"), e.getMessage());
-      return result;
-    }
+    localRevisions = hgLogCommand.execute(hgFile, maxCount == 0 ? -1 : maxCount, true, args);
     Collections.reverse(localRevisions);
 
     for (HgFileRevision revision : localRevisions) {
@@ -257,7 +230,7 @@ public class HgCachingCommittedChangesProvider implements CachingCommittedChange
 
       HgRevisionNumber firstParent = parents.isEmpty() ? null : parents.get(0); // can have no parents if it is a root
 
-      List<Change> changes = new ArrayList<Change>();
+      List<Change> changes = new ArrayList<>();
       for (String file : revision.getModifiedFiles()) {
         changes.add(createChange(root, file, firstParent, file, vcsRevisionNumber, FileStatus.MODIFIED));
       }
@@ -267,8 +240,9 @@ public class HgCachingCommittedChangesProvider implements CachingCommittedChange
       for (String file : revision.getDeletedFiles()) {
         changes.add(createChange(root, file, firstParent, null, vcsRevisionNumber, FileStatus.DELETED));
       }
-      for (Map.Entry<String, String> copiedFile : revision.getCopiedFiles().entrySet()) {
-        changes.add(createChange(root, copiedFile.getKey(), firstParent, copiedFile.getValue(), vcsRevisionNumber, FileStatus.ADDED));
+      for (Map.Entry<String, String> copiedFile : revision.getMovedFiles().entrySet()) {
+        changes
+          .add(createChange(root, copiedFile.getKey(), firstParent, copiedFile.getValue(), vcsRevisionNumber, HgChangeProvider.RENAMED));
       }
 
       result.add(new HgCommittedChangeList(myVcs, vcsRevisionNumber, revision.getBranchName(), revision.getCommitMessage(),
@@ -286,9 +260,9 @@ public class HgCachingCommittedChangesProvider implements CachingCommittedChange
                               FileStatus aStatus) {
 
     HgContentRevision beforeRevision =
-      fileBefore == null ? null : new HgContentRevision(project, new HgFile(root, new File(root.getPath(), fileBefore)), revisionBefore);
+      fileBefore == null ? null : HgContentRevision.create(project, new HgFile(root, new File(root.getPath(), fileBefore)), revisionBefore);
     HgContentRevision afterRevision =
-      fileAfter == null ? null : new HgContentRevision(project, new HgFile(root, new File(root.getPath(), fileAfter)), revisionAfter);
+      fileAfter == null ? null : HgContentRevision.create(project, new HgFile(root, new File(root.getPath(), fileAfter)), revisionAfter);
     return new Change(beforeRevision, afterRevision, aStatus);
   }
 
@@ -297,12 +271,12 @@ public class HgCachingCommittedChangesProvider implements CachingCommittedChange
   }
 
   public VcsCommittedViewAuxiliary createActions(DecoratorManager decoratorManager, RepositoryLocation repositoryLocation) {
-    AnAction copyHashAction = new AnAction("Copy &Hash", "Copy hash to clipboard", AllIcons.Actions.Copy) {
+    AnAction copyHashAction = new AnAction("Copy &Hash", "Copy hash to clipboard", PlatformIcons.COPY_ICON) {
       @Override
       public void actionPerformed(AnActionEvent e) {
         ChangeList[] changeLists = e.getData(VcsDataKeys.CHANGE_LISTS);
         if (changeLists != null && changeLists[0] instanceof HgCommittedChangeList) {
-          HgRevisionNumber revisionNumber = ((HgCommittedChangeList)changeLists[0]).getRevision();
+          HgRevisionNumber revisionNumber = ((HgCommittedChangeList)changeLists[0]).getRevisionNumber();
           CopyPasteManager.getInstance().setContents(new StringSelection(revisionNumber.getChangeset()));
         }
       }
@@ -329,10 +303,10 @@ public class HgCachingCommittedChangesProvider implements CachingCommittedChange
     if (localVirtualFile == null) {
       return null;
     }
-    final FilePathImpl filePath = new FilePathImpl(localVirtualFile);
+    final FilePath filePath = VcsUtil.getFilePath(localVirtualFile);
     final CommittedChangeList list = getCommittedChangesForRevision(getLocationFor(filePath), number.asString());
     if (list != null) {
-      return new Pair<CommittedChangeList, FilePath>(list, filePath);
+      return new Pair<>(list, filePath);
     }
     return null;
   }
@@ -357,24 +331,19 @@ public class HgCachingCommittedChangesProvider implements CachingCommittedChange
     HgLogCommand hgLogCommand = new HgLogCommand(project);
     hgLogCommand.setLogFile(false);
     hgLogCommand.setFollowCopies(true);
-    List<String> args = new ArrayList<String>();
+    List<String> args = new ArrayList<>();
     args.add("--rev");
     args.add(revision);
     final List<HgFileRevision> revisions;
-    try {
-      revisions = hgLogCommand.execute(hgFile, 1, true, args);
-    }
-    catch (HgCommandException e) {
-      new HgCommandResultNotifier(project).notifyError(null, HgVcsMessages.message("hg4idea.error.log.command.execution"), e.getMessage());
-      return null;
-    }
-    if (revisions == null || revisions.isEmpty()) {
+    revisions = hgLogCommand.execute(hgFile, 1, true, args);
+    if (ContainerUtil.isEmpty(revisions)) {
       return null;
     }
     HgFileRevision localRevision = revisions.get(0);
     HgRevisionNumber vcsRevisionNumber = localRevision.getRevisionNumber();
-    HgRevisionNumber firstParent = vcsRevisionNumber.getParents().get(0);
-    List<Change> changes = new ArrayList<Change>();
+    List<HgRevisionNumber> parents = vcsRevisionNumber.getParents();
+    HgRevisionNumber firstParent = parents.isEmpty() ? null : parents.get(0); // can have no parents if it is a root
+    List<Change> changes = new ArrayList<>();
     for (String file : localRevision.getModifiedFiles()) {
       changes.add(createChange(root, file, firstParent, file, vcsRevisionNumber, FileStatus.MODIFIED));
     }
@@ -384,8 +353,8 @@ public class HgCachingCommittedChangesProvider implements CachingCommittedChange
     for (String file : localRevision.getDeletedFiles()) {
       changes.add(createChange(root, file, firstParent, null, vcsRevisionNumber, FileStatus.DELETED));
     }
-    for (Map.Entry<String, String> copiedFile : localRevision.getCopiedFiles().entrySet()) {
-      changes.add(createChange(root, copiedFile.getKey(), firstParent, copiedFile.getValue(), vcsRevisionNumber, HgChangeProvider.COPIED));
+    for (Map.Entry<String, String> copiedFile : localRevision.getMovedFiles().entrySet()) {
+      changes.add(createChange(root, copiedFile.getKey(), firstParent, copiedFile.getValue(), vcsRevisionNumber, HgChangeProvider.RENAMED));
     }
 
     return new HgCommittedChangeList(myVcs, vcsRevisionNumber, localRevision.getBranchName(), localRevision.getCommitMessage(),
@@ -461,7 +430,7 @@ public class HgCachingCommittedChangesProvider implements CachingCommittedChange
       }
 
       if (args.length() > 0) {
-        List<String> logArgs = new ArrayList<String>();
+        List<String> logArgs = new ArrayList<>();
         logArgs.add("-r");
         logArgs.add(args.toString());
         return logArgs;

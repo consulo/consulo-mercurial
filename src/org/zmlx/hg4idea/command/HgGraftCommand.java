@@ -12,61 +12,54 @@
 // limitations under the License.
 package org.zmlx.hg4idea.command;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
+import com.intellij.dvcs.DvcsUtil;
+import com.intellij.openapi.application.AccessToken;
+import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.zmlx.hg4idea.execution.HgCommandExecutor;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 import org.zmlx.hg4idea.repo.HgRepository;
-import com.intellij.dvcs.DvcsUtil;
-import com.intellij.openapi.application.AccessToken;
-import com.intellij.openapi.project.Project;
 
-public class HgGraftCommand
-{
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-	@NotNull
-	private final Project myProject;
-	@NotNull
-	private final HgRepository myRepository;
+public class HgGraftCommand {
 
-	public HgGraftCommand(@NotNull Project project, @NotNull HgRepository repo)
-	{
-		myProject = project;
-		myRepository = repo;
-	}
+  @NotNull private final Project myProject;
+  @NotNull private final HgRepository myRepository;
 
-	@Nullable
-	public HgCommandResult startGrafting(List<String> hashes)
-	{
-		return graft(hashes);
-	}
+  public HgGraftCommand(@NotNull Project project, @NotNull HgRepository repo) {
+    myProject = project;
+    myRepository = repo;
+  }
 
-	@Nullable
-	public HgCommandResult continueGrafting()
-	{
-		return graft(Collections.singletonList("--continue"));
-	}
+  @Nullable
+  public HgCommandResult startGrafting(List<String> hashes) {
+    return graft(hashes);
+  }
 
-	@Nullable
-	private HgCommandResult graft(@NotNull List<String> params)
-	{
-		List<String> args = new ArrayList<String>();
-		args.add("--log");
-		args.addAll(params);
-		AccessToken token = DvcsUtil.workingTreeChangeStarted(myProject);
-		try
-		{
-			HgCommandResult result = new HgCommandExecutor(myProject).executeInCurrentThread(myRepository.getRoot(), "graft", args);
-			myRepository.update();
-			return result;
-		}
-		finally
-		{
-			DvcsUtil.workingTreeChangeFinished(myProject, token);
-		}
-	}
+  @Nullable
+  public HgCommandResult continueGrafting() {
+    return graft(Collections.singletonList("--continue"));
+  }
+
+  @Nullable
+  private HgCommandResult graft(@NotNull List<String> params) {
+    List<String> args = new ArrayList<>();
+    args.add("--log");
+    args.addAll(params);
+    AccessToken token = DvcsUtil.workingTreeChangeStarted(myProject);
+    try {
+      HgCommandResult result =
+        new HgCommandExecutor(myProject)
+          .executeInCurrentThread(myRepository.getRoot(), "graft", args);
+      myRepository.update();
+      return result;
+    }
+    finally {
+      DvcsUtil.workingTreeChangeFinished(myProject, token);
+    }
+  }
 }

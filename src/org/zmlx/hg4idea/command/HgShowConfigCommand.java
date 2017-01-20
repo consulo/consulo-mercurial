@@ -20,10 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import org.zmlx.hg4idea.execution.HgCommandExecutor;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class HgShowConfigCommand {
 
@@ -41,13 +38,14 @@ public class HgShowConfigCommand {
 
     final HgCommandExecutor executor = new HgCommandExecutor(project);
     executor.setSilent(true);
-    HgCommandResult result = executor.executeInCurrentThread(repo, "showconfig", null);
+    //force override debug option while initialize hg configs
+    HgCommandResult result = executor.executeInCurrentThread(repo, "showconfig", Arrays.asList("--config", "ui.debug=false"));
 
     if (result == null) {
       return Collections.emptyMap();
     }
 
-    Map<String, Map<String, String>> configMap = new HashMap<String, Map<String, String>>();
+    Map<String, Map<String, String>> configMap = new HashMap<>();
     for (String line : result.getOutputLines()) {
       List<String> option = StringUtil.split(line, "=", true, false);
       if (option.size() == 2) {
@@ -62,7 +60,7 @@ public class HgShowConfigCommand {
             configMap.get(sectionName).put(optionName, value);
           }
           else {
-            HashMap<String, String> sectionMap = new HashMap<String, String>();
+            HashMap<String, String> sectionMap = new HashMap<>();
             sectionMap.put(optionName, value);
             configMap.put(sectionName, sectionMap);
           }

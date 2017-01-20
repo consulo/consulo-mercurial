@@ -12,18 +12,6 @@
 // limitations under the License.
 package org.zmlx.hg4idea.ui;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Collection;
-
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.zmlx.hg4idea.repo.HgRepository;
-import org.zmlx.hg4idea.util.HgUtil;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.event.DocumentAdapter;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.project.Project;
@@ -31,126 +19,99 @@ import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.EditorComboBox;
-import com.intellij.util.ui.UIUtil;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.zmlx.hg4idea.repo.HgRepository;
+import org.zmlx.hg4idea.util.HgUtil;
 
-public class HgPullDialog extends DialogWrapper
-{
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Collection;
 
-	private final Project project;
-	private HgRepositorySelectorComponent hgRepositorySelector;
-	private JPanel mainPanel;
-	private EditorComboBox myRepositoryURL;
-	private String myCurrentRepositoryUrl;
+public class HgPullDialog extends DialogWrapper {
 
-	public HgPullDialog(@NotNull Project project, @NotNull Collection<HgRepository> repositories, @Nullable final HgRepository selectedRepo)
-	{
-		super(project, false);
-		this.project = project;
-		hgRepositorySelector.setTitle("Select repository to pull changesets for");
-		hgRepositorySelector.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-				onChangeRepository();
-			}
-		});
+  private final Project project;
+  private HgRepositorySelectorComponent hgRepositorySelector;
+  private JPanel mainPanel;
+  private EditorComboBox myRepositoryURL;
+  private String myCurrentRepositoryUrl;
 
-		setTitle("Pull");
-		setOKButtonText("Pull");
-		init();
-		setRoots(repositories, selectedRepo);
-	}
+  public HgPullDialog(@NotNull Project project, @NotNull Collection<HgRepository> repositories, @Nullable final HgRepository selectedRepo) {
+    super(project, false);
+    this.project = project;
+    hgRepositorySelector.setTitle("Select repository to pull changesets for");
+    hgRepositorySelector.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        onChangeRepository();
+      }
+    });
 
-	public void createUIComponents()
-	{
-		myRepositoryURL = new EditorComboBox("");
-		myRepositoryURL.addDocumentListener(new DocumentAdapter()
-		{
-			@Override
-			public void documentChanged(DocumentEvent e)
-			{
-				onChangePullSource();
-			}
-		});
-	}
+    setTitle("Pull");
+    setOKButtonText("Pull");
+    init();
+    setRoots(repositories, selectedRepo);
+  }
 
-	private void addPathsFromHgrc(@NotNull VirtualFile repo)
-	{
-		Collection<String> paths = HgUtil.getRepositoryPaths(project, repo);
-		for(String path : paths)
-		{
-			myRepositoryURL.prependItem(path);
-		}
-	}
+  public void createUIComponents() {
+    myRepositoryURL = new EditorComboBox("");
+    myRepositoryURL.addDocumentListener(new DocumentAdapter() {
+      @Override
+      public void documentChanged(DocumentEvent e) {
+        onChangePullSource();
+      }
+    });
+  }
 
-	@NotNull
-	public HgRepository getRepository()
-	{
-		return hgRepositorySelector.getRepository();
-	}
+  private void addPathsFromHgrc(@NotNull VirtualFile repo) {
+    Collection<String> paths = HgUtil.getRepositoryPaths(project, repo);
+    for (String path : paths) {
+      myRepositoryURL.prependItem(path);
+    }
+  }
 
-	public String getSource()
-	{
-		return myCurrentRepositoryUrl;
-	}
+  @NotNull
+  public HgRepository getRepository() {
+    return hgRepositorySelector.getRepository();
+  }
 
-	private void setRoots(@NotNull Collection<HgRepository> repositories, @Nullable final HgRepository selectedRepo)
-	{
-		hgRepositorySelector.setRoots(repositories);
-		hgRepositorySelector.setSelectedRoot(selectedRepo);
-		onChangeRepository();
-	}
+  public String getSource() {
+    return myCurrentRepositoryUrl;
+  }
 
-	@Override
-	protected JComponent createCenterPanel()
-	{
-		return mainPanel;
-	}
+  private void setRoots(@NotNull Collection<HgRepository> repositories, @Nullable final HgRepository selectedRepo) {
+    hgRepositorySelector.setRoots(repositories);
+    hgRepositorySelector.setSelectedRoot(selectedRepo);
+    onChangeRepository();
+  }
 
-	@Override
-	protected String getHelpId()
-	{
-		return "reference.mercurial.pull.dialog";
-	}
+  protected JComponent createCenterPanel() {
+    return mainPanel;
+  }
 
-	private void onChangeRepository()
-	{
-		ApplicationManager.getApplication().executeOnPooledThread(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				final VirtualFile repo = hgRepositorySelector.getRepository().getRoot();
-				final String defaultPath = HgUtil.getRepositoryDefaultPath(project, repo);
-				if(!StringUtil.isEmptyOrSpaces(defaultPath))
-				{
-					UIUtil.invokeAndWaitIfNeeded(new Runnable()
-					{
-						@Override
-						public void run()
-						{
-							addPathsFromHgrc(repo);
-							myRepositoryURL.setText(HgUtil.removePasswordIfNeeded(defaultPath));
-							myCurrentRepositoryUrl = defaultPath;
-						}
-					});
+  @Override
+  protected String getHelpId() {
+    return "reference.mercurial.pull.dialog";
+  }
 
-					onChangePullSource();
-				}
-			}
-		});
-	}
+  private void onChangeRepository() {
+    final VirtualFile repo = hgRepositorySelector.getRepository().getRoot();
+    final String defaultPath = HgUtil.getRepositoryDefaultPath(project, repo);
+    if (!StringUtil.isEmptyOrSpaces(defaultPath)) {
+      addPathsFromHgrc(repo);
+      myRepositoryURL.setText(HgUtil.removePasswordIfNeeded(defaultPath));
+      myCurrentRepositoryUrl = defaultPath;
+      onChangePullSource();
+    }
+  }
 
-	private void onChangePullSource()
-	{
-		myCurrentRepositoryUrl = myRepositoryURL.getText();
-		setOKActionEnabled(!StringUtil.isEmptyOrSpaces(myRepositoryURL.getText()));
-	}
+  private void onChangePullSource() {
+    myCurrentRepositoryUrl = myRepositoryURL.getText();
+    setOKActionEnabled(!StringUtil.isEmptyOrSpaces(myRepositoryURL.getText()));
+  }
 
-	@Override
-	protected String getDimensionServiceKey()
-	{
-		return HgPullDialog.class.getName();
-	}
+  @Override
+  protected String getDimensionServiceKey() {
+    return HgPullDialog.class.getName();
+  }
 }

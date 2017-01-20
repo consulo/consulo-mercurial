@@ -17,7 +17,6 @@ package org.zmlx.hg4idea.push;
 
 import com.intellij.dvcs.push.VcsPushOptionValue;
 
-public enum HgVcsPushOptionValue implements VcsPushOptionValue
-{
-	None, Current
+public enum HgVcsPushOptionValue implements VcsPushOptionValue {
+  None, Current
 }

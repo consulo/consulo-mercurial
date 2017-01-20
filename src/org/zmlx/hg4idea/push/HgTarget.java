@@ -15,74 +15,53 @@
  */
 package org.zmlx.hg4idea.push;
 
+import com.intellij.dvcs.push.PushTarget;
 import org.jetbrains.annotations.NotNull;
 import org.zmlx.hg4idea.util.HgUtil;
-import com.intellij.dvcs.push.PushTarget;
 
-public class HgTarget implements PushTarget
-{
-	@NotNull
-	String myTarget;
-	@NotNull
-	String myBranchName;
+public class HgTarget implements PushTarget {
+  @NotNull String myTarget;
+  @NotNull String myBranchName;
 
-	public HgTarget(@NotNull String name, @NotNull String branchName)
-	{
-		myTarget = name;
-		myBranchName = branchName;
-	}
+  public HgTarget(@NotNull String name, @NotNull String branchName) {
+    myTarget = name;
+    myBranchName = branchName;
+  }
 
-	@NotNull
-	@Override
-	public String getPresentation()
-	{
-		return HgUtil.removePasswordIfNeeded(myTarget);
-	}
+  @NotNull
+  @Override
+  public String getPresentation() {
+    return HgUtil.removePasswordIfNeeded(myTarget);
+  }
 
-	@Override
-	public boolean hasSomethingToPush()
-	{
-		// push is always allowed except invalid target
-		return true;
-	}
+  @Override
+  public boolean hasSomethingToPush() {
+    // push is always allowed except invalid target
+    return true;
+  }
 
-	@Override
-	public boolean equals(Object o)
-	{
-		if(this == o)
-		{
-			return true;
-		}
-		if(!(o instanceof HgTarget))
-		{
-			return false;
-		}
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof HgTarget)) return false;
 
-		HgTarget hgTarget = (HgTarget) o;
+    HgTarget hgTarget = (HgTarget)o;
 
-		if(!myBranchName.equals(hgTarget.myBranchName))
-		{
-			return false;
-		}
-		if(!myTarget.equals(hgTarget.myTarget))
-		{
-			return false;
-		}
+    if (!myBranchName.equals(hgTarget.myBranchName)) return false;
+    if (!myTarget.equals(hgTarget.myTarget)) return false;
 
-		return true;
-	}
+    return true;
+  }
 
-	@Override
-	public int hashCode()
-	{
-		int result = myTarget.hashCode();
-		result = 31 * result + myBranchName.hashCode();
-		return result;
-	}
+  @Override
+  public int hashCode() {
+    int result = myTarget.hashCode();
+    result = 31 * result + myBranchName.hashCode();
+    return result;
+  }
 
-	@NotNull
-	public String getBranchName()
-	{
-		return myBranchName;
-	}
+  @NotNull
+  public String getBranchName() {
+    return myBranchName;
+  }
 }

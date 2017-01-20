@@ -16,12 +16,9 @@
 */
 package org.zmlx.hg4idea.provider.annotate;
 
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vcs.VcsKey;
 import com.intellij.openapi.vcs.annotate.*;
-import com.intellij.openapi.vcs.changes.CurrentContentRevision;
 import com.intellij.openapi.vcs.history.VcsFileRevision;
 import com.intellij.openapi.vcs.history.VcsRevisionNumber;
 import com.intellij.openapi.vfs.LocalFileSystem;
@@ -39,7 +36,7 @@ import java.util.List;
 
 public class HgAnnotation extends FileAnnotation {
 
-  private static final Logger LOG = Logger.getInstance(HgAnnotation.class.getName());
+  private StringBuilder myContentBuffer;
 
   public enum FIELD {
     USER, REVISION, DATE, LINE, CONTENT
@@ -66,20 +63,8 @@ public class HgAnnotation extends FileAnnotation {
   }
 
   @Override
-  @Nullable
-  public AnnotationSourceSwitcher getAnnotationSourceSwitcher() {
-    return null;
-  }
-
-  @Override
   public int getLineCount() {
     return myLines.size();
-  }
-
-  @Override
-  @Nullable
-  public VcsRevisionNumber originalRevision(int lineNumber) {
-    return getLineRevisionNumber(lineNumber);
   }
 
   @Override
@@ -118,13 +103,13 @@ public class HgAnnotation extends FileAnnotation {
 
   @Override
   public String getAnnotatedContent() {
-    try {
-      return CurrentContentRevision.create(myFile.toFilePath()).getContent();
+    if (myContentBuffer == null) {
+      myContentBuffer = new StringBuilder();
+      for (HgAnnotationLine line : myLines) {
+        myContentBuffer.append(line.get(FIELD.CONTENT));
+      }
     }
-    catch (VcsException e) {
-      LOG.info(e);
-      return "";
-    }
+    return myContentBuffer.toString();
   }
 
   @Override
@@ -151,14 +136,9 @@ public class HgAnnotation extends FileAnnotation {
   @Override
   @Nullable
   public List<VcsFileRevision> getRevisions() {
-    List<VcsFileRevision> result = new LinkedList<VcsFileRevision>();
+    List<VcsFileRevision> result = new LinkedList<>();
     result.addAll(myFileRevisions);
     return result;
-  }
-
-  @Override
-  public boolean revisionsNotEmpty() {
-    return true;
   }
 
   @Nullable

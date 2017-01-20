@@ -16,67 +16,75 @@
 
 package org.zmlx.hg4idea.repo;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.zmlx.hg4idea.HgNameWithHashInfo;
 import com.intellij.dvcs.repo.Repository;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.vcs.log.Hash;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.zmlx.hg4idea.HgNameWithHashInfo;
+import org.zmlx.hg4idea.provider.HgLocalIgnoredHolder;
+
+import java.util.*;
 
 
-public interface HgRepository extends Repository
-{
-	@NotNull
-	String DEFAULT_BRANCH = "default";
+public interface HgRepository extends Repository {
+  @NotNull String DEFAULT_BRANCH = "default";
 
-	@NotNull
-	VirtualFile getHgDir();
+  @NotNull
+  VirtualFile getHgDir();
 
-	/**
-	 * Returns the current branch of this Hg repository.
-	 */
+  /**
+   * Returns the current branch of this Hg repository.
+   */
 
-	@NotNull
-	String getCurrentBranch();
+  @NotNull
+  String getCurrentBranch();
 
-	/**
-	 * @return map with heavy branch names and appropriate set of head hashes
-	 */
-	@NotNull
-	Map<String, Set<Hash>> getBranches();
+  /**
+   * @return map with heavy branch names and appropriate set of head hashes, order of heads is important - the last head in file is the main
+   */
+  @NotNull
+  Map<String, LinkedHashSet<Hash>> getBranches();
 
-	/**
-	 * @return names of opened heavy branches
-	 */
-	@NotNull
-	Set<String> getOpenedBranches();
+  /**
+   * @return names of opened heavy branches
+   */
+  @NotNull
+  Set<String> getOpenedBranches();
 
-	@NotNull
-	Collection<HgNameWithHashInfo> getBookmarks();
+  @NotNull
+  Collection<HgNameWithHashInfo> getBookmarks();
 
-	@NotNull
-	Collection<HgNameWithHashInfo> getTags();
+  @NotNull
+  Collection<HgNameWithHashInfo> getTags();
 
-	@NotNull
-	Collection<HgNameWithHashInfo> getLocalTags();
+  @NotNull
+  Collection<HgNameWithHashInfo> getLocalTags();
 
-	@Nullable
-	String getCurrentBookmark();
+  @Nullable
+  String getCurrentBookmark();
 
-	@Nullable
-	String getTipRevision();
+  @Nullable
+  String getTipRevision();
 
-	@NotNull
-	HgConfig getRepositoryConfig();
+  @NotNull
+  HgConfig getRepositoryConfig();
 
-	boolean hasSubrepos();
+  boolean hasSubrepos();
 
-	@NotNull
-	Collection<HgNameWithHashInfo> getSubrepos();
+  @NotNull
+  Collection<HgNameWithHashInfo> getSubrepos();
 
-	void updateConfig();
+  @NotNull
+  List<HgNameWithHashInfo> getMQAppliedPatches();
+
+  @NotNull
+  List<String> getAllPatchNames();
+
+  @NotNull
+  List<String> getUnappliedPatchNames();
+
+  void updateConfig();
+
+  HgLocalIgnoredHolder getLocalIgnoredHolder();
 }

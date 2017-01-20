@@ -15,81 +15,71 @@
  */
 package org.zmlx.hg4idea.branch;
 
-import java.util.List;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.zmlx.hg4idea.command.HgMergeCommand;
-import org.zmlx.hg4idea.command.HgUpdateCommand;
-import org.zmlx.hg4idea.repo.HgRepository;
-import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.dvcs.ui.BranchActionGroup;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.update.UpdatedFiles;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.zmlx.hg4idea.command.HgMergeCommand;
+import org.zmlx.hg4idea.command.HgUpdateCommand;
+import org.zmlx.hg4idea.repo.HgRepository;
 
-public class HgCommonBranchActions extends ActionGroup
-{
+import java.util.List;
 
-	@NotNull
-	protected final Project myProject;
-	@NotNull
-	protected String myBranchName;
-	@NotNull
-	List<HgRepository> myRepositories;
+public class HgCommonBranchActions extends BranchActionGroup {
 
-	HgCommonBranchActions(@NotNull Project project, @NotNull List<HgRepository> repositories, @NotNull String branchName)
-	{
-		super("", true);
-		myProject = project;
-		myBranchName = branchName;
-		myRepositories = repositories;
-		getTemplatePresentation().setText(myBranchName, false); // no mnemonics
-	}
+  @NotNull protected final Project myProject;
+  @NotNull protected String myBranchName;
+  @NotNull List<HgRepository> myRepositories;
 
-	@NotNull
-	@Override
-	public AnAction[] getChildren(@Nullable AnActionEvent e)
-	{
-		return new AnAction[]{
-				new UpdateAction(myProject, myRepositories, myBranchName),
-				new MergeAction(myProject, myRepositories, myBranchName)
-		};
-	}
+  HgCommonBranchActions(@NotNull Project project, @NotNull List<HgRepository> repositories, @NotNull String branchName) {
+    myProject = project;
+    myBranchName = branchName;
+    myRepositories = repositories;
+    getTemplatePresentation().setText(myBranchName, false); // no mnemonics
+  }
 
-	private static class MergeAction extends HgBranchAbstractAction
-	{
+  @NotNull
+  @Override
+  public AnAction[] getChildren(@Nullable AnActionEvent e) {
+    return new AnAction[]{
+      new UpdateAction(myProject, myRepositories, myBranchName),
+      new MergeAction(myProject, myRepositories, myBranchName)
+    };
+  }
 
-		public MergeAction(@NotNull Project project, @NotNull List<HgRepository> repositories, @NotNull String branchName)
-		{
-			super(project, "Merge", repositories, branchName);
-		}
+  private static class MergeAction extends HgBranchAbstractAction {
 
-		@Override
-		public void actionPerformed(AnActionEvent e)
-		{
-			FileDocumentManager.getInstance().saveAllDocuments();
-			final UpdatedFiles updatedFiles = UpdatedFiles.create();
-			for(final HgRepository repository : myRepositories)
-			{
-				HgMergeCommand.mergeWith(repository, myBranchName, updatedFiles);
-			}
-		}
-	}
+    public MergeAction(@NotNull Project project,
+                       @NotNull List<HgRepository> repositories,
+                       @NotNull String branchName) {
+      super(project, "Merge", repositories, branchName);
+    }
 
-	private static class UpdateAction extends HgBranchAbstractAction
-	{
+    @Override
+    public void actionPerformed(AnActionEvent e) {
+      FileDocumentManager.getInstance().saveAllDocuments();
+      final UpdatedFiles updatedFiles = UpdatedFiles.create();
+      for (final HgRepository repository : myRepositories) {
+        HgMergeCommand.mergeWith(repository, myBranchName, updatedFiles);
+      }
+    }
+  }
 
-		public UpdateAction(@NotNull Project project, @NotNull List<HgRepository> repositories, @NotNull String branchName)
-		{
-			super(project, "Update", repositories, branchName);
-		}
+  private static class UpdateAction extends HgBranchAbstractAction {
 
-		@Override
-		public void actionPerformed(AnActionEvent e)
-		{
-			HgUpdateCommand.updateTo(myBranchName, myRepositories, null);
-		}
-	}
+    public UpdateAction(@NotNull Project project,
+                        @NotNull List<HgRepository> repositories,
+                        @NotNull String branchName) {
+      super(project, "Update", repositories, branchName);
+    }
+
+    @Override
+    public void actionPerformed(AnActionEvent e) {
+      HgUpdateCommand.updateTo(myBranchName, myRepositories, null);
+    }
+  }
 }

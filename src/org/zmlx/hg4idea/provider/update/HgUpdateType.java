@@ -18,20 +18,19 @@ package org.zmlx.hg4idea.provider.update;
 /**
  * The type of update to perform
  */
-public enum HgUpdateType
-{
+public enum HgUpdateType {
 
 
-	/**
-	 * Try to update without merge, fails if conflicts
-	 */
-	ONLY_UPDATE,
-	/**
-	 * Merge commits with pulled
-	 */
-	MERGE,
-	/**
-	 * Rebase local commits
-	 */
-	REBASE
+  /**
+   * Try to update without merge, fails if conflicts
+   */
+  ONLY_UPDATE,
+  /**
+   * Merge commits with pulled
+   */
+  MERGE,
+  /**
+   * Rebase local commits
+   */
+  REBASE
 }

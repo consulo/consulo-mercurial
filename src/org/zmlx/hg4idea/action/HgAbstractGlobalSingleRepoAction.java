@@ -15,35 +15,24 @@
  */
 package org.zmlx.hg4idea.action;
 
-import java.util.Collection;
-import java.util.List;
-
-import javax.swing.Icon;
-
+import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.zmlx.hg4idea.repo.HgRepository;
-import com.intellij.openapi.project.Project;
 
-public abstract class HgAbstractGlobalSingleRepoAction extends HgAbstractGlobalAction
-{
+import java.util.Collection;
+import java.util.List;
 
-	public HgAbstractGlobalSingleRepoAction(Icon icon)
-	{
-		super(icon);
-	}
+public abstract class HgAbstractGlobalSingleRepoAction extends HgAbstractGlobalAction {
 
-	public HgAbstractGlobalSingleRepoAction()
-	{
-		super();
-	}
+  @Override
+  protected void execute(@NotNull Project project,
+                         @NotNull Collection<HgRepository> repositories,
+                         @NotNull List<HgRepository> selectedRepositories) {
+    execute(project, repositories, selectedRepositories.isEmpty() ? null : selectedRepositories.get(0));
+  }
 
-	@Override
-	protected void execute(@NotNull Project project, @NotNull Collection<HgRepository> repositories,
-			@NotNull List<HgRepository> selectedRepositories)
-	{
-		execute(project, repositories, selectedRepositories.isEmpty() ? null : selectedRepositories.get(0));
-	}
-
-	protected abstract void execute(@NotNull Project project, @NotNull Collection<HgRepository> repositories, @Nullable HgRepository selectedRepo);
+  protected abstract void execute(@NotNull Project project,
+                                  @NotNull Collection<HgRepository> repositories,
+                                  @Nullable HgRepository selectedRepo);
 }

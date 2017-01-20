@@ -18,6 +18,7 @@ package org.zmlx.hg4idea.action;
 import java.util.Collection;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.repo.HgRepositoryManager;
@@ -26,39 +27,34 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vcs.CalledInAwt;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.Function;
 import com.intellij.util.containers.ContainerUtil;
-import com.sun.istack.internal.NotNull;
 
-public class HgActionUtil
-{
+public class HgActionUtil {
 
-	@NotNull
-	public static List<HgRepository> collectRepositoriesFromFiles(@NotNull final HgRepositoryManager repositoryManager,
-			@NotNull Collection<VirtualFile> files)
-	{
-		return ContainerUtil.mapNotNull(files, new Function<VirtualFile, HgRepository>()
-		{
-			@Override
-			public HgRepository fun(VirtualFile file)
-			{
-				return repositoryManager.getRepositoryForFile(file);
-			}
-		});
-	}
+  @NotNull
+  public static List<HgRepository> collectRepositoriesFromFiles(@NotNull final HgRepositoryManager repositoryManager,
+                                                                @NotNull Collection<VirtualFile> files) {
+    return ContainerUtil.mapNotNull(files, new Function<VirtualFile, HgRepository>() {
+      @Override
+      public HgRepository fun(VirtualFile file) {
+        return repositoryManager.getRepositoryForFile(file);
+      }
+    });
+  }
 
-	@Nullable
-	public static HgRepository getSelectedRepositoryFromEvent(AnActionEvent e)
-	{
-		final DataContext dataContext = e.getDataContext();
-		final Project project = CommonDataKeys.PROJECT.getData(dataContext);
-		if(project == null)
-		{
-			return null;
-		}
-		VirtualFile file = e.getData(CommonDataKeys.VIRTUAL_FILE);
-		HgRepositoryManager repositoryManager = HgUtil.getRepositoryManager(project);
-		return file != null ? repositoryManager.getRepositoryForFile(file) : HgUtil.getCurrentRepository(project);
-	}
+  @Nullable
+  @CalledInAwt
+  public static HgRepository getSelectedRepositoryFromEvent(AnActionEvent e) {
+    final DataContext dataContext = e.getDataContext();
+    final Project project = CommonDataKeys.PROJECT.getData(dataContext);
+    if (project == null) {
+      return null;
+    }
+    VirtualFile file = e.getData(CommonDataKeys.VIRTUAL_FILE);
+    HgRepositoryManager repositoryManager = HgUtil.getRepositoryManager(project);
+    return file != null ? repositoryManager.getRepositoryForFile(file) : HgUtil.getCurrentRepository(project);
+  }
 }

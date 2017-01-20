@@ -15,21 +15,17 @@
  */
 package org.zmlx.hg4idea.ui;
 
-import com.intellij.dvcs.DvcsRememberedInputs;
-import com.intellij.dvcs.ui.CloneDvcsDialog;
-import com.intellij.dvcs.ui.DvcsBundle;
-import com.intellij.openapi.application.ModalityState;
-import com.intellij.openapi.components.ServiceManager;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.ProgressManager;
-import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.zmlx.hg4idea.HgRememberedInputs;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.command.HgIdentifyCommand;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 import org.zmlx.hg4idea.util.HgUtil;
+import com.intellij.dvcs.DvcsRememberedInputs;
+import com.intellij.dvcs.ui.CloneDvcsDialog;
+import com.intellij.openapi.application.ModalityState;
+import com.intellij.openapi.components.ServiceManager;
+import com.intellij.openapi.project.Project;
 
 /**
  * A dialog for the mercurial clone options
@@ -56,18 +52,12 @@ public class HgCloneDialog extends CloneDvcsDialog {
     return ServiceManager.getService(HgRememberedInputs.class);
   }
 
+  @NotNull
   @Override
-  protected boolean test(@NotNull final String url) {
-    final boolean[] testResult = new boolean[1];
-    ProgressManager.getInstance().run(new Task.Modal(myProject, DvcsBundle.message("clone.testing", url), true) {
-      @Override
-      public void run(@NotNull ProgressIndicator indicator) {
-        final HgIdentifyCommand identifyCommand = new HgIdentifyCommand(myProject);
-        identifyCommand.setSource(url);
-        final HgCommandResult result = identifyCommand.execute(ModalityState.stateForComponent(getRootPane()));
-        testResult[0] = result != null && result.getExitValue() == 0;
-      }
-    });
-    return testResult[0];
+  protected TestResult test(@NotNull final String url) {
+    HgIdentifyCommand identifyCommand = new HgIdentifyCommand(myProject);
+    identifyCommand.setSource(url);
+    HgCommandResult result = identifyCommand.execute(ModalityState.stateForComponent(getRootPane()));
+    return result != null && result.getExitValue() == 0 ? TestResult.SUCCESS : new TestResult(result.getRawError());
   }
 }

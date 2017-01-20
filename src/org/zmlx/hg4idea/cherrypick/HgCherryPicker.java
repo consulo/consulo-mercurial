@@ -15,9 +15,14 @@
  */
 package org.zmlx.hg4idea.cherrypick;
 
-import java.util.List;
-import java.util.Map;
-
+import com.intellij.dvcs.DvcsUtil;
+import com.intellij.dvcs.cherrypick.VcsCherryPicker;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vcs.VcsKey;
+import com.intellij.openapi.vcs.update.UpdatedFiles;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.util.containers.ContainerUtil;
+import com.intellij.vcs.log.VcsFullCommitDetails;
 import org.jetbrains.annotations.NotNull;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.action.HgCommandResultNotifier;
@@ -25,109 +30,74 @@ import org.zmlx.hg4idea.command.HgGraftCommand;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 import org.zmlx.hg4idea.provider.update.HgConflictResolver;
 import org.zmlx.hg4idea.repo.HgRepository;
+import org.zmlx.hg4idea.repo.HgRepositoryManager;
 import org.zmlx.hg4idea.util.HgErrorUtil;
 import org.zmlx.hg4idea.util.HgUtil;
-import com.intellij.dvcs.DvcsUtil;
-import com.intellij.dvcs.cherrypick.VcsCherryPicker;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.VcsKey;
-import com.intellij.openapi.vcs.update.UpdatedFiles;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.Function;
-import com.intellij.util.containers.ContainerUtil;
-import com.intellij.vcs.log.VcsFullCommitDetails;
-import com.intellij.vcs.log.VcsLog;
 
-public class HgCherryPicker extends VcsCherryPicker
-{
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
-	@NotNull
-	private final Project myProject;
+public class HgCherryPicker extends VcsCherryPicker {
 
-	public HgCherryPicker(@NotNull Project project)
-	{
-		myProject = project;
-	}
+  @NotNull private final Project myProject;
 
-	@NotNull
-	@Override
-	public VcsKey getSupportedVcs()
-	{
-		return HgVcs.getKey();
-	}
+  public HgCherryPicker(@NotNull Project project) {
+    myProject = project;
+  }
 
-	@NotNull
-	@Override
-	public String getActionTitle()
-	{
-		return "Graft";
-	}
+  @NotNull
+  @Override
+  public VcsKey getSupportedVcs() {
+    return HgVcs.getKey();
+  }
 
-	@Override
-	public void cherryPick(@NotNull final List<VcsFullCommitDetails> commits)
-	{
-		Map<HgRepository, List<VcsFullCommitDetails>> commitsInRoots = DvcsUtil.groupCommitsByRoots(HgUtil.getRepositoryManager(myProject), commits);
-		for(Map.Entry<HgRepository, List<VcsFullCommitDetails>> entry : commitsInRoots.entrySet())
-		{
-			processGrafting(entry.getKey(), ContainerUtil.map(entry.getValue(), new Function<VcsFullCommitDetails, String>()
-			{
-				@Override
-				public String fun(VcsFullCommitDetails commitDetails)
-				{
-					return commitDetails.getId().asString();
-				}
-			}));
-		}
-	}
+  @NotNull
+  @Override
+  public String getActionTitle() {
+    return "Graft";
+  }
 
-	private static void processGrafting(@NotNull HgRepository repository, @NotNull List<String> hashes)
-	{
-		Project project = repository.getProject();
-		VirtualFile root = repository.getRoot();
-		HgGraftCommand command = new HgGraftCommand(project, repository);
-		HgCommandResult result = command.startGrafting(hashes);
-		boolean hasConflicts = !HgConflictResolver.findConflicts(project, root).isEmpty();
-		if(!hasConflicts && HgErrorUtil.isCommandExecutionFailed(result))
-		{
-			new HgCommandResultNotifier(project).notifyError(result, "Hg Error", "Couldn't  graft.");
-			return;
-		}
-		final UpdatedFiles updatedFiles = UpdatedFiles.create();
-		while(hasConflicts)
-		{
-			new HgConflictResolver(project, updatedFiles).resolve(root);
-			hasConflicts = !HgConflictResolver.findConflicts(project, root).isEmpty();
-			if(!hasConflicts)
-			{
-				result = command.continueGrafting();
-				hasConflicts = !HgConflictResolver.findConflicts(project, root).isEmpty();
-			}
-			else
-			{
-				new HgCommandResultNotifier(project).notifyError(result, "Hg Error", "Couldn't continue grafting");
-				break;
-			}
-		}
-		repository.update();
-		root.refresh(true, true);
-	}
+  @Override
+  public void cherryPick(@NotNull final List<VcsFullCommitDetails> commits) {
+    Map<HgRepository, List<VcsFullCommitDetails>> commitsInRoots = DvcsUtil.groupCommitsByRoots(
+      HgUtil.getRepositoryManager(myProject), commits);
+    for (Map.Entry<HgRepository, List<VcsFullCommitDetails>> entry : commitsInRoots.entrySet()) {
+      processGrafting(entry.getKey(), ContainerUtil.map(entry.getValue(),
+                                                        commitDetails -> commitDetails.getId().asString()));
+    }
+  }
 
-	@Override
-	public boolean isEnabled(@NotNull VcsLog log, @NotNull List<VcsFullCommitDetails> details)
-	{
-		if(details.isEmpty())
-		{
-			return false;
-		}
+  private static void processGrafting(@NotNull HgRepository repository, @NotNull List<String> hashes) {
+    Project project = repository.getProject();
+    VirtualFile root = repository.getRoot();
+    HgGraftCommand command = new HgGraftCommand(project, repository);
+    HgCommandResult result = command.startGrafting(hashes);
+    boolean hasConflicts = HgConflictResolver.hasConflicts(project, root);
+    if (!hasConflicts && HgErrorUtil.isCommandExecutionFailed(result)) {
+      new HgCommandResultNotifier(project).notifyError(result, "Hg Error", "Couldn't  graft.");
+      return;
+    }
+    final UpdatedFiles updatedFiles = UpdatedFiles.create();
+    while (hasConflicts) {
+      new HgConflictResolver(project, updatedFiles).resolve(root);
+      hasConflicts = HgConflictResolver.hasConflicts(project, root);
+      if (!hasConflicts) {
+        result = command.continueGrafting();
+        hasConflicts = HgConflictResolver.hasConflicts(project, root);
+      }
+      else {
+        new HgCommandResultNotifier(project).notifyError(result, "Hg Error", "Couldn't continue grafting");
+        break;
+      }
+    }
+    repository.update();
+    root.refresh(true, true);
+  }
 
-		for(VcsFullCommitDetails commit : details)
-		{
-			HgRepository repository = HgUtil.getRepositoryManager(myProject).getRepositoryForRoot(commit.getRoot());
-			if(repository == null)
-			{
-				return false;
-			}
-		}
-		return true;
-	}
+  @Override
+  public boolean canHandleForRoots(@NotNull Collection<VirtualFile> roots) {
+    HgRepositoryManager hgRepositoryManager = HgUtil.getRepositoryManager(myProject);
+    return roots.stream().allMatch(r -> hgRepositoryManager.getRepositoryForRoot(r) != null);
+  }
 }

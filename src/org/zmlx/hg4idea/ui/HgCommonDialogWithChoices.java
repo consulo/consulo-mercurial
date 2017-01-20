@@ -31,6 +31,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
 
+import static org.zmlx.hg4idea.util.HgUtil.TIP_REFERENCE;
+
 public class HgCommonDialogWithChoices extends DialogWrapper {
 
 
@@ -80,7 +82,7 @@ public class HgCommonDialogWithChoices extends DialogWrapper {
     return hgRepositorySelectorComponent.getRepository();
   }
 
-  public String getTag() {
+  private String getTag() {
     return (String)tagSelector.getSelectedItem();
   }
 
@@ -88,7 +90,7 @@ public class HgCommonDialogWithChoices extends DialogWrapper {
     return tagOption.isSelected();
   }
 
-  public String getBranch() {
+  private String getBranch() {
     return (String)branchSelector.getSelectedItem();
   }
 
@@ -96,7 +98,11 @@ public class HgCommonDialogWithChoices extends DialogWrapper {
     return branchOption.isSelected();
   }
 
-  public String getBookmark() {
+  private boolean isRevisionSelected() {
+    return revisionOption.isSelected();
+  }
+
+  private String getBookmark() {
     return (String)bookmarkSelector.getSelectedItem();
   }
 
@@ -104,7 +110,7 @@ public class HgCommonDialogWithChoices extends DialogWrapper {
     return bookmarkOption.isSelected();
   }
 
-  public String getRevision() {
+  private String getRevision() {
     return revisionTxt.getText();
   }
 
@@ -118,10 +124,11 @@ public class HgCommonDialogWithChoices extends DialogWrapper {
   private void updateRepository() {
     HgRepository repo = hgRepositorySelectorComponent.getRepository();
     branchSelector.setModel(new DefaultComboBoxModel(repo.getOpenedBranches().toArray()));
-    DefaultComboBoxModel tagComboBoxModel = new DefaultComboBoxModel(HgUtil.getNamesWithoutHashes(repo.getTags()).toArray());
-    tagComboBoxModel.addElement("tip");    //HgRepository does not store 'tip' tag because it is internal and not included in tags file
+    DefaultComboBoxModel tagComboBoxModel = new DefaultComboBoxModel(HgUtil.getSortedNamesWithoutHashes(repo.getTags()).toArray());
+    tagComboBoxModel
+      .addElement(TIP_REFERENCE);    //HgRepository does not store 'tip' tag because it is internal and not included in tags file
     tagSelector.setModel(tagComboBoxModel);
-    bookmarkSelector.setModel(new DefaultComboBoxModel(HgUtil.getNamesWithoutHashes(repo.getBookmarks()).toArray()));
+    bookmarkSelector.setModel(new DefaultComboBoxModel(HgUtil.getSortedNamesWithoutHashes(repo.getBookmarks()).toArray()));
     update();
   }
 
@@ -138,11 +145,15 @@ public class HgCommonDialogWithChoices extends DialogWrapper {
   }
 
   public String getTargetValue() {
-    return isBranchSelected() ? getBranch() : isBookmarkSelected() ? getBookmark() : isTagSelected() ? getTag() : getRevision();
+    return isBranchSelected()
+           ? "branch(\"" + getBranch() + "\")"
+           : isBookmarkSelected()
+             ? "bookmark(\"" + getBookmark() + "\")"
+             : isTagSelected() ? "tag(\"" + getTag() + "\")" : "\"" + getRevision() + "\"";
   }
 
   protected ValidationInfo doValidate() {
     String message = "You have to specify appropriate name or revision.";
-    return StringUtil.isEmptyOrSpaces(getTargetValue()) ? new ValidationInfo(message, myBranchesBorderPanel) : null;
+    return isRevisionSelected() && StringUtil.isEmptyOrSpaces(getRevision()) ? new ValidationInfo(message, myBranchesBorderPanel) : null;
   }
 }

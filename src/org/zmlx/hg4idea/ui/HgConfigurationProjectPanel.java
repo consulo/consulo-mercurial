@@ -12,20 +12,26 @@
 // limitations under the License.
 package org.zmlx.hg4idea.ui;
 
-import com.intellij.openapi.options.ConfigurationException;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.ui.TextFieldWithBrowseButton;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
+
 import org.jetbrains.annotations.NotNull;
 import org.zmlx.hg4idea.HgProjectSettings;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.HgVcsMessages;
-import org.zmlx.hg4idea.util.HgUtil;
+import org.zmlx.hg4idea.repo.HgRepositoryManager;
 import org.zmlx.hg4idea.util.HgVersion;
-
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import com.intellij.dvcs.branch.DvcsSyncSettings;
+import com.intellij.dvcs.ui.DvcsBundle;
+import com.intellij.openapi.components.ServiceManager;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.ui.TextFieldWithBrowseButton;
+import com.intellij.ui.components.JBCheckBox;
 
 public class HgConfigurationProjectPanel {
 
@@ -36,6 +42,7 @@ public class HgConfigurationProjectPanel {
   private JCheckBox myIgnoredWhitespacesInAnnotationsCbx;
   private TextFieldWithBrowseButton myPathSelector;
   private JButton myTestButton;
+  private JBCheckBox mySyncControl;
   private final HgVcs myVcs;
 
   public HgConfigurationProjectPanel(@NotNull HgProjectSettings projectSettings, @NotNull Project project) {
@@ -58,12 +65,21 @@ public class HgConfigurationProjectPanel {
         );
       }
     });
+    if (!project.isDefault()) {
+      final HgRepositoryManager repositoryManager = ServiceManager.getService(project, HgRepositoryManager.class);
+      mySyncControl.setVisible(repositoryManager != null && repositoryManager.moreThanOneRoot());
+    }
+    else {
+      mySyncControl.setVisible(true);
+    }
+    mySyncControl.setToolTipText(DvcsBundle.message("sync.setting.description", "Mercurial"));
   }
 
   public boolean isModified() {
     boolean executableModified = !getCurrentPath().equals(myProjectSettings.getHgExecutable());
     return executableModified ||
            myCheckIncomingOutgoingCbx.isSelected() != myProjectSettings.isCheckIncomingOutgoing() ||
+           ((myProjectSettings.getSyncSetting() == DvcsSyncSettings.Value.SYNC) != mySyncControl.isSelected()) ||
            myIgnoredWhitespacesInAnnotationsCbx.isSelected() != myProjectSettings.isWhitespacesIgnoredInAnnotations();
   }
 
@@ -71,6 +87,7 @@ public class HgConfigurationProjectPanel {
     myProjectSettings.setCheckIncomingOutgoing(myCheckIncomingOutgoingCbx.isSelected());
     myProjectSettings.setIgnoreWhitespacesInAnnotations(myIgnoredWhitespacesInAnnotationsCbx.isSelected());
     myProjectSettings.setHgExecutable(getCurrentPath());
+    myProjectSettings.setSyncSetting(mySyncControl.isSelected() ? DvcsSyncSettings.Value.SYNC : DvcsSyncSettings.Value.DONT_SYNC);
     myVcs.checkVersion();
   }
 
@@ -82,20 +99,11 @@ public class HgConfigurationProjectPanel {
     myCheckIncomingOutgoingCbx.setSelected(myProjectSettings.isCheckIncomingOutgoing());
     myIgnoredWhitespacesInAnnotationsCbx.setSelected(myProjectSettings.isWhitespacesIgnoredInAnnotations());
     myPathSelector.setText(myProjectSettings.getGlobalSettings().getHgExecutable());
+    mySyncControl.setSelected(myProjectSettings.getSyncSetting() == DvcsSyncSettings.Value.SYNC);
   }
 
   public JPanel getPanel() {
     return myMainPanel;
-  }
-
-  public void validate() throws ConfigurationException {
-    String hgExecutable;
-    hgExecutable = getCurrentPath();
-    if (!HgUtil.isExecutableValid(hgExecutable)) {
-      throw new ConfigurationException(
-        HgVcsMessages.message("hg4idea.configuration.executable.error", hgExecutable)
-      );
-    }
   }
 
   private void createUIComponents() {

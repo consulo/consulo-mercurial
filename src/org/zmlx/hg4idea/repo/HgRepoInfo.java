@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2013 JetBrains s.r.o.
+ * Copyright 2000-2016 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,200 +15,148 @@
  */
 package org.zmlx.hg4idea.repo;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-
+import com.intellij.dvcs.repo.Repository;
+import com.intellij.vcs.log.Hash;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.zmlx.hg4idea.HgNameWithHashInfo;
-import com.google.common.base.Objects;
-import com.intellij.dvcs.repo.Repository;
-import com.intellij.vcs.log.Hash;
 
-public class HgRepoInfo
-{
-	@NotNull
-	private String myCurrentBranch = HgRepository.DEFAULT_BRANCH;
-	@Nullable
-	private final String myTipRevision;
-	@Nullable
-	private final String myCurrentRevision;
-	@NotNull
-	private final Repository.State myState;
-	@Nullable
-	private String myCurrentBookmark = null;
-	@NotNull
-	private Map<String, Set<Hash>> myBranches = Collections.emptyMap();
-	@NotNull
-	private Set<HgNameWithHashInfo> myBookmarks = Collections.emptySet();
-	@NotNull
-	private Set<HgNameWithHashInfo> myTags = Collections.emptySet();
-	@NotNull
-	private Set<HgNameWithHashInfo> myLocalTags = Collections.emptySet();
-	@NotNull
-	Set<HgNameWithHashInfo> mySubrepos = Collections.emptySet();
+import java.util.*;
 
-	public HgRepoInfo(@NotNull String currentBranch,
-			@Nullable String currentRevision,
-			@Nullable String currentTipRevision,
-			@NotNull Repository.State state,
-			@NotNull Map<String, Set<Hash>> branches,
-			@NotNull Collection<HgNameWithHashInfo> bookmarks,
-			@Nullable String currentBookmark,
-			@NotNull Collection<HgNameWithHashInfo> tags,
-			@NotNull Collection<HgNameWithHashInfo> localTags,
-			@NotNull Collection<HgNameWithHashInfo> subrepos)
-	{
-		myCurrentBranch = currentBranch;
-		myCurrentRevision = currentRevision;
-		myTipRevision = currentTipRevision;
-		myState = state;
-		myBranches = branches;
-		myBookmarks = new LinkedHashSet<HgNameWithHashInfo>(bookmarks);
-		myCurrentBookmark = currentBookmark;
-		myTags = new LinkedHashSet<HgNameWithHashInfo>(tags);
-		myLocalTags = new LinkedHashSet<HgNameWithHashInfo>(localTags);
-		mySubrepos = new HashSet<HgNameWithHashInfo>(subrepos);
-	}
+public class HgRepoInfo {
+  @NotNull private String myCurrentBranch = HgRepository.DEFAULT_BRANCH;
+  @Nullable private final String myTipRevision;
+  @Nullable private final String myCurrentRevision;
+  @NotNull private final Repository.State myState;
+  @Nullable private String myCurrentBookmark = null;
+  @NotNull private Map<String, LinkedHashSet<Hash>> myBranches = Collections.emptyMap();
+  @NotNull private Set<HgNameWithHashInfo> myBookmarks = Collections.emptySet();
+  @NotNull private Set<HgNameWithHashInfo> myTags = Collections.emptySet();
+  @NotNull private Set<HgNameWithHashInfo> myLocalTags = Collections.emptySet();
+  @NotNull private Set<HgNameWithHashInfo> mySubrepos = Collections.emptySet();
+  @NotNull private List<HgNameWithHashInfo> myMQApplied = Collections.emptyList();
+  @NotNull private List<String> myMqNames = Collections.emptyList();
 
-	@NotNull
-	public String getCurrentBranch()
-	{
-		return myCurrentBranch;
-	}
+  public HgRepoInfo(@NotNull String currentBranch,
+                    @Nullable String currentRevision,
+                    @Nullable String currentTipRevision,
+                    @NotNull Repository.State state,
+                    @NotNull Map<String, LinkedHashSet<Hash>> branches,
+                    @NotNull Collection<HgNameWithHashInfo> bookmarks,
+                    @Nullable String currentBookmark,
+                    @NotNull Collection<HgNameWithHashInfo> tags,
+                    @NotNull Collection<HgNameWithHashInfo> localTags, @NotNull Collection<HgNameWithHashInfo> subrepos,
+                    @NotNull List<HgNameWithHashInfo> mqApplied, @NotNull List<String> mqNames) {
+    myCurrentBranch = currentBranch;
+    myCurrentRevision = currentRevision;
+    myTipRevision = currentTipRevision;
+    myState = state;
+    myBranches = branches;
+    myBookmarks = new LinkedHashSet<>(bookmarks);
+    myCurrentBookmark = currentBookmark;
+    myTags = new LinkedHashSet<>(tags);
+    myLocalTags = new LinkedHashSet<>(localTags);
+    mySubrepos = new HashSet<>(subrepos);
+    myMQApplied = mqApplied;
+    myMqNames = mqNames;
+  }
 
-	@NotNull
-	public Map<String, Set<Hash>> getBranches()
-	{
-		return myBranches;
-	}
+  @NotNull
+  public String getCurrentBranch() {
+    return myCurrentBranch;
+  }
 
-	@NotNull
-	public Collection<HgNameWithHashInfo> getBookmarks()
-	{
-		return myBookmarks;
-	}
+  @NotNull
+  public Map<String, LinkedHashSet<Hash>> getBranches() {
+    return myBranches;
+  }
 
-	@NotNull
-	public Collection<HgNameWithHashInfo> getTags()
-	{
-		return myTags;
-	}
+  @NotNull
+  public Collection<HgNameWithHashInfo> getBookmarks() {
+    return myBookmarks;
+  }
 
-	@NotNull
-	public Collection<HgNameWithHashInfo> getLocalTags()
-	{
-		return myLocalTags;
-	}
+  @NotNull
+  public Collection<HgNameWithHashInfo> getTags() {
+    return myTags;
+  }
 
-	@Nullable
-	public String getTipRevision()
-	{
-		return myTipRevision;
-	}
+  @NotNull
+  public Collection<HgNameWithHashInfo> getLocalTags() {
+    return myLocalTags;
+  }
 
-	@Nullable
-	public String getCurrentRevision()
-	{
-		return myCurrentRevision;
-	}
+  @Nullable
+  public String getTipRevision() {
+    return myTipRevision;
+  }
 
-	@Nullable
-	public String getCurrentBookmark()
-	{
-		return myCurrentBookmark;
-	}
+  @Nullable
+  public String getCurrentRevision() {
+    return myCurrentRevision;
+  }
 
-	@NotNull
-	public Repository.State getState()
-	{
-		return myState;
-	}
+  @Nullable
+  public String getCurrentBookmark() {
+    return myCurrentBookmark;
+  }
 
-	@Override
-	public boolean equals(Object o)
-	{
-		if(this == o)
-		{
-			return true;
-		}
-		if(o == null || getClass() != o.getClass())
-		{
-			return false;
-		}
+  @NotNull
+  public Repository.State getState() {
+    return myState;
+  }
 
-		HgRepoInfo info = (HgRepoInfo) o;
+  @NotNull
+  public List<HgNameWithHashInfo> getMQApplied() {
+    return myMQApplied;
+  }
 
-		if(myState != info.myState)
-		{
-			return false;
-		}
-		if(myTipRevision != null ? !myTipRevision.equals(info.myTipRevision) : info.myTipRevision != null)
-		{
-			return false;
-		}
-		if(myCurrentRevision != null ? !myCurrentRevision.equals(info.myCurrentRevision) : info.myCurrentRevision != null)
-		{
-			return false;
-		}
-		if(!myCurrentBranch.equals(info.myCurrentBranch))
-		{
-			return false;
-		}
-		if(myCurrentBookmark != null ? !myCurrentBookmark.equals(info.myCurrentBookmark) : info.myCurrentBookmark != null)
-		{
-			return false;
-		}
-		if(!myBranches.equals(info.myBranches))
-		{
-			return false;
-		}
-		if(!myBookmarks.equals(info.myBookmarks))
-		{
-			return false;
-		}
-		if(!myTags.equals(info.myTags))
-		{
-			return false;
-		}
-		if(!myLocalTags.equals(info.myLocalTags))
-		{
-			return false;
-		}
-		if(!mySubrepos.equals(info.mySubrepos))
-		{
-			return false;
-		}
+  public List<String> getMqPatchNames() {
+    return myMqNames;
+  }
 
-		return true;
-	}
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
 
-	@Override
-	public int hashCode()
-	{
-		return Objects.hashCode(myCurrentBranch, myCurrentRevision, myTipRevision, myCurrentBookmark, myState, myBranches, myBookmarks, myTags,
-				myLocalTags, mySubrepos);
-	}
+    HgRepoInfo info = (HgRepoInfo)o;
 
-	@Override
-	@NotNull
-	public String toString()
-	{
-		return String.format("HgRepository{myCurrentBranch=%s, myCurrentRevision='%s', myState=%s}", myCurrentBranch, myCurrentRevision, myState);
-	}
+    if (myState != info.myState) return false;
+    if (myTipRevision != null ? !myTipRevision.equals(info.myTipRevision) : info.myTipRevision != null) return false;
+    if (myCurrentRevision != null ? !myCurrentRevision.equals(info.myCurrentRevision) : info.myCurrentRevision != null) return false;
+    if (!myCurrentBranch.equals(info.myCurrentBranch)) return false;
+    if (myCurrentBookmark != null ? !myCurrentBookmark.equals(info.myCurrentBookmark) : info.myCurrentBookmark != null) return false;
+    if (!myBranches.equals(info.myBranches)) return false;
+    if (!myBookmarks.equals(info.myBookmarks)) return false;
+    if (!myTags.equals(info.myTags)) return false;
+    if (!myLocalTags.equals(info.myLocalTags)) return false;
+    if (!mySubrepos.equals(info.mySubrepos)) return false;
+    if (!myMQApplied.equals(info.myMQApplied)) return false;
+    if (!myMqNames.equals(info.myMqNames)) return false;
 
-	public boolean hasSubrepos()
-	{
-		return !mySubrepos.isEmpty();
-	}
+    return true;
+  }
 
-	@NotNull
-	public Collection<HgNameWithHashInfo> getSubrepos()
-	{
-		return mySubrepos;
-	}
+  @Override
+  public int hashCode() {
+    return Objects.hash(myCurrentBranch, myCurrentRevision, myTipRevision, myCurrentBookmark, myState, myBranches, myBookmarks, myTags,
+                        myLocalTags, mySubrepos, myMQApplied, myMqNames);
+  }
+
+  @Override
+  @NotNull
+  public String toString() {
+    return String.format("HgRepository{myCurrentBranch=%s, myCurrentRevision='%s', myState=%s}",
+                         myCurrentBranch, myCurrentRevision, myState);
+  }
+
+  public boolean hasSubrepos() {
+    return !mySubrepos.isEmpty();
+  }
+
+  @NotNull
+  public Collection<HgNameWithHashInfo> getSubrepos() {
+    return mySubrepos;
+  }
 }
