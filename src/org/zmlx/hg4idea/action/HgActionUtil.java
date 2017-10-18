@@ -48,8 +48,7 @@ public class HgActionUtil {
   @Nullable
   @CalledInAwt
   public static HgRepository getSelectedRepositoryFromEvent(AnActionEvent e) {
-    final DataContext dataContext = e.getDataContext();
-    final Project project = CommonDataKeys.PROJECT.getData(dataContext);
+    final Project project = e.getProject();
     if (project == null) {
       return null;
     }

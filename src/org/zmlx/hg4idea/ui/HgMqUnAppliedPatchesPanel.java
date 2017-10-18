@@ -49,7 +49,6 @@ import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
-import com.intellij.openapi.actionSystem.DataKey;
 import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.actionSystem.EmptyAction;
@@ -61,6 +60,7 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vcs.CalledInAny;
@@ -76,7 +76,7 @@ import com.intellij.util.containers.ContainerUtil;
 
 public class HgMqUnAppliedPatchesPanel extends JPanel implements DataProvider, HgUpdater {
 
-  public static final DataKey<HgMqUnAppliedPatchesPanel> MQ_PATCHES = DataKey.create("Mq.Patches");
+  public static final Key<HgMqUnAppliedPatchesPanel> MQ_PATCHES = Key.create("Mq.Patches");
   private static final String POPUP_ACTION_GROUP = "Mq.Patches.ContextMenu";
   private static final String TOOLBAR_ACTION_GROUP = "Mq.Patches.Toolbar";
   private static final Logger LOG = Logger.getInstance(HgMqUnAppliedPatchesPanel.class);
@@ -240,11 +240,11 @@ public class HgMqUnAppliedPatchesPanel extends JPanel implements DataProvider, H
 
   @Nullable
   @Override
-  public Object getData(@NonNls String dataId) {
-    if (MQ_PATCHES.is(dataId)) {
+  public Object getData(@NonNls Key<?> dataId) {
+    if (MQ_PATCHES == dataId) {
       return this;
     }
-    else if (CommonDataKeys.VIRTUAL_FILE.is(dataId)) {
+    else if (CommonDataKeys.VIRTUAL_FILE == dataId) {
       VirtualFile patchVFile = getSelectedPatchFile();
       if (patchVFile != null) return patchVFile;
     }

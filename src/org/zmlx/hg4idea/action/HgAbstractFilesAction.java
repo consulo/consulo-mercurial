@@ -12,7 +12,17 @@
 // limitations under the License.
 package org.zmlx.hg4idea.action;
 
-import com.intellij.openapi.actionSystem.*;
+import java.lang.reflect.InvocationTargetException;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.zmlx.hg4idea.HgVcs;
+import org.zmlx.hg4idea.util.HgUtil;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.CommonDataKeys;
+import com.intellij.openapi.actionSystem.DataContext;
+import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
@@ -21,12 +31,6 @@ import com.intellij.openapi.vcs.ProjectLevelVcsManager;
 import com.intellij.openapi.vcs.TransactionRunnable;
 import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.zmlx.hg4idea.HgVcs;
-import org.zmlx.hg4idea.util.HgUtil;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.LinkedList;
-import java.util.List;
 
 abstract class HgAbstractFilesAction extends AnAction {
 
@@ -40,8 +44,8 @@ abstract class HgAbstractFilesAction extends AnAction {
   public final void actionPerformed(AnActionEvent event) {
     final DataContext dataContext = event.getDataContext();
 
-    final Project project = CommonDataKeys.PROJECT.getData(dataContext);
-    final VirtualFile[] files = CommonDataKeys.VIRTUAL_FILE_ARRAY.getData(dataContext);
+    final Project project = event.getProject();
+    final VirtualFile[] files = dataContext.getData(CommonDataKeys.VIRTUAL_FILE_ARRAY);
     if (project == null || files == null || files.length == 0) {
       return;
     }
@@ -73,13 +77,13 @@ abstract class HgAbstractFilesAction extends AnAction {
     Presentation presentation = e.getPresentation();
     final DataContext dataContext = e.getDataContext();
 
-    Project project = CommonDataKeys.PROJECT.getData(dataContext);
+    Project project = e.getProject();
     if (project == null) {
       presentation.setEnabled(false);
       return;
     }
 
-    VirtualFile[] files = CommonDataKeys.VIRTUAL_FILE_ARRAY.getData(dataContext);
+    VirtualFile[] files = dataContext.getData(CommonDataKeys.VIRTUAL_FILE_ARRAY);
     if (files == null || files.length == 0) {
       presentation.setEnabled(false);
       return;

@@ -12,6 +12,16 @@
 // limitations under the License.
 package org.zmlx.hg4idea.action;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import org.jetbrains.annotations.NotNull;
+import org.zmlx.hg4idea.HgVcs;
+import org.zmlx.hg4idea.repo.HgRepository;
+import org.zmlx.hg4idea.repo.HgRepositoryManager;
+import org.zmlx.hg4idea.util.HgUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.DataContext;
@@ -21,22 +31,11 @@ import com.intellij.openapi.vcs.ProjectLevelVcsManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.ObjectUtils;
 import com.intellij.util.containers.ContainerUtil;
-import org.jetbrains.annotations.NotNull;
-import org.zmlx.hg4idea.HgVcs;
-import org.zmlx.hg4idea.repo.HgRepository;
-import org.zmlx.hg4idea.repo.HgRepositoryManager;
-import org.zmlx.hg4idea.util.HgUtil;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 public abstract class HgAbstractGlobalAction extends DumbAwareAction {
 
   public void actionPerformed(@NotNull AnActionEvent event) {
-    final DataContext dataContext = event.getDataContext();
-    final Project project = CommonDataKeys.PROJECT.getData(dataContext);
+    final Project project = event.getProject();
     if (project == null) {
       return;
     }
