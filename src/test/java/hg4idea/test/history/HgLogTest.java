@@ -1,19 +1,19 @@
 package hg4idea.test.history;
 
-import com.intellij.openapi.vfs.VfsUtilCore;
-import com.intellij.openapi.vfs.VirtualFile;
-import hg4idea.test.HgPlatformTest;
+import static com.intellij.dvcs.test.Executor.cd;
+import static com.intellij.dvcs.test.Executor.touch;
+import static hg4idea.test.HgExecutor.hg;
+
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
 import org.zmlx.hg4idea.HgFile;
 import org.zmlx.hg4idea.HgFileRevision;
 import org.zmlx.hg4idea.command.HgLogCommand;
 import org.zmlx.hg4idea.execution.HgCommandException;
-
-import java.util.List;
-
-import static com.intellij.openapi.vcs.Executor.cd;
-import static com.intellij.openapi.vcs.Executor.touch;
-import static hg4idea.test.HgExecutor.hg;
+import com.intellij.openapi.vfs.VfsUtilCore;
+import com.intellij.openapi.vfs.VirtualFile;
+import hg4idea.test.HgPlatformTest;
 
 /**
  * @author Nadya Zabrodina

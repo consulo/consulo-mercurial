@@ -15,6 +15,17 @@
  */
 package hg4idea.test.merge;
 
+import static com.intellij.dvcs.test.Executor.cd;
+import static com.intellij.dvcs.test.Executor.echo;
+import static com.intellij.dvcs.test.Executor.touch;
+import static hg4idea.test.HgExecutor.hg;
+import static hg4idea.test.HgExecutor.hgMergeWith;
+import static hg4idea.test.HgExecutor.updateProject;
+
+import java.io.IOException;
+
+import org.junit.Assert;
+import org.zmlx.hg4idea.HgVcs;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vcs.merge.MergeData;
@@ -23,13 +34,6 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.testFramework.EdtTestUtil;
 import hg4idea.test.HgPlatformTest;
 import hg4idea.test.HgTestUtil;
-import org.testng.Assert;
-import org.zmlx.hg4idea.HgVcs;
-
-import java.io.IOException;
-
-import static com.intellij.openapi.vcs.Executor.*;
-import static hg4idea.test.HgExecutor.*;
 
 public class HgMergeProviderTest extends HgPlatformTest {
   protected MergeProvider myMergeProvider;

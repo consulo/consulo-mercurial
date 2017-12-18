@@ -27,7 +27,7 @@ import org.zmlx.hg4idea.log.HgHistoryUtil;
 import java.util.Arrays;
 import java.util.Collection;
 
-import static com.intellij.openapi.vcs.Executor.*;
+import static com.intellij.dvcs.test.Executor.*;
 import static hg4idea.test.HgExecutor.hg;
 
 public class HgLogHistoryTest extends HgPlatformTest {

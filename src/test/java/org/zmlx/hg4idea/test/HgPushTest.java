@@ -15,11 +15,11 @@
  */
 package org.zmlx.hg4idea.test;
 
-import com.intellij.openapi.vfs.VirtualFile;
-import org.testng.annotations.Test;
-import org.zmlx.hg4idea.command.HgPushCommand;
+import static org.junit.Assert.assertNotNull;
 
-import static org.testng.Assert.assertNotNull;
+import org.junit.Test;
+import org.zmlx.hg4idea.command.HgPushCommand;
+import com.intellij.openapi.vfs.VirtualFile;
 
 /**
  * @author Kirill Likhodedov

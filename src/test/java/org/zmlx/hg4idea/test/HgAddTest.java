@@ -12,21 +12,21 @@
 // limitations under the License.
 package org.zmlx.hg4idea.test;
 
-import com.intellij.openapi.vcs.VcsConfiguration;
-import com.intellij.openapi.vfs.VirtualFile;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import static org.zmlx.hg4idea.test.HgTestOutputParser.added;
 
 import java.lang.reflect.Method;
 
-import static org.zmlx.hg4idea.test.HgTestOutputParser.added;
+import org.junit.Before;
+import org.junit.Test;
+import com.intellij.openapi.vcs.VcsConfiguration;
+import com.intellij.openapi.vfs.VirtualFile;
 
 /**
  * Tests adding files to the Mercurial repository.
  */
 public class HgAddTest extends HgSingleUserTest {
 
-  @BeforeMethod
+  @Before
   @Override
   protected void setUp(Method testMethod) throws Exception {
     super.setUp(testMethod);

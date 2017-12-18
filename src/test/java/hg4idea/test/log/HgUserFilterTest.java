@@ -15,6 +15,18 @@
  */
 package hg4idea.test.log;
 
+import static com.intellij.dvcs.test.Executor.cd;
+import static com.intellij.dvcs.test.Executor.overwrite;
+import static hg4idea.test.HgExecutor.hg;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+
+import org.jetbrains.annotations.NotNull;
+import org.zmlx.hg4idea.HgVcs;
+import org.zmlx.hg4idea.command.HgWorkingCopyRevisionsCommand;
+import org.zmlx.hg4idea.log.HgLogProvider;
 import com.intellij.openapi.extensions.Extensions;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Condition;
@@ -26,18 +38,6 @@ import com.intellij.vcs.log.impl.VcsLogManager;
 import com.intellij.vcs.log.util.VcsUserUtil;
 import hg4idea.test.HgPlatformTest;
 import junit.framework.TestCase;
-import org.jetbrains.annotations.NotNull;
-import org.zmlx.hg4idea.HgVcs;
-import org.zmlx.hg4idea.command.HgWorkingCopyRevisionsCommand;
-import org.zmlx.hg4idea.log.HgLogProvider;
-
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-
-import static com.intellij.openapi.vcs.Executor.cd;
-import static com.intellij.openapi.vcs.Executor.overwrite;
-import static hg4idea.test.HgExecutor.hg;
 
 public class HgUserFilterTest extends HgPlatformTest {
   private VcsLogUserFilterTest myVcsLogUserFilterTest;

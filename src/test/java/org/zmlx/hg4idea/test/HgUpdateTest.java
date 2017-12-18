@@ -12,22 +12,11 @@
 // limitations under the License.
 package org.zmlx.hg4idea.test;
 
-import com.intellij.execution.process.ProcessOutput;
-import com.intellij.openapi.progress.EmptyProgressIndicator;
-import com.intellij.openapi.vcs.VcsException;
-import com.intellij.openapi.vcs.VcsTestUtil;
-import com.intellij.openapi.vcs.update.UpdatedFiles;
-import com.intellij.openapi.vfs.VirtualFile;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-import org.zmlx.hg4idea.HgChange;
-import org.zmlx.hg4idea.HgFile;
-import org.zmlx.hg4idea.HgFileStatusEnum;
-import org.zmlx.hg4idea.HgRevisionNumber;
-import org.zmlx.hg4idea.command.*;
-import org.zmlx.hg4idea.provider.update.HgRegularUpdater;
-import org.zmlx.hg4idea.provider.update.HgUpdateConfigurationSettings;
-import org.zmlx.hg4idea.util.HgUtil;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,273 +25,326 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static org.testng.Assert.*;
-
-@SuppressWarnings({"ConstantConditions", "ThrowableResultOfMethodCallIgnored"})
-public class HgUpdateTest extends HgCollaborativeTest {
-
-  private VirtualFile projectRepoVirtualFile;
-  private File projectRepo;
-  private File remoteRepo;
-
-  @BeforeMethod
-  @Override
-  protected void setUp(Method testMethod) throws Exception {
-    super.setUp(testMethod);
-    projectRepoVirtualFile = myRepo.getDir();
-    projectRepo = new File(myRepo.getDir().getPath());
-    remoteRepo = new File(myParentRepo.getDir().getPath());
-  }
-
-  @Test
-  public void updateKeepsWorkingAfterPull() throws Exception {
-
-    changeFile_A_AndCommitInRemoteRepository();
-
-    //do a simple pull without an update
-    HgPullCommand pull = new HgPullCommand(myProject, projectRepoVirtualFile);
-    pull.setSource(HgUtil.getRepositoryDefaultPath(myProject, projectRepoVirtualFile));
-    pull.executeInCurrentThread();
-
-    assertEquals( determineNumberOfIncomingChanges( projectRepo ), 0,
-                  "The update operation should have pulled the incoming changes from the default repository." );
-    
-    updateThroughPlugin();
-
-    HgRevisionNumber parentRevision = new HgWorkingCopyRevisionsCommand(myProject).firstParent(projectRepoVirtualFile);
-    assertEquals( parentRevision.getRevision(), "1",
-                  "The working directory should have been updated to the latest version" );
-
-  }
-
-  @Test
-  public void updateShouldMergeAndCommitChanges() throws Exception{
-    changeFile_A_AndCommitInRemoteRepository();
-    createAndCommitNewFileInLocalRepository();
-    //we've got diverging heads in remote and local now
-
-    PreUpdateInformation preUpdateInformation = new PreUpdateInformation().getPreUpdateInformation();
-    HgRevisionNumber incomingHead = preUpdateInformation.getIncomingHead();
-    HgRevisionNumber headBeforeUpdate = preUpdateInformation.getHeadBeforeUpdate();
-
-    List<VcsException> warnings = updateThroughPlugin();
-
-    assertEquals(warnings.size(), 0, "Plain update should not generate warnings");
-
-    assertCurrentHeadIsMerge(incomingHead, headBeforeUpdate);
-  }
-  
-  @Test
-  public void updateShouldNotMergeIfMultipleHeadsBeforeUpdate() throws Exception {
-    changeFile_A_AndCommitInRemoteRepository();
-    createAndCommitNewFileInLocalRepository();
-
-    //create multiple heads locally
-    HgUpdateCommand updateCommand = new HgUpdateCommand(myProject, projectRepoVirtualFile);
-    HgRevisionNumber parent = new HgParentsCommand(myProject).executeInCurrentThread(projectRepoVirtualFile).get(0);
-    HgParentsCommand parentsCommand = new HgParentsCommand(myProject);
-    parentsCommand.setRevision(parent);
-    List<HgRevisionNumber> parents = parentsCommand.executeInCurrentThread(projectRepoVirtualFile);
-    updateCommand.setRevision(parents.get(0).getChangeset());
-    updateCommand.execute();
-
-    createFileInCommand(projectRepoVirtualFile.findChild("com"),"c.txt", "updated content");
-    runHg(projectRepo, "commit", "-m", "creating new local head");
-
-    List<HgRevisionNumber> branchHeads = new HgHeadsCommand(myProject, projectRepoVirtualFile).executeInCurrentThread();
-    assertEquals(branchHeads.size(), 2);
-
-    HgRevisionNumber parentBeforeUpdate = new HgWorkingCopyRevisionsCommand(myProject).identify(projectRepoVirtualFile).getFirst();
-    assertUpdateThroughPluginFails();
-    HgRevisionNumber parentAfterUpdate = new HgWorkingCopyRevisionsCommand(myProject).identify(projectRepoVirtualFile).getFirst();
-    List<HgRevisionNumber> branchHeadsAfterUpdate = new HgHeadsCommand(myProject, projectRepoVirtualFile).executeInCurrentThread();
-
-    assertEquals(branchHeadsAfterUpdate.size(), 3);
-    assertEquals(parentBeforeUpdate, parentAfterUpdate);
-  }
-  
-  @Test
-  public void localChangesShouldBeAllowedWithFastForwardUpdate() throws Exception{
-    createFileInCommand(projectRepoVirtualFile.findChild("com"), "b.txt", "other file");
-    runHg(projectRepo, "commit", "-m", "adding second file");
-    runHg(projectRepo, "push");
-
-    runHg(remoteRepo, "update");
-    changeFile_A_AndCommitInRemoteRepository();
-
-    fillFile(projectRepo, new String[]{"com", "b.txt"}, "local change");
-    createFileInCommand(projectRepoVirtualFile.findChild("com"), "c.txt", "other file");
+import org.junit.Before;
+import org.junit.Test;
+import org.zmlx.hg4idea.HgChange;
+import org.zmlx.hg4idea.HgFile;
+import org.zmlx.hg4idea.HgFileStatusEnum;
+import org.zmlx.hg4idea.HgRevisionNumber;
+import org.zmlx.hg4idea.command.HgHeadsCommand;
+import org.zmlx.hg4idea.command.HgIncomingCommand;
+import org.zmlx.hg4idea.command.HgParentsCommand;
+import org.zmlx.hg4idea.command.HgPullCommand;
+import org.zmlx.hg4idea.command.HgStatusCommand;
+import org.zmlx.hg4idea.command.HgUpdateCommand;
+import org.zmlx.hg4idea.command.HgWorkingCopyRevisionsCommand;
+import org.zmlx.hg4idea.provider.update.HgRegularUpdater;
+import org.zmlx.hg4idea.provider.update.HgUpdateConfigurationSettings;
+import org.zmlx.hg4idea.util.HgUtil;
+import com.intellij.execution.process.ProcessOutput;
+import com.intellij.openapi.progress.EmptyProgressIndicator;
+import com.intellij.openapi.vcs.VcsException;
+import com.intellij.openapi.vcs.VcsTestUtil;
+import com.intellij.openapi.vcs.update.UpdatedFiles;
+import com.intellij.openapi.vfs.VirtualFile;
 
 
-    assertIsChanged(HgFileStatusEnum.MODIFIED, "com", "b.txt");
-    assertIsChanged(HgFileStatusEnum.ADDED, "com", "c.txt");
+@SuppressWarnings({
+		"ConstantConditions",
+		"ThrowableResultOfMethodCallIgnored"
+})
+public class HgUpdateTest extends HgCollaborativeTest
+{
 
-    PreUpdateInformation information = new PreUpdateInformation().getPreUpdateInformation();
-    HgRevisionNumber incomingHead = information.getIncomingHead();
-    
-    List<VcsException> nonFatalWarnings = updateThroughPlugin();
+	private VirtualFile projectRepoVirtualFile;
+	private File projectRepo;
+	private File remoteRepo;
 
-    assertTrue(nonFatalWarnings.isEmpty());
-    HgRevisionNumber parentAfterUpdate = new HgParentsCommand(myProject).executeInCurrentThread(projectRepoVirtualFile).get(0);
-    assertEquals(incomingHead, parentAfterUpdate);
+	@Before
+	@Override
+	protected void setUp(Method testMethod) throws Exception
+	{
+		super.setUp(testMethod);
+		projectRepoVirtualFile = myRepo.getDir();
+		projectRepo = new File(myRepo.getDir().getPath());
+		remoteRepo = new File(myParentRepo.getDir().getPath());
+	}
 
-    assertIsChanged(HgFileStatusEnum.MODIFIED, "com", "b.txt");
-    assertIsChanged(HgFileStatusEnum.ADDED, "com", "c.txt");
-  }
+	@Test
+	public void updateKeepsWorkingAfterPull() throws Exception
+	{
 
-  @Test
-  public void updateShouldNotMergeTwoHeadsComingFromRemote() throws Exception {
-    String originalParent = runHg(remoteRepo, "parents", "--template", "{rev}\n").getStdout().trim();
-    changeFile_A_AndCommitInRemoteRepository();
+		changeFile_A_AndCommitInRemoteRepository();
 
-    runHg(remoteRepo, "update", "--clean", originalParent);
+		//do a simple pull without an update
+		HgPullCommand pull = new HgPullCommand(myProject, projectRepoVirtualFile);
+		pull.setSource(HgUtil.getRepositoryDefaultPath(myProject, projectRepoVirtualFile));
+		pull.executeInCurrentThread();
 
-    File file = fillFile(remoteRepo, new String[]{"com", "b.txt"}, "second file");
-    runHg(remoteRepo, "add", file.getPath());
-    runHg(remoteRepo, "commit", "-m", "adding second file");
+		assertEquals("The update operation should have pulled the incoming changes from the default repository.", determineNumberOfIncomingChanges(projectRepo), 0);
 
-    assertUpdateThroughPluginFails();
+		updateThroughPlugin();
 
-    List<HgRevisionNumber> branchHeads = new HgHeadsCommand(myProject, projectRepoVirtualFile).executeInCurrentThread();
-    assertEquals(branchHeads.size(), 2);
+		HgRevisionNumber parentRevision = new HgWorkingCopyRevisionsCommand(myProject).firstParent(projectRepoVirtualFile);
+		assertEquals(parentRevision.getRevision(), "1", "The working directory should have been updated to the latest version");
+
+	}
+
+	@Test
+	public void updateShouldMergeAndCommitChanges() throws Exception
+	{
+		changeFile_A_AndCommitInRemoteRepository();
+		createAndCommitNewFileInLocalRepository();
+		//we've got diverging heads in remote and local now
+
+		PreUpdateInformation preUpdateInformation = new PreUpdateInformation().getPreUpdateInformation();
+		HgRevisionNumber incomingHead = preUpdateInformation.getIncomingHead();
+		HgRevisionNumber headBeforeUpdate = preUpdateInformation.getHeadBeforeUpdate();
+
+		List<VcsException> warnings = updateThroughPlugin();
+
+		assertEquals("Plain update should not generate warnings", warnings.size(), 0);
+
+		assertCurrentHeadIsMerge(incomingHead, headBeforeUpdate);
+	}
+
+	@Test
+	public void updateShouldNotMergeIfMultipleHeadsBeforeUpdate() throws Exception
+	{
+		changeFile_A_AndCommitInRemoteRepository();
+		createAndCommitNewFileInLocalRepository();
+
+		//create multiple heads locally
+		HgUpdateCommand updateCommand = new HgUpdateCommand(myProject, projectRepoVirtualFile);
+		HgRevisionNumber parent = new HgParentsCommand(myProject).executeInCurrentThread(projectRepoVirtualFile).get(0);
+		HgParentsCommand parentsCommand = new HgParentsCommand(myProject);
+		parentsCommand.setRevision(parent);
+		List<HgRevisionNumber> parents = parentsCommand.executeInCurrentThread(projectRepoVirtualFile);
+		updateCommand.setRevision(parents.get(0).getChangeset());
+		updateCommand.execute();
+
+		createFileInCommand(projectRepoVirtualFile.findChild("com"), "c.txt", "updated content");
+		runHg(projectRepo, "commit", "-m", "creating new local head");
+
+		List<HgRevisionNumber> branchHeads = new HgHeadsCommand(myProject, projectRepoVirtualFile).executeInCurrentThread();
+		assertEquals(branchHeads.size(), 2);
+
+		HgRevisionNumber parentBeforeUpdate = new HgWorkingCopyRevisionsCommand(myProject).identify(projectRepoVirtualFile).getFirst();
+		assertUpdateThroughPluginFails();
+		HgRevisionNumber parentAfterUpdate = new HgWorkingCopyRevisionsCommand(myProject).identify(projectRepoVirtualFile).getFirst();
+		List<HgRevisionNumber> branchHeadsAfterUpdate = new HgHeadsCommand(myProject, projectRepoVirtualFile).executeInCurrentThread();
+
+		assertEquals(branchHeadsAfterUpdate.size(), 3);
+		assertEquals(parentBeforeUpdate, parentAfterUpdate);
+	}
+
+	@Test
+	public void localChangesShouldBeAllowedWithFastForwardUpdate() throws Exception
+	{
+		createFileInCommand(projectRepoVirtualFile.findChild("com"), "b.txt", "other file");
+		runHg(projectRepo, "commit", "-m", "adding second file");
+		runHg(projectRepo, "push");
+
+		runHg(remoteRepo, "update");
+		changeFile_A_AndCommitInRemoteRepository();
+
+		fillFile(projectRepo, new String[]{
+				"com",
+				"b.txt"
+		}, "local change");
+		createFileInCommand(projectRepoVirtualFile.findChild("com"), "c.txt", "other file");
 
 
-  }
+		assertIsChanged(HgFileStatusEnum.MODIFIED, "com", "b.txt");
+		assertIsChanged(HgFileStatusEnum.ADDED, "com", "c.txt");
 
-  private void assertIsChanged(HgFileStatusEnum status, String... filepath) {
-    Set<HgChange> localChanges = new HgStatusCommand.Builder(true).build(myProject).executeInCurrentThread(projectRepoVirtualFile);
-    assertTrue(localChanges.contains(new HgChange(getHgFile(filepath), status)));
-  }
+		PreUpdateInformation information = new PreUpdateInformation().getPreUpdateInformation();
+		HgRevisionNumber incomingHead = information.getIncomingHead();
 
-  @Override
-  protected HgFile getHgFile(String... filepath) {
-    File fileToInclude = projectRepo;
-    for (int i = 0; i < filepath.length; i++) {
-      fileToInclude = new File(fileToInclude, filepath[i]);
-    }
-    return new HgFile(projectRepoVirtualFile, fileToInclude);
-  }
+		List<VcsException> nonFatalWarnings = updateThroughPlugin();
 
-  private void assertCurrentHeadIsMerge(HgRevisionNumber incomingHead, HgRevisionNumber headBeforeUpdate) {
-    List<HgRevisionNumber> newHeads = new HgHeadsCommand(myProject, projectRepoVirtualFile).executeInCurrentThread();
-    assertEquals(newHeads.size(), 1, "After updating, there should be only one head because the remote heads should have been merged");
-    HgRevisionNumber newHead = newHeads.get(0);
-    HgParentsCommand parents = new HgParentsCommand(myProject);
-    parents.setRevision(newHead);
-    List<HgRevisionNumber> parentRevisions = parents.executeInCurrentThread(projectRepoVirtualFile);
-    assertEquals(parentRevisions.size(), 2);
-    assertTrue(parentRevisions.contains(incomingHead));
-    assertTrue(parentRevisions.contains(headBeforeUpdate));
-  }
+		assertTrue(nonFatalWarnings.isEmpty());
+		HgRevisionNumber parentAfterUpdate = new HgParentsCommand(myProject).executeInCurrentThread(projectRepoVirtualFile).get(0);
+		assertEquals(incomingHead, parentAfterUpdate);
 
-  @Test
-  public void updateShouldMergeButNotCommitWithConflicts() throws Exception{
-    changeFile_A_AndCommitInRemoteRepository();
+		assertIsChanged(HgFileStatusEnum.MODIFIED, "com", "b.txt");
+		assertIsChanged(HgFileStatusEnum.ADDED, "com", "c.txt");
+	}
 
-    VirtualFile commonFile = projectRepoVirtualFile.findChild("com").findChild("a.txt");
-    assertNotNull(commonFile);
-    
-    VcsTestUtil.editFileInCommand(myProject, commonFile, "conflicting content");
-    runHg(projectRepo, "commit", "-m", "adding conflicting history to local repository");
-    
-    PreUpdateInformation preUpdateInformation = new PreUpdateInformation().getPreUpdateInformation();
-    HgRevisionNumber incomingHead = preUpdateInformation.getIncomingHead();
-    HgRevisionNumber headBeforeUpdate = preUpdateInformation.getHeadBeforeUpdate();
+	@Test
+	public void updateShouldNotMergeTwoHeadsComingFromRemote() throws Exception
+	{
+		String originalParent = runHg(remoteRepo, "parents", "--template", "{rev}\n").getStdout().trim();
+		changeFile_A_AndCommitInRemoteRepository();
 
-    List<VcsException> warnings = updateThroughPlugin();
-    assertFalse(warnings.isEmpty());
-    assertTrue(warnings.get(warnings.size()-1).getMessage().contains("conflicts"));
-    assertTrue(warnings.get(warnings.size()-1).getMessage().contains("commit"));
+		runHg(remoteRepo, "update", "--clean", originalParent);
 
-    List<HgRevisionNumber> parents = new HgWorkingCopyRevisionsCommand(myProject).parents(projectRepoVirtualFile);
-    assertEquals(parents.size(), 2);
-    assertTrue(parents.contains(incomingHead));
-    assertTrue(parents.contains(headBeforeUpdate));
-  }
+		File file = fillFile(remoteRepo, new String[]{
+				"com",
+				"b.txt"
+		}, "second file");
+		runHg(remoteRepo, "add", file.getPath());
+		runHg(remoteRepo, "commit", "-m", "adding second file");
 
-  @Test
-  public void updateShouldNotMergeWithNonCommittedChanges() throws Exception {
-    changeFile_A_AndCommitInRemoteRepository();
+		assertUpdateThroughPluginFails();
 
-    //generate some extra local history
-    createAndCommitNewFileInLocalRepository();
+		List<HgRevisionNumber> branchHeads = new HgHeadsCommand(myProject, projectRepoVirtualFile).executeInCurrentThread();
+		assertEquals(branchHeads.size(), 2);
 
-    HgRevisionNumber parentBeforeUpdate = new HgWorkingCopyRevisionsCommand(myProject).parents(projectRepoVirtualFile).get(0);
 
-    VcsTestUtil.editFileInCommand(myProject, projectRepoVirtualFile.findFileByRelativePath("com/a.txt"), "modified file contents");
+	}
 
-    assertUpdateThroughPluginFails();
+	private void assertIsChanged(HgFileStatusEnum status, String... filepath)
+	{
+		Set<HgChange> localChanges = new HgStatusCommand.Builder(true).build(myProject).executeInCurrentThread(projectRepoVirtualFile);
+		assertTrue(localChanges.contains(new HgChange(getHgFile(filepath), status)));
+	}
 
-    assertEquals(new HgHeadsCommand( myProject, projectRepoVirtualFile ).executeInCurrentThread().size(), 2,
-                 "Remote head should have been pulled in" );
+	@Override
+	protected HgFile getHgFile(String... filepath)
+	{
+		File fileToInclude = projectRepo;
+		for(int i = 0; i < filepath.length; i++)
+		{
+			fileToInclude = new File(fileToInclude, filepath[i]);
+		}
+		return new HgFile(projectRepoVirtualFile, fileToInclude);
+	}
 
-    assertEquals( new HgWorkingCopyRevisionsCommand( myProject ).parents( projectRepoVirtualFile ).size(), 1,
-                  "No merge should have been attempted" );
+	private void assertCurrentHeadIsMerge(HgRevisionNumber incomingHead, HgRevisionNumber headBeforeUpdate)
+	{
+		List<HgRevisionNumber> newHeads = new HgHeadsCommand(myProject, projectRepoVirtualFile).executeInCurrentThread();
+		assertEquals("After updating, there should be only one head because the remote heads should have been merged", newHeads.size(), 1);
+		HgRevisionNumber newHead = newHeads.get(0);
+		HgParentsCommand parents = new HgParentsCommand(myProject);
+		parents.setRevision(newHead);
+		List<HgRevisionNumber> parentRevisions = parents.executeInCurrentThread(projectRepoVirtualFile);
+		assertEquals(parentRevisions.size(), 2);
+		assertTrue(parentRevisions.contains(incomingHead));
+		assertTrue(parentRevisions.contains(headBeforeUpdate));
+	}
 
-    assertEquals( new HgWorkingCopyRevisionsCommand( myProject ).parents( projectRepoVirtualFile ).get(0), parentBeforeUpdate,
-                  "No merge should have been attempted" );
-  }
+	@Test
+	public void updateShouldMergeButNotCommitWithConflicts() throws Exception
+	{
+		changeFile_A_AndCommitInRemoteRepository();
 
-  private void assertUpdateThroughPluginFails() {
-    try {
-      updateThroughPlugin();
-      fail("The update should have failed because a merge cannot be initiated with outstanding changes");
-    } catch (VcsException e) {
-      //expected
-    }
-  }
+		VirtualFile commonFile = projectRepoVirtualFile.findChild("com").findChild("a.txt");
+		assertNotNull(commonFile);
 
-  private void createAndCommitNewFileInLocalRepository() throws IOException {
-    createFileInCommand(projectRepoVirtualFile.findChild("com"), "b.txt", "other file");
-    runHg(projectRepo, "commit", "-m", "adding non-conflicting history to local repository");
-  }
+		VcsTestUtil.editFileInCommand(myProject, commonFile, "conflicting content");
+		runHg(projectRepo, "commit", "-m", "adding conflicting history to local repository");
 
-  private List<VcsException> updateThroughPlugin() throws VcsException {
-    HgRegularUpdater updater = new HgRegularUpdater(myProject, projectRepoVirtualFile, new HgUpdateConfigurationSettings());
-    UpdatedFiles updatedFiles = UpdatedFiles.create();
-    EmptyProgressIndicator indicator = new EmptyProgressIndicator();
-    ArrayList<VcsException> nonFatalWarnings = new ArrayList<>();
-    updater.update(updatedFiles, indicator, nonFatalWarnings);
-    return nonFatalWarnings;
-  }
+		PreUpdateInformation preUpdateInformation = new PreUpdateInformation().getPreUpdateInformation();
+		HgRevisionNumber incomingHead = preUpdateInformation.getIncomingHead();
+		HgRevisionNumber headBeforeUpdate = preUpdateInformation.getHeadBeforeUpdate();
 
-  private void changeFile_A_AndCommitInRemoteRepository() throws IOException {
-    fillFile(remoteRepo, new String[]{"com", "a.txt"}, "update file contents");
-    runHg(remoteRepo, "commit", "-m", "Adding history to remote repository");
+		List<VcsException> warnings = updateThroughPlugin();
+		assertFalse(warnings.isEmpty());
+		assertTrue(warnings.get(warnings.size() - 1).getMessage().contains("conflicts"));
+		assertTrue(warnings.get(warnings.size() - 1).getMessage().contains("commit"));
 
-    assertEquals( determineNumberOfIncomingChanges( projectRepo ), 1,
-                  "The remote repository should have gotten new history" );
-  }
+		List<HgRevisionNumber> parents = new HgWorkingCopyRevisionsCommand(myProject).parents(projectRepoVirtualFile);
+		assertEquals(parents.size(), 2);
+		assertTrue(parents.contains(incomingHead));
+		assertTrue(parents.contains(headBeforeUpdate));
+	}
 
-  private int determineNumberOfIncomingChanges(File repo) throws IOException {
-    ProcessOutput result = runHg(repo, "-q", "incoming", "--template", "{rev} ");
-    String output = result.getStdout();
-    return output.length() == 0 ? 0 : output.split(" ").length;
-  }
+	@Test
+	public void updateShouldNotMergeWithNonCommittedChanges() throws Exception
+	{
+		changeFile_A_AndCommitInRemoteRepository();
 
-  private class PreUpdateInformation {
-    private HgRevisionNumber incomingHead;
-    private HgRevisionNumber headBeforeUpdate;
+		//generate some extra local history
+		createAndCommitNewFileInLocalRepository();
 
-    public HgRevisionNumber getIncomingHead() {
-      return incomingHead;
-    }
+		HgRevisionNumber parentBeforeUpdate = new HgWorkingCopyRevisionsCommand(myProject).parents(projectRepoVirtualFile).get(0);
 
-    public HgRevisionNumber getHeadBeforeUpdate() {
-      return headBeforeUpdate;
-    }
+		VcsTestUtil.editFileInCommand(myProject, projectRepoVirtualFile.findFileByRelativePath("com/a.txt"), "modified file contents");
 
-    public PreUpdateInformation getPreUpdateInformation() {
-      List<HgRevisionNumber> currentHeads = new HgHeadsCommand(myProject, projectRepoVirtualFile).executeInCurrentThread();
-      List<HgRevisionNumber> incomingChangesets = new HgIncomingCommand(myProject).executeInCurrentThread(projectRepoVirtualFile);
+		assertUpdateThroughPluginFails();
 
-      assertEquals(currentHeads.size(), 1);
-      assertEquals(incomingChangesets.size(), 1);
+		assertEquals("Remote head should have been pulled in", new HgHeadsCommand(myProject, projectRepoVirtualFile).executeInCurrentThread().size(), 2);
 
-      incomingHead = incomingChangesets.get(0);
-      headBeforeUpdate = currentHeads.get(0);
-      return this;
-    }
-  }
+		assertEquals("No merge should have been attempted", new HgWorkingCopyRevisionsCommand(myProject).parents(projectRepoVirtualFile).size(), 1);
+
+		assertEquals("No merge should have been attempted", new HgWorkingCopyRevisionsCommand(myProject).parents(projectRepoVirtualFile).get(0), parentBeforeUpdate);
+	}
+
+	private void assertUpdateThroughPluginFails()
+	{
+		try
+		{
+			updateThroughPlugin();
+			fail("The update should have failed because a merge cannot be initiated with outstanding changes");
+		}
+		catch(VcsException e)
+		{
+			//expected
+		}
+	}
+
+	private void createAndCommitNewFileInLocalRepository() throws IOException
+	{
+		createFileInCommand(projectRepoVirtualFile.findChild("com"), "b.txt", "other file");
+		runHg(projectRepo, "commit", "-m", "adding non-conflicting history to local repository");
+	}
+
+	private List<VcsException> updateThroughPlugin() throws VcsException
+	{
+		HgRegularUpdater updater = new HgRegularUpdater(myProject, projectRepoVirtualFile, new HgUpdateConfigurationSettings());
+		UpdatedFiles updatedFiles = UpdatedFiles.create();
+		EmptyProgressIndicator indicator = new EmptyProgressIndicator();
+		ArrayList<VcsException> nonFatalWarnings = new ArrayList<>();
+		updater.update(updatedFiles, indicator, nonFatalWarnings);
+		return nonFatalWarnings;
+	}
+
+	private void changeFile_A_AndCommitInRemoteRepository() throws IOException
+	{
+		fillFile(remoteRepo, new String[]{
+				"com",
+				"a.txt"
+		}, "update file contents");
+		runHg(remoteRepo, "commit", "-m", "Adding history to remote repository");
+
+		assertEquals("The remote repository should have gotten new history", determineNumberOfIncomingChanges(projectRepo), 1);
+	}
+
+	private int determineNumberOfIncomingChanges(File repo) throws IOException
+	{
+		ProcessOutput result = runHg(repo, "-q", "incoming", "--template", "{rev} ");
+		String output = result.getStdout();
+		return output.length() == 0 ? 0 : output.split(" ").length;
+	}
+
+	private class PreUpdateInformation
+	{
+		private HgRevisionNumber incomingHead;
+		private HgRevisionNumber headBeforeUpdate;
+
+		public HgRevisionNumber getIncomingHead()
+		{
+			return incomingHead;
+		}
+
+		public HgRevisionNumber getHeadBeforeUpdate()
+		{
+			return headBeforeUpdate;
+		}
+
+		public PreUpdateInformation getPreUpdateInformation()
+		{
+			List<HgRevisionNumber> currentHeads = new HgHeadsCommand(myProject, projectRepoVirtualFile).executeInCurrentThread();
+			List<HgRevisionNumber> incomingChangesets = new HgIncomingCommand(myProject).executeInCurrentThread(projectRepoVirtualFile);
+
+			assertEquals(currentHeads.size(), 1);
+			assertEquals(incomingChangesets.size(), 1);
+
+			incomingHead = incomingChangesets.get(0);
+			headBeforeUpdate = currentHeads.get(0);
+			return this;
+		}
+	}
 }
 

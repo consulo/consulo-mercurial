@@ -1,19 +1,19 @@
 package org.zmlx.hg4idea.test;
 
-import com.intellij.openapi.vcs.VcsException;
-import com.intellij.openapi.vcs.changes.ChangeListManager;
-import com.intellij.openapi.vcs.history.VcsFileRevision;
-import com.intellij.openapi.vcs.history.VcsHistorySession;
-import com.intellij.vcsUtil.VcsUtil;
-import org.testng.annotations.Test;
-import org.zmlx.hg4idea.HgVcs;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
+import org.junit.Test;
+import org.zmlx.hg4idea.HgVcs;
+import com.intellij.openapi.vcs.VcsException;
+import com.intellij.openapi.vcs.changes.ChangeListManager;
+import com.intellij.openapi.vcs.history.VcsFileRevision;
+import com.intellij.openapi.vcs.history.VcsHistorySession;
+import com.intellij.vcsUtil.VcsUtil;
 
 /**
  * HgHistoryTest tests retrieving file history and specific revisions.

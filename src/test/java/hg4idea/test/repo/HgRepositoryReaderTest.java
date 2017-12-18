@@ -15,6 +15,8 @@
  */
 package hg4idea.test.repo;
 
+import static org.junit.Assert.assertTrue;
+
 import com.intellij.openapi.application.PluginPathManager;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vcs.VcsTestUtil;

@@ -15,25 +15,25 @@
  */
 package hg4idea.test.log;
 
-import com.intellij.openapi.vcs.VcsException;
-import com.intellij.util.containers.ContainerUtil;
-import com.intellij.vcs.log.TimedVcsCommit;
-import com.intellij.vcs.log.impl.VcsLogFilterCollectionImpl;
-import com.intellij.vcs.log.ui.filter.VcsLogTextFilterImpl;
-import hg4idea.test.HgPlatformTest;
-import org.jetbrains.annotations.NotNull;
-import org.zmlx.hg4idea.command.HgWorkingCopyRevisionsCommand;
-import org.zmlx.hg4idea.log.HgLogProvider;
+import static com.intellij.dvcs.test.Executor.cd;
+import static com.intellij.dvcs.test.Executor.overwrite;
+import static hg4idea.test.HgExecutor.hg;
+import static hg4idea.test.log.HgUserFilterTest.findLogProvider;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static com.intellij.openapi.vcs.Executor.cd;
-import static com.intellij.openapi.vcs.Executor.overwrite;
-import static hg4idea.test.HgExecutor.hg;
-import static hg4idea.test.log.HgUserFilterTest.findLogProvider;
+import org.jetbrains.annotations.NotNull;
+import org.zmlx.hg4idea.command.HgWorkingCopyRevisionsCommand;
+import org.zmlx.hg4idea.log.HgLogProvider;
+import com.intellij.openapi.vcs.VcsException;
+import com.intellij.util.containers.ContainerUtil;
+import com.intellij.vcs.log.TimedVcsCommit;
+import com.intellij.vcs.log.impl.VcsLogFilterCollectionImpl;
+import com.intellij.vcs.log.ui.filter.VcsLogTextFilterImpl;
+import hg4idea.test.HgPlatformTest;
 
 public class HgTextFilterTest extends HgPlatformTest {
   @Override

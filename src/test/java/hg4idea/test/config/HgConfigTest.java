@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 
-import static com.intellij.openapi.vcs.Executor.cd;
+import static com.intellij.dvcs.test.Executor.cd;
 
 /**
  * @author Nadya Zabrodina

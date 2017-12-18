@@ -12,11 +12,11 @@
 // limitations under the License.
 package org.zmlx.hg4idea.test;
 
+import java.io.File;
+
+import org.junit.Test;
 import com.intellij.openapi.vcs.VcsTestUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.testng.annotations.Test;
-
-import java.io.File;
 
 public class HgCopyTest extends HgSingleUserTest {
 

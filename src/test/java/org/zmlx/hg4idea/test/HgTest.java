@@ -12,6 +12,8 @@
 // limitations under the License.
 package org.zmlx.hg4idea.test;
 
+import static org.junit.Assert.assertTrue;
+
 import com.intellij.execution.process.ProcessOutput;
 import com.intellij.openapi.application.PluginPathManager;
 import com.intellij.openapi.vcs.AbstractVcsHelper;
@@ -25,16 +27,15 @@ import com.intellij.util.ui.UIUtil;
 import com.intellij.vcsUtil.VcsUtil;
 import hg4idea.test.HgPlatformTest;
 import org.jetbrains.annotations.Nullable;
+import org.junit.After;
+import org.junit.Before;
 import org.picocontainer.MutablePicoContainer;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 import org.zmlx.hg4idea.HgFile;
 import org.zmlx.hg4idea.HgVcs;
 
 import java.io.*;
 import java.lang.reflect.Method;
 
-import static org.testng.Assert.assertTrue;
 
 /**
  * The ancestor of all hg4idea test cases.
@@ -58,7 +59,7 @@ public abstract class HgTest extends AbstractVcsTestCase {
   protected HgTestChangeListManager myChangeListManager;
   private HgTestRepository myMainRepo;
 
-  @BeforeMethod
+  @Before
   protected void setUp(final Method testMethod) throws Exception {
     // setting hg executable
     String exec = System.getenv(HG_EXECUTABLE_PATH);
@@ -91,7 +92,7 @@ public abstract class HgTest extends AbstractVcsTestCase {
     doActionSilently(VcsConfiguration.StandardConfirmation.REMOVE);
   }
 
-  @AfterMethod
+  @After
   protected void tearDown() throws Exception {
     GuiUtils.runOrInvokeAndWait(new Runnable() {
       @Override

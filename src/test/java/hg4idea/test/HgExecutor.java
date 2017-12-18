@@ -27,7 +27,7 @@ import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
-import static com.intellij.openapi.vcs.Executor.*;
+import static com.intellij.dvcs.test.Executor.*;
 
 public class HgExecutor {
 

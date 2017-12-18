@@ -24,8 +24,8 @@ import org.zmlx.hg4idea.util.HgErrorUtil;
 import java.io.File;
 import java.util.Collections;
 
-import static com.intellij.openapi.vcs.Executor.cd;
-import static com.intellij.openapi.vcs.Executor.touch;
+import static com.intellij.dvcs.test.Executor.cd;
+import static com.intellij.dvcs.test.Executor.touch;
 import static hg4idea.test.HgExecutor.hg;
 import static hg4idea.test.HgExecutor.hgMergeWith;
 

@@ -30,8 +30,8 @@ import org.zmlx.hg4idea.util.HgBranchReferenceValidator;
 
 import java.util.Collection;
 
-import static com.intellij.openapi.vcs.Executor.cd;
-import static com.intellij.openapi.vcs.Executor.echo;
+import static com.intellij.dvcs.test.Executor.cd;
+import static com.intellij.dvcs.test.Executor.echo;
 import static hg4idea.test.HgExecutor.hg;
 
 @RunWith(Parameterized.class)

@@ -15,14 +15,14 @@
  */
 package org.zmlx.hg4idea.log;
 
-import com.intellij.openapi.util.Couple;
-import org.junit.Test;
-import org.zmlx.hg4idea.util.HgUtil;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import org.junit.Test;
+import org.zmlx.hg4idea.util.HgUtil;
+import com.intellij.openapi.util.Couple;
 
 public class HgLogParseTest {
 
