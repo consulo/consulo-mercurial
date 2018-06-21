@@ -17,8 +17,6 @@ package org.zmlx.hg4idea.status.ui;
 
 import java.awt.event.MouseEvent;
 
-import javax.swing.Icon;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.zmlx.hg4idea.HgProjectSettings;
@@ -41,6 +39,7 @@ import com.intellij.openapi.wm.WindowManager;
 import com.intellij.openapi.wm.impl.status.EditorBasedWidget;
 import com.intellij.util.Consumer;
 import com.intellij.util.messages.MessageBusConnection;
+import consulo.ui.image.Image;
 
 public class HgIncomingOutgoingWidget extends EditorBasedWidget
   implements StatusBarWidget.IconPresentation, StatusBarWidget.Multiframe, HgUpdater, HgHideableWidget {
@@ -53,7 +52,7 @@ public class HgIncomingOutgoingWidget extends EditorBasedWidget
   private boolean isAlreadyShown;
 
   private volatile String myTooltip = "";
-  private Icon myCurrentIcon = AllIcons.Ide.IncomingChangesOff;
+  private Image myCurrentIcon = AllIcons.Ide.IncomingChangesOff;
 
   public HgIncomingOutgoingWidget(@NotNull HgVcs vcs,
                                   @NotNull Project project,
@@ -82,7 +81,7 @@ public class HgIncomingOutgoingWidget extends EditorBasedWidget
   }
 
   @Override
-  public WidgetPresentation getPresentation(@NotNull PlatformType type) {
+  public WidgetPresentation getPresentation() {
     return this;
   }
 
@@ -204,7 +203,7 @@ public class HgIncomingOutgoingWidget extends EditorBasedWidget
 
   @NotNull
   @Override
-  public Icon getIcon() {
+  public Image getIcon() {
     return myCurrentIcon;
   }
 
