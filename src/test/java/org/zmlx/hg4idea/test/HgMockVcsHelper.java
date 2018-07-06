@@ -15,15 +15,32 @@
  */
 package org.zmlx.hg4idea.test;
 
+import gnu.trove.THashSet;
+
+import java.awt.Component;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
+import org.jetbrains.annotations.Nls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import com.intellij.ide.errorTreeView.HotfixData;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.*;
+import com.intellij.openapi.vcs.AbstractVcs;
+import com.intellij.openapi.vcs.AbstractVcsHelper;
+import com.intellij.openapi.vcs.CommittedChangesProvider;
+import com.intellij.openapi.vcs.FilePath;
+import com.intellij.openapi.vcs.RepositoryLocation;
+import com.intellij.openapi.vcs.TransactionRunnable;
+import com.intellij.openapi.vcs.VcsException;
+import com.intellij.openapi.vcs.VcsKey;
+import com.intellij.openapi.vcs.VcsShowConfirmationOption;
 import com.intellij.openapi.vcs.annotate.AnnotationProvider;
 import com.intellij.openapi.vcs.annotate.FileAnnotation;
 import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vcs.changes.CommitResultHandler;
 import com.intellij.openapi.vcs.changes.LocalChangeList;
-import com.intellij.openapi.vcs.history.VcsFileRevision;
 import com.intellij.openapi.vcs.history.VcsHistoryProvider;
 import com.intellij.openapi.vcs.history.VcsRevisionNumber;
 import com.intellij.openapi.vcs.merge.MergeDialogCustomizer;
@@ -31,16 +48,6 @@ import com.intellij.openapi.vcs.merge.MergeProvider;
 import com.intellij.openapi.vcs.versionBrowser.ChangeBrowserSettings;
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList;
 import com.intellij.openapi.vfs.VirtualFile;
-import gnu.trove.THashSet;
-import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.awt.*;
-import java.io.File;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Substitutes AbstractVcsHelperImpl for tests, where dialogs need to be tested.
@@ -75,10 +82,6 @@ public class HgMockVcsHelper extends AbstractVcsHelper {
 
   @Override
   public void showAnnotation(FileAnnotation annotation, VirtualFile file, AbstractVcs vcs) {
-  }
-
-  @Override
-  public void showDifferences(VcsFileRevision cvsVersionOn, VcsFileRevision cvsVersionOn1, File file) {
   }
 
   @Override
