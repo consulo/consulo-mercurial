@@ -15,8 +15,8 @@ package org.zmlx.hg4idea;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import com.intellij.dvcs.branch.DvcsSyncSettings;
-import com.intellij.lifecycle.PeriodicalTasksCloser;
 import com.intellij.openapi.components.PersistentStateComponent;
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.components.StoragePathMacros;
@@ -61,7 +61,7 @@ public class HgProjectSettings implements PersistentStateComponent<HgProjectSett
   }
 
   public static HgProjectSettings getInstance(@NotNull Project project) {
-    return PeriodicalTasksCloser.getInstance().safeGetService(project, HgProjectSettings.class);
+    return ServiceManager.getService(project, HgProjectSettings.class);
   }
 
   @Nullable
