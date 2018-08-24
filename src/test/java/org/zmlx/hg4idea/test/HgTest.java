@@ -29,7 +29,6 @@ import hg4idea.test.HgPlatformTest;
 import org.jetbrains.annotations.Nullable;
 import org.junit.After;
 import org.junit.Before;
-import org.picocontainer.MutablePicoContainer;
 import org.zmlx.hg4idea.HgFile;
 import org.zmlx.hg4idea.HgVcs;
 
@@ -168,9 +167,9 @@ public abstract class HgTest extends AbstractVcsTestCase {
    */
   protected HgMockVcsHelper registerMockVcsHelper() {
     final String key = "com.intellij.openapi.vcs.AbstractVcsHelper";
-    final MutablePicoContainer picoContainer = (MutablePicoContainer) myProject.getPicoContainer();
-    picoContainer.unregisterComponent(key);
-    picoContainer.registerComponentImplementation(key, HgMockVcsHelper.class);
+//    final MutablePicoContainer picoContainer = (MutablePicoContainer) myProject.getPicoContainer();
+//    picoContainer.unregisterComponent(key);
+//    picoContainer.registerComponentImplementation(key, HgMockVcsHelper.class);
     return (HgMockVcsHelper) AbstractVcsHelper.getInstance(myProject);
   }
 
