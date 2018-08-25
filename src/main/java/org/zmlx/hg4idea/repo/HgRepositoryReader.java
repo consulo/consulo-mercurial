@@ -15,6 +15,27 @@
  */
 package org.zmlx.hg4idea.repo;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.zmlx.hg4idea.HgNameWithHashInfo;
+import org.zmlx.hg4idea.HgVcs;
+import org.zmlx.hg4idea.util.HgVersion;
+import com.google.common.io.BaseEncoding;
 import com.intellij.dvcs.DvcsUtil;
 import com.intellij.dvcs.repo.RepoStateException;
 import com.intellij.dvcs.repo.Repository;
@@ -25,20 +46,6 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.vcs.log.Hash;
 import com.intellij.vcs.log.VcsLogObjectsFactory;
-import org.apache.commons.codec.binary.Hex;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.zmlx.hg4idea.HgNameWithHashInfo;
-import org.zmlx.hg4idea.HgVcs;
-import org.zmlx.hg4idea.util.HgVersion;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Reads information about the Hg repository from Hg service files located in the {@code .hg} folder.
@@ -119,7 +126,7 @@ public class HgRepositoryReader {
   public String readCurrentRevision() {
     if (!isDirStateInfoAvailable()) return null;
     try {
-      return Hex.encodeHexString(readHashBytesFromFile(myDirStateFile));
+      return BaseEncoding.base16().lowerCase().encode(readHashBytesFromFile(myDirStateFile));
     }
     catch (IOException e) {
       // dirState exists if not fresh,  if we could not load dirState info repository must be corrupted
