@@ -205,7 +205,7 @@ public class HgLogProvider implements VcsLogProvider {
         }
       }
     });
-    return connection;
+    return connection::disconnect;
   }
 
   @NotNull
