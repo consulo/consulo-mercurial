@@ -1,4 +1,4 @@
-<idea-plugin>
+<consulo-plugin>
 	<id>consulo.mercurial</id>
 	<name>Mercurial</name>
 	<description>
@@ -153,4 +153,4 @@
 	</actions>
 
 	<resource-bundle>org.zmlx.hg4idea.HgVcsMessages</resource-bundle>
-</idea-plugin>
+</consulo-plugin>
