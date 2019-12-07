@@ -15,7 +15,6 @@
  */
 package org.zmlx.hg4idea.command;
 
-import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
@@ -24,6 +23,7 @@ import com.intellij.util.Function;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.messages.MessageBus;
 import com.intellij.vcsUtil.VcsFileUtil;
+import consulo.container.boot.ContainerPathManager;
 import org.jetbrains.annotations.NotNull;
 import org.zmlx.hg4idea.HgFile;
 import org.zmlx.hg4idea.HgVcs;
@@ -64,7 +64,7 @@ public abstract class HgCommitTypeCommand {
   }
 
   protected File saveCommitMessage() throws VcsException {
-    File systemDir = new File(PathManager.getSystemPath());
+    File systemDir = new File(ContainerPathManager.get().getSystemPath());
     File tempFile = new File(systemDir, TEMP_FILE_NAME);
     try {
       FileUtil.writeToFile(tempFile, myMessage.getBytes(myCharset));
