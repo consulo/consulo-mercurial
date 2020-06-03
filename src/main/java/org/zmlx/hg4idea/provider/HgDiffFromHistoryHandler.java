@@ -25,8 +25,8 @@ import com.intellij.openapi.vcs.history.DiffFromHistoryHandler;
 import com.intellij.openapi.vcs.history.VcsFileRevision;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.vcsUtil.VcsUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.HgFileRevision;
 import org.zmlx.hg4idea.util.HgUtil;
 
@@ -39,30 +39,30 @@ public class HgDiffFromHistoryHandler extends BaseDiffFromHistoryHandler<HgFileR
 
   private static final Logger LOG = Logger.getInstance(HgDiffFromHistoryHandler.class);
 
-  public HgDiffFromHistoryHandler(@NotNull Project project) {
+  public HgDiffFromHistoryHandler(@Nonnull Project project) {
     super(project);
   }
 
-  @NotNull
+  @Nonnull
   @Override
-  protected List<Change> getChangesBetweenRevisions(@NotNull FilePath path, @NotNull HgFileRevision rev1, @Nullable HgFileRevision rev2) {
+  protected List<Change> getChangesBetweenRevisions(@Nonnull FilePath path, @Nonnull HgFileRevision rev1, @Nullable HgFileRevision rev2) {
     return executeDiff(path, rev1, rev2);
   }
 
-  @NotNull
+  @Nonnull
   @Override
-  protected List<Change> getAffectedChanges(@NotNull FilePath path, @NotNull HgFileRevision rev) throws VcsException {
+  protected List<Change> getAffectedChanges(@Nonnull FilePath path, @Nonnull HgFileRevision rev) throws VcsException {
     return executeDiff(path, null, rev);
   }
 
-  @NotNull
+  @Nonnull
   @Override
-  protected String getPresentableName(@NotNull HgFileRevision revision) {
+  protected String getPresentableName(@Nonnull HgFileRevision revision) {
     return revision.getRevisionNumber().getChangeset();
   }
 
-  @NotNull
-  private List<Change> executeDiff(@NotNull FilePath path, @Nullable HgFileRevision rev1, @Nullable HgFileRevision rev2) {
+  @Nonnull
+  private List<Change> executeDiff(@Nonnull FilePath path, @Nullable HgFileRevision rev1, @Nullable HgFileRevision rev2) {
     VirtualFile root = VcsUtil.getVcsRootFor(myProject, path);
     LOG.assertTrue(root != null, "Repository is null for " + path);
 

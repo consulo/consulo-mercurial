@@ -17,8 +17,8 @@ package org.zmlx.hg4idea.util;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.text.StringUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+
 import org.zmlx.hg4idea.execution.HgCommandResult;
 import org.zmlx.hg4idea.execution.ShellCommandException;
 
@@ -26,6 +26,8 @@ import java.text.ParseException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.annotation.Nullable;
 
 /**
  * The version of Hg.
@@ -65,13 +67,14 @@ public final class HgVersion implements Comparable<HgVersion> {
   private final int myMajor;
   private final int myMiddle;
   private final int myMinor;  //use only first digit after second dot
-  @NotNull private final Set<String> myUnsupportedExtensions;
+  @Nonnull
+  private final Set<String> myUnsupportedExtensions;
 
   public HgVersion(int major, int middle, int minor) {
     this(major, middle, minor, Collections.<String>emptySet());
   }
 
-  public HgVersion(int major, int middle, int minor, @NotNull Set<String> unsupportedExtensions) {
+  public HgVersion(int major, int middle, int minor, @Nonnull Set<String> unsupportedExtensions) {
     myMajor = major;
     myMiddle = middle;
     myMinor = minor;
@@ -81,9 +84,9 @@ public final class HgVersion implements Comparable<HgVersion> {
   /**
    * Parses output of "Hg version" command.
    */
-  @NotNull
+  @Nonnull
   public static HgVersion parseVersionAndExtensionInfo(@Nullable String output,
-                                                       @NotNull List<String> errorLines)
+                                                       @Nonnull List<String> errorLines)
     throws ParseException {
     if (StringUtil.isEmptyOrSpaces(output)) {
       throw new ParseException("Empty hg version output: " + output, 0);
@@ -97,8 +100,8 @@ public final class HgVersion implements Comparable<HgVersion> {
     throw new ParseException("Unsupported format of hg version output: " + output, 0);
   }
 
-  @NotNull
-  public static Set<String> parseUnsupportedExtensions(@NotNull List<String> errorLines) {
+  @Nonnull
+  public static Set<String> parseUnsupportedExtensions(@Nonnull List<String> errorLines) {
     // hg version command execute with null start directory,
     // but hgrc configuration file may be related to one of repository then extension may be failed to import too
     //before fixed use command exit value instead if errors.isEmpty
@@ -118,7 +121,7 @@ public final class HgVersion implements Comparable<HgVersion> {
 
   // Utility method used in parsing - checks that the given capture group exists and captured something - then returns the captured value,
   // otherwise returns 0.
-  private static int getIntGroup(@NotNull Matcher matcher, int group) {
+  private static int getIntGroup(@Nonnull Matcher matcher, int group) {
 
     if (group > matcher.groupCount() + 1) {
       return 0;
@@ -130,8 +133,8 @@ public final class HgVersion implements Comparable<HgVersion> {
     return Integer.parseInt(match);
   }
 
-  @NotNull
-  public static HgVersion identifyVersion(@NotNull String executable)
+  @Nonnull
+  public static HgVersion identifyVersion(@Nonnull String executable)
     throws ShellCommandException, InterruptedException, ParseException {
     HgCommandResult versionResult = HgUtil.getVersionOutput(executable);
     return parseVersionAndExtensionInfo(versionResult.getRawOutput(), versionResult.getErrorLines());
@@ -176,7 +179,7 @@ public final class HgVersion implements Comparable<HgVersion> {
     return !myUnsupportedExtensions.isEmpty();
   }
 
-  @NotNull
+  @Nonnull
   public Set<String> getUnsupportedExtensions() {
     return myUnsupportedExtensions;
   }
@@ -205,7 +208,7 @@ public final class HgVersion implements Comparable<HgVersion> {
    * <p/>
    * {@link HgVersion#NULL} is less than any other not-NULL version.
    */
-  public int compareTo(@NotNull HgVersion o) {
+  public int compareTo(@Nonnull HgVersion o) {
     int d = myMajor - o.myMajor;
     if (d != 0) {
       return d;
@@ -218,7 +221,7 @@ public final class HgVersion implements Comparable<HgVersion> {
   }
 
   @Override
-  @NotNull
+  @Nonnull
   public String toString() {
     return myMajor + "." + myMiddle + "." + myMinor;
   }

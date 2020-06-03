@@ -15,14 +15,15 @@
  */
 package org.zmlx.hg4idea.action.mq;
 
+import javax.annotation.Nonnull;
+
 import com.intellij.vcs.log.Hash;
-import org.jetbrains.annotations.NotNull;
 import org.zmlx.hg4idea.command.mq.HgQFinishCommand;
 import org.zmlx.hg4idea.repo.HgRepository;
 
 public class HgQFinishFromLogAction extends HgMqAppliedPatchAction {
   @Override
-  protected void actionPerformed(@NotNull HgRepository repository, @NotNull Hash commit) {
+  protected void actionPerformed(@Nonnull HgRepository repository, @Nonnull Hash commit) {
     String revisionHash = commit.asString();
     new HgQFinishCommand(repository).execute(revisionHash);
   }

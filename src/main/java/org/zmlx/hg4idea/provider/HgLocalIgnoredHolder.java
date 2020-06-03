@@ -22,11 +22,12 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+
 import org.zmlx.hg4idea.command.HgStatusCommand;
 import org.zmlx.hg4idea.repo.HgRepository;
 import com.intellij.dvcs.repo.AsyncFilesManagerListener;
-import com.intellij.openapi.Disposable;
+import consulo.disposer.Disposable;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.vcs.FilePath;
 import com.intellij.openapi.vcs.VcsException;
@@ -40,21 +41,26 @@ import com.intellij.vcsUtil.VcsUtil;
 
 public class HgLocalIgnoredHolder implements Disposable {
   private static final Logger LOG = Logger.getInstance(HgLocalIgnoredHolder.class);
-  @NotNull private final MergingUpdateQueue myUpdateQueue;
-  @NotNull private final AtomicBoolean myInUpdateMode;
-  @NotNull private final HgRepository myRepository;
-  @NotNull private final Set<VirtualFile> myIgnoredSet;
-  @NotNull private final ReentrantReadWriteLock SET_LOCK = new ReentrantReadWriteLock();
+  @Nonnull
+  private final MergingUpdateQueue myUpdateQueue;
+  @Nonnull
+  private final AtomicBoolean myInUpdateMode;
+  @Nonnull
+  private final HgRepository myRepository;
+  @Nonnull
+  private final Set<VirtualFile> myIgnoredSet;
+  @Nonnull
+  private final ReentrantReadWriteLock SET_LOCK = new ReentrantReadWriteLock();
   private final EventDispatcher<AsyncFilesManagerListener> myListeners = EventDispatcher.create(AsyncFilesManagerListener.class);
 
-  public HgLocalIgnoredHolder(@NotNull HgRepository repository) {
+  public HgLocalIgnoredHolder(@Nonnull HgRepository repository) {
     myRepository = repository;
     myIgnoredSet = ContainerUtil.newHashSet();
     myInUpdateMode = new AtomicBoolean(false);
     myUpdateQueue = new MergingUpdateQueue("HgIgnoreUpdate", 500, true, null, this, null, Alarm.ThreadToUse.POOLED_THREAD);
   }
 
-  public void addUpdateStateListener(@NotNull AsyncFilesManagerListener listener) {
+  public void addUpdateStateListener(@Nonnull AsyncFilesManagerListener listener) {
     myListeners.addListener(listener, this);
   }
 
@@ -105,8 +111,8 @@ public class HgLocalIgnoredHolder implements Disposable {
     }
   }
 
-  @NotNull
-  public List<FilePath> removeIgnoredFiles(@NotNull Collection<FilePath> files) {
+  @Nonnull
+  public List<FilePath> removeIgnoredFiles(@Nonnull Collection<FilePath> files) {
     List<FilePath> removedIgnoredFiles = ContainerUtil.newArrayList();
     try {
       SET_LOCK.writeLock().lock();
@@ -125,7 +131,7 @@ public class HgLocalIgnoredHolder implements Disposable {
     return removedIgnoredFiles;
   }
 
-  public void addFiles(@NotNull List<VirtualFile> files) {
+  public void addFiles(@Nonnull List<VirtualFile> files) {
     try {
       SET_LOCK.writeLock().lock();
       myIgnoredSet.addAll(files);
@@ -135,7 +141,7 @@ public class HgLocalIgnoredHolder implements Disposable {
     }
   }
 
-  public boolean contains(@NotNull VirtualFile file) {
+  public boolean contains(@Nonnull VirtualFile file) {
     try {
       SET_LOCK.readLock().lock();
       return myIgnoredSet.contains(file);
@@ -149,7 +155,7 @@ public class HgLocalIgnoredHolder implements Disposable {
     return myInUpdateMode.get();
   }
 
-  @NotNull
+  @Nonnull
   public Set<VirtualFile> getIgnoredFiles() {
     try {
       SET_LOCK.readLock().lock();

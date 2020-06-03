@@ -19,11 +19,12 @@ import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.EditorComboBox;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.util.HgUtil;
 
+import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -37,7 +38,7 @@ public class HgPullDialog extends DialogWrapper {
   private EditorComboBox myRepositoryURL;
   private String myCurrentRepositoryUrl;
 
-  public HgPullDialog(@NotNull Project project, @NotNull Collection<HgRepository> repositories, @Nullable final HgRepository selectedRepo) {
+  public HgPullDialog(@Nonnull Project project, @Nonnull Collection<HgRepository> repositories, @Nullable final HgRepository selectedRepo) {
     super(project, false);
     this.project = project;
     hgRepositorySelector.setTitle("Select repository to pull changesets for");
@@ -63,14 +64,14 @@ public class HgPullDialog extends DialogWrapper {
     });
   }
 
-  private void addPathsFromHgrc(@NotNull VirtualFile repo) {
+  private void addPathsFromHgrc(@Nonnull VirtualFile repo) {
     Collection<String> paths = HgUtil.getRepositoryPaths(project, repo);
     for (String path : paths) {
       myRepositoryURL.prependItem(path);
     }
   }
 
-  @NotNull
+  @Nonnull
   public HgRepository getRepository() {
     return hgRepositorySelector.getRepository();
   }
@@ -79,7 +80,7 @@ public class HgPullDialog extends DialogWrapper {
     return myCurrentRepositoryUrl;
   }
 
-  private void setRoots(@NotNull Collection<HgRepository> repositories, @Nullable final HgRepository selectedRepo) {
+  private void setRoots(@Nonnull Collection<HgRepository> repositories, @Nullable final HgRepository selectedRepo) {
     hgRepositorySelector.setRoots(repositories);
     hgRepositorySelector.setSelectedRoot(selectedRepo);
     onChangeRepository();

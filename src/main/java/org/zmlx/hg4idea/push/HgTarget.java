@@ -15,20 +15,23 @@
  */
 package org.zmlx.hg4idea.push;
 
+import javax.annotation.Nonnull;
+
 import com.intellij.dvcs.push.PushTarget;
-import org.jetbrains.annotations.NotNull;
 import org.zmlx.hg4idea.util.HgUtil;
 
 public class HgTarget implements PushTarget {
-  @NotNull String myTarget;
-  @NotNull String myBranchName;
+  @Nonnull
+  String myTarget;
+  @Nonnull
+  String myBranchName;
 
-  public HgTarget(@NotNull String name, @NotNull String branchName) {
+  public HgTarget(@Nonnull String name, @Nonnull String branchName) {
     myTarget = name;
     myBranchName = branchName;
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public String getPresentation() {
     return HgUtil.removePasswordIfNeeded(myTarget);
@@ -60,7 +63,7 @@ public class HgTarget implements PushTarget {
     return result;
   }
 
-  @NotNull
+  @Nonnull
   public String getBranchName() {
     return myBranchName;
   }

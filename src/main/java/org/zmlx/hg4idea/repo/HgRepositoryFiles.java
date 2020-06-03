@@ -16,7 +16,7 @@
 package org.zmlx.hg4idea.repo;
 
 import com.intellij.openapi.vfs.VirtualFile;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -45,26 +45,39 @@ public class HgRepositoryFiles {
   private static final String HGIGNORE = ".hgignore";
 
 
-  @NotNull private final String myBranchHeadsPath;
-  @NotNull private final String myBranchHeadsDirPath;
-  @NotNull private final String myMergePath;
-  @NotNull private final String myRebasePath;
-  @NotNull private final String myBranchPath;
-  @NotNull private final String myDirstatePath;
-  @NotNull private final String myBookmarksPath;
-  @NotNull private final String myTagsPath;
-  @NotNull private final String myLocalTagsPath;
-  @NotNull private final String myCurrentBookmarkPath;
-  @NotNull private final String myMQDirPath;
-  @NotNull private final String myConfigHgrcPath;
-  @NotNull private final String myHgIgnorePath;
+  @Nonnull
+  private final String myBranchHeadsPath;
+  @Nonnull
+  private final String myBranchHeadsDirPath;
+  @Nonnull
+  private final String myMergePath;
+  @Nonnull
+  private final String myRebasePath;
+  @Nonnull
+  private final String myBranchPath;
+  @Nonnull
+  private final String myDirstatePath;
+  @Nonnull
+  private final String myBookmarksPath;
+  @Nonnull
+  private final String myTagsPath;
+  @Nonnull
+  private final String myLocalTagsPath;
+  @Nonnull
+  private final String myCurrentBookmarkPath;
+  @Nonnull
+  private final String myMQDirPath;
+  @Nonnull
+  private final String myConfigHgrcPath;
+  @Nonnull
+  private final String myHgIgnorePath;
 
-  @NotNull
-  public static HgRepositoryFiles getInstance(@NotNull VirtualFile hgDir) {
+  @Nonnull
+  public static HgRepositoryFiles getInstance(@Nonnull VirtualFile hgDir) {
     return new HgRepositoryFiles(hgDir);
   }
 
-  private HgRepositoryFiles(@NotNull VirtualFile hgDir) {
+  private HgRepositoryFiles(@Nonnull VirtualFile hgDir) {
     myBranchHeadsPath = hgDir.getPath() + slash(BRANCHHEADS);
     myBranchHeadsDirPath = hgDir.getPath() + slash(BRANCHEADSDIR);
     myBranchPath = hgDir.getPath() + slash(BRANCH);
@@ -81,25 +94,25 @@ public class HgRepositoryFiles {
     myHgIgnorePath = repoDir.getPath() + slash(HGIGNORE);
   }
 
-  @NotNull
-  private static String slash(@NotNull String s) {
+  @Nonnull
+  private static String slash(@Nonnull String s) {
     return "/" + s;
   }
 
   /**
    * Returns subdirectories of .hg which we are interested in - they should be watched by VFS.
    */
-  @NotNull
+  @Nonnull
   static Collection<String> getSubDirRelativePaths() {
     return Arrays.asList(slash(BRANCHHEADS), slash(MERGE));
   }
 
-  @NotNull
+  @Nonnull
   public String getBranchHeadsDirPath() {
     return myBranchHeadsDirPath;
   }
 
-  @NotNull
+  @Nonnull
   public String getMQDirPath() {
     return myMQDirPath;
   }

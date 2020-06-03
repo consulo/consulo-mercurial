@@ -18,28 +18,32 @@ import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vcs.changes.ByteBackedContentRevision;
 import com.intellij.openapi.vfs.CharsetToolkit;
 import com.intellij.vcsUtil.VcsUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+
 import org.zmlx.hg4idea.util.HgUtil;
 
 import java.util.Objects;
 
+import javax.annotation.Nullable;
+
 public class HgContentRevision implements ByteBackedContentRevision {
 
   private final Project myProject;
-  @NotNull private final HgFile myHgFile;
-  @NotNull private final HgRevisionNumber myRevisionNumber;
+  @Nonnull
+  private final HgFile myHgFile;
+  @Nonnull
+  private final HgRevisionNumber myRevisionNumber;
 
   private FilePath filePath;
 
-  protected HgContentRevision(Project project, @NotNull HgFile hgFile, @NotNull HgRevisionNumber revisionNumber) {
+  protected HgContentRevision(Project project, @Nonnull HgFile hgFile, @Nonnull HgRevisionNumber revisionNumber) {
     myProject = project;
     myHgFile = hgFile;
     myRevisionNumber = revisionNumber;
   }
 
-  @NotNull
-  public static HgContentRevision create(Project project, @NotNull HgFile hgFile, @NotNull HgRevisionNumber revisionNumber) {
+  @Nonnull
+  public static HgContentRevision create(Project project, @Nonnull HgFile hgFile, @Nonnull HgRevisionNumber revisionNumber) {
     return !hgFile.toFilePath().getFileType().isBinary()
            ? new HgContentRevision(project, hgFile, revisionNumber)
            : new HgBinaryContentRevision(project, hgFile, revisionNumber);
@@ -59,7 +63,7 @@ public class HgContentRevision implements ByteBackedContentRevision {
     return HgUtil.loadContent(myProject, myRevisionNumber, fileToCat);
   }
 
-  @NotNull
+  @Nonnull
   public FilePath getFile() {
     if (filePath == null) {
       filePath = myHgFile.toFilePath();
@@ -67,7 +71,7 @@ public class HgContentRevision implements ByteBackedContentRevision {
     return filePath;
   }
 
-  @NotNull
+  @Nonnull
   public HgRevisionNumber getRevisionNumber() {
     return myRevisionNumber;
   }

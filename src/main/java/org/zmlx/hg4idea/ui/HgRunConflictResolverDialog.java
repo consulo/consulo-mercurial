@@ -18,13 +18,14 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.Consumer;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+
 import org.zmlx.hg4idea.HgFile;
 import org.zmlx.hg4idea.command.HgResolveCommand;
 import org.zmlx.hg4idea.command.HgResolveStatusEnum;
 import org.zmlx.hg4idea.repo.HgRepository;
 
+import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -39,8 +40,8 @@ public class HgRunConflictResolverDialog extends DialogWrapper {
 
   private final Project project;
 
-  public HgRunConflictResolverDialog(@NotNull Project project,
-                                     @NotNull Collection<HgRepository> repositories,
+  public HgRunConflictResolverDialog(@Nonnull Project project,
+                                     @Nonnull Collection<HgRepository> repositories,
                                      @Nullable HgRepository selectedRepo) {
     super(project, false);
     this.project = project;
@@ -54,12 +55,12 @@ public class HgRunConflictResolverDialog extends DialogWrapper {
     setRoots(repositories, selectedRepo);
   }
 
-  @NotNull
+  @Nonnull
   public HgRepository getRepository() {
     return repositorySelector.getRepository();
   }
 
-  private void setRoots(@NotNull Collection<HgRepository> repositories, @Nullable HgRepository selectedRepo) {
+  private void setRoots(@Nonnull Collection<HgRepository> repositories, @Nullable HgRepository selectedRepo) {
     repositorySelector.setRoots(repositories);
     repositorySelector.setSelectedRoot(selectedRepo);
     onChangeRepository();

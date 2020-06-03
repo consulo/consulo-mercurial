@@ -5,7 +5,7 @@ import com.intellij.dvcs.repo.AbstractRepositoryManager;
 import com.intellij.dvcs.repo.VcsRepositoryManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.ObjectUtils;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.HgProjectSettings;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.branch.HgMultiRootBranchConfig;
@@ -17,8 +17,8 @@ public class HgRepositoryManager extends AbstractRepositoryManager<HgRepository>
 
   private final HgProjectSettings mySettings;
 
-  public HgRepositoryManager(@NotNull Project project,
-                             @NotNull VcsRepositoryManager vcsRepositoryManager) {
+  public HgRepositoryManager(@Nonnull Project project,
+                             @Nonnull VcsRepositoryManager vcsRepositoryManager) {
     super(vcsRepositoryManager, HgVcs.getInstance(project), HgUtil.DOT_HG);
     mySettings = ObjectUtils.assertNotNull(HgVcs.getInstance(project)).getProjectSettings();
   }
@@ -28,7 +28,7 @@ public class HgRepositoryManager extends AbstractRepositoryManager<HgRepository>
     return mySettings.getSyncSetting() == DvcsSyncSettings.Value.SYNC && !new HgMultiRootBranchConfig(getRepositories()).diverged();
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public List<HgRepository> getRepositories() {
     return getRepositories(HgRepository.class);

@@ -20,8 +20,8 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.containers.ContainerUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.util.HgUtil;
 
 import java.io.File;
@@ -39,15 +39,15 @@ public class HgMqAdditionalPatchReader {
   private static final String USER = "# User ";
   private static final String DIFF_INFO = "diff -";
 
-  @NotNull
+  @Nonnull
   public static MqPatchDetails readMqPatchInfo(@Nullable VirtualFile root, @Nullable File patchFile) {
     if (patchFile == null) return MqPatchDetails.EMPTY_PATCH_DETAILS;
     String context = DvcsUtil.tryLoadFileOrReturn(patchFile, "");
     return parseAdditionalMqInfo(root == null ? HgUtil.getNearestHgRoot(VfsUtil.findFileByIoFile(patchFile, true)) : root, context);
   }
 
-  @NotNull
-  private static MqPatchDetails parseAdditionalMqInfo(@Nullable VirtualFile root, @NotNull String context) {
+  @Nonnull
+  private static MqPatchDetails parseAdditionalMqInfo(@Nullable VirtualFile root, @Nonnull String context) {
     String[] lines = StringUtil.splitByLines(context, false);
     String user = null;
     Date date = null;
@@ -82,13 +82,13 @@ public class HgMqAdditionalPatchReader {
     return new MqPatchDetails(nodeId, parent, date, root, branch, StringUtil.join(messageLines, "\n"), user);
   }
 
-  @NotNull
-  private static String extractField(@NotNull String line, @NotNull String prefix) {
+  @Nonnull
+  private static String extractField(@Nonnull String line, @Nonnull String prefix) {
     return line.substring(prefix.length()).trim();
   }
 
   @Nullable
-  private static Date tryParseDate(@NotNull String substring) {
+  private static Date tryParseDate(@Nonnull String substring) {
     try {
       return new Date(NumberFormat.getInstance().parse(substring).longValue() * 1000);
     }
@@ -99,7 +99,7 @@ public class HgMqAdditionalPatchReader {
 
   @SuppressWarnings("unused")
   // for future custom additional patch reader implementation
-  public boolean isMqPatch(@NotNull File file) {
+  public boolean isMqPatch(@Nonnull File file) {
     return DvcsUtil.tryLoadFileOrReturn(file, "").startsWith("# HG changeset patch");
   }
 }

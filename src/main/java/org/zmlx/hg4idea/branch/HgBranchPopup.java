@@ -21,18 +21,16 @@ import com.intellij.dvcs.repo.AbstractRepositoryManager;
 import com.intellij.dvcs.ui.LightActionGroup;
 import com.intellij.dvcs.ui.RootAction;
 import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Condition;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.HgProjectSettings;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.repo.HgRepositoryManager;
 import org.zmlx.hg4idea.util.HgUtil;
 
-import javax.annotation.Nonnull;
 import javax.swing.*;
 import java.util.List;
 
@@ -54,7 +52,7 @@ public class HgBranchPopup extends DvcsBranchPopup<HgRepository>
 	/**
 	 * @param currentRepository Current repository, which means the repository of the currently open or selected file.
 	 */
-	public static HgBranchPopup getInstance(@NotNull Project project, @NotNull HgRepository currentRepository)
+	public static HgBranchPopup getInstance(@Nonnull Project project, @Nonnull HgRepository currentRepository)
 	{
 
 		HgRepositoryManager manager = HgUtil.getRepositoryManager(project);
@@ -73,10 +71,10 @@ public class HgBranchPopup extends DvcsBranchPopup<HgRepository>
 				preselectActionCondition);
 	}
 
-	private HgBranchPopup(@NotNull HgRepository currentRepository,
-						  @NotNull HgRepositoryManager repositoryManager,
-						  @NotNull HgMultiRootBranchConfig hgMultiRootBranchConfig, @NotNull HgProjectSettings vcsSettings,
-						  @NotNull Condition<AnAction> preselectActionCondition)
+	private HgBranchPopup(@Nonnull HgRepository currentRepository,
+						  @Nonnull HgRepositoryManager repositoryManager,
+						  @Nonnull HgMultiRootBranchConfig hgMultiRootBranchConfig, @Nonnull HgProjectSettings vcsSettings,
+						  @Nonnull Condition<AnAction> preselectActionCondition)
 	{
 		super(currentRepository, repositoryManager, hgMultiRootBranchConfig, vcsSettings, preselectActionCondition, DIMENSION_SERVICE_KEY);
 	}
@@ -89,8 +87,8 @@ public class HgBranchPopup extends DvcsBranchPopup<HgRepository>
 	}
 
 	@Override
-	protected void fillWithCommonRepositoryActions(@NotNull LightActionGroup popupGroup,
-												   @NotNull AbstractRepositoryManager<HgRepository> repositoryManager)
+	protected void fillWithCommonRepositoryActions(@Nonnull LightActionGroup popupGroup,
+												   @Nonnull AbstractRepositoryManager<HgRepository> repositoryManager)
 	{
 		List<HgRepository> allRepositories = repositoryManager.getRepositories();
 		popupGroup.add(new HgBranchPopupActions.HgNewBranchAction(myProject, allRepositories, myCurrentRepository));
@@ -120,7 +118,6 @@ public class HgBranchPopup extends DvcsBranchPopup<HgRepository>
 	}
 
 	@Nonnull
-	@NotNull
 	protected LightActionGroup createRepositoriesActions()
 	{
 		LightActionGroup popupGroup = new LightActionGroup();
@@ -134,7 +131,7 @@ public class HgBranchPopup extends DvcsBranchPopup<HgRepository>
 		return popupGroup;
 	}
 
-	protected void fillPopupWithCurrentRepositoryActions(@NotNull LightActionGroup popupGroup, @Nullable LightActionGroup actions)
+	protected void fillPopupWithCurrentRepositoryActions(@Nonnull LightActionGroup popupGroup, @Nullable LightActionGroup actions)
 	{
 		popupGroup.addAll(new HgBranchPopupActions(myProject, myCurrentRepository).createActions(actions, myRepoTitleInfo));
 	}

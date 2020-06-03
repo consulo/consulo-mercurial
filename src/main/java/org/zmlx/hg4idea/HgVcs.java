@@ -20,10 +20,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
 
+import javax.annotation.Nonnull;
 import javax.swing.event.HyperlinkEvent;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.provider.HgCachingCommittedChangesProvider;
 import org.zmlx.hg4idea.provider.HgChangeProvider;
 import org.zmlx.hg4idea.provider.HgCheckoutProvider;
@@ -58,7 +58,6 @@ import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.vcs.AbstractVcs;
 import com.intellij.openapi.vcs.CalledInAwt;
 import com.intellij.openapi.vcs.CheckoutProvider;
@@ -83,6 +82,7 @@ import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.messages.MessageBusConnection;
 import com.intellij.util.messages.Topic;
+import consulo.disposer.Disposer;
 
 public class HgVcs extends AbstractVcs<CommittedChangeList>
 {
@@ -110,9 +110,9 @@ public class HgVcs extends AbstractVcs<CommittedChangeList>
 	private final HgUpdateEnvironment updateEnvironment;
 	private final HgCachingCommittedChangesProvider committedChangesProvider;
 	private MessageBusConnection messageBusConnection;
-	@NotNull
+	@Nonnull
 	private final HgGlobalSettings globalSettings;
-	@NotNull
+	@Nonnull
 	private final HgProjectSettings projectSettings;
 	private final ProjectLevelVcsManager myVcsManager;
 
@@ -129,10 +129,10 @@ public class HgVcs extends AbstractVcs<CommittedChangeList>
 	private HgStatusWidget myStatusWidget;
 	private HgIncomingOutgoingWidget myIncomingWidget;
 	private HgIncomingOutgoingWidget myOutgoingWidget;
-	@NotNull
+	@Nonnull
 	private HgVersion myVersion = HgVersion.NULL;  // version of Hg which this plugin uses.
 
-	public HgVcs(@NotNull Project project, @NotNull HgGlobalSettings globalSettings, @NotNull HgProjectSettings projectSettings, ProjectLevelVcsManager vcsManager)
+	public HgVcs(@Nonnull Project project, @Nonnull HgGlobalSettings globalSettings, @Nonnull HgProjectSettings projectSettings, ProjectLevelVcsManager vcsManager)
 	{
 		super(project, VCS_NAME);
 		this.globalSettings = globalSettings;
@@ -162,7 +162,7 @@ public class HgVcs extends AbstractVcs<CommittedChangeList>
 		return new HgProjectConfigurable(getProject(), projectSettings);
 	}
 
-	@NotNull
+	@Nonnull
 	public HgProjectSettings getProjectSettings()
 	{
 		return projectSettings;
@@ -249,9 +249,9 @@ public class HgVcs extends AbstractVcs<CommittedChangeList>
 		return true;
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
-	public <S> List<S> filterUniqueRoots(@NotNull List<S> in, @NotNull Function<S, VirtualFile> convertor)
+	public <S> List<S> filterUniqueRoots(@Nonnull List<S> in, @Nonnull Function<S, VirtualFile> convertor)
 	{
 		Collections.sort(in, Comparator.comparing(convertor, FilePathComparator.getInstance()));
 
@@ -296,7 +296,7 @@ public class HgVcs extends AbstractVcs<CommittedChangeList>
 	/**
 	 * @return the prompthooks.py extension used for capturing prompts from Mercurial and requesting IDEA's user about authentication.
 	 */
-	@NotNull
+	@Nonnull
 	public File getPromptHooksExtensionFile()
 	{
 		if(myPromptHooksExtensionFile == null || !myPromptHooksExtensionFile.exists())
@@ -416,13 +416,13 @@ public class HgVcs extends AbstractVcs<CommittedChangeList>
 		return (HgVcs) vcsManager.findVcsByName(VCS_NAME);
 	}
 
-	@NotNull
+	@Nonnull
 	public HgGlobalSettings getGlobalSettings()
 	{
 		return globalSettings;
 	}
 
-	public void showMessageInConsole(@NotNull String message, @NotNull ConsoleViewContentType contentType)
+	public void showMessageInConsole(@Nonnull String message, @Nonnull ConsoleViewContentType contentType)
 	{
 		if(message.length() > MAX_CONSOLE_OUTPUT_SIZE)
 		{
@@ -449,7 +449,7 @@ public class HgVcs extends AbstractVcs<CommittedChangeList>
 		return Arrays.asList(myCommitAndPushExecutor, myMqNewExecutor);
 	}
 
-	@NotNull
+	@Nonnull
 	public HgCloseBranchExecutor getCloseBranchExecutor()
 	{
 		return myCloseBranchExecutor;
@@ -499,7 +499,7 @@ public class HgVcs extends AbstractVcs<CommittedChangeList>
 		NotificationListener linkAdapter = new NotificationListener.Adapter()
 		{
 			@Override
-			protected void hyperlinkActivated(@NotNull Notification notification, @NotNull HyperlinkEvent e)
+			protected void hyperlinkActivated(@Nonnull Notification notification, @Nonnull HyperlinkEvent e)
 			{
 				if(SETTINGS_LINK.equals(e.getDescription()))
 				{
@@ -547,7 +547,7 @@ public class HgVcs extends AbstractVcs<CommittedChangeList>
 	/**
 	 * @return the version number of Hg, which is used by IDEA. Or {@link HgVersion#NULL} if version info is unavailable.
 	 */
-	@NotNull
+	@Nonnull
 	public HgVersion getVersion()
 	{
 		return myVersion;

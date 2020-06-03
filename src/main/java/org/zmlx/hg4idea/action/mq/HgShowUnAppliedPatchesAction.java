@@ -22,8 +22,8 @@ import com.intellij.openapi.wm.ToolWindowId;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.util.ContentUtilEx;
 import com.intellij.util.ObjectUtils;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+
 import org.zmlx.hg4idea.action.HgAbstractGlobalSingleRepoAction;
 import org.zmlx.hg4idea.action.HgActionUtil;
 import org.zmlx.hg4idea.repo.HgRepository;
@@ -31,9 +31,11 @@ import org.zmlx.hg4idea.ui.HgMqUnAppliedPatchesPanel;
 
 import java.util.Collection;
 
+import javax.annotation.Nullable;
+
 public class HgShowUnAppliedPatchesAction extends HgAbstractGlobalSingleRepoAction {
   @Override
-  protected void execute(@NotNull Project project, @NotNull Collection<HgRepository> repositories, @Nullable HgRepository selectedRepo) {
+  protected void execute(@Nonnull Project project, @Nonnull Collection<HgRepository> repositories, @Nullable HgRepository selectedRepo) {
     if (selectedRepo != null) {
       showUnAppliedPatches(project, selectedRepo);
     }
@@ -45,7 +47,7 @@ public class HgShowUnAppliedPatchesAction extends HgAbstractGlobalSingleRepoActi
     e.getPresentation().setEnabledAndVisible(repository != null);
   }
 
-  public static void showUnAppliedPatches(@NotNull Project project, @NotNull HgRepository selectedRepo) {
+  public static void showUnAppliedPatches(@Nonnull Project project, @Nonnull HgRepository selectedRepo) {
     ToolWindow toolWindow = ObjectUtils.assertNotNull(ToolWindowManager.getInstance(project).getToolWindow(ToolWindowId.VCS));
     ContentUtilEx
       .addTabbedContent(toolWindow.getContentManager(), new HgMqUnAppliedPatchesPanel(selectedRepo), "MQ", selectedRepo.getRoot().getName(),

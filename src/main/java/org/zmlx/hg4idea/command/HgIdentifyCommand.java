@@ -2,8 +2,8 @@ package org.zmlx.hg4idea.command;
 
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.project.Project;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 import org.zmlx.hg4idea.execution.HgRemoteCommandExecutor;
 
@@ -28,7 +28,7 @@ public class HgIdentifyCommand {
   }
 
   @Nullable
-  public HgCommandResult execute(@NotNull ModalityState state) {
+  public HgCommandResult execute(@Nonnull ModalityState state) {
     final List<String> arguments = new LinkedList<>();
     arguments.add(source);
     final HgRemoteCommandExecutor executor = new HgRemoteCommandExecutor(project, source, state, false);

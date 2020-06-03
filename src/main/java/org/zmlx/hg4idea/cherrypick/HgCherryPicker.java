@@ -23,7 +23,7 @@ import com.intellij.openapi.vcs.update.UpdatedFiles;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.vcs.log.VcsFullCommitDetails;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.action.HgCommandResultNotifier;
 import org.zmlx.hg4idea.command.HgGraftCommand;
@@ -40,26 +40,27 @@ import java.util.Map;
 
 public class HgCherryPicker extends VcsCherryPicker {
 
-  @NotNull private final Project myProject;
+  @Nonnull
+  private final Project myProject;
 
-  public HgCherryPicker(@NotNull Project project) {
+  public HgCherryPicker(@Nonnull Project project) {
     myProject = project;
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public VcsKey getSupportedVcs() {
     return HgVcs.getKey();
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public String getActionTitle() {
     return "Graft";
   }
 
   @Override
-  public void cherryPick(@NotNull final List<VcsFullCommitDetails> commits) {
+  public void cherryPick(@Nonnull final List<VcsFullCommitDetails> commits) {
     Map<HgRepository, List<VcsFullCommitDetails>> commitsInRoots = DvcsUtil.groupCommitsByRoots(
       HgUtil.getRepositoryManager(myProject), commits);
     for (Map.Entry<HgRepository, List<VcsFullCommitDetails>> entry : commitsInRoots.entrySet()) {
@@ -68,7 +69,7 @@ public class HgCherryPicker extends VcsCherryPicker {
     }
   }
 
-  private static void processGrafting(@NotNull HgRepository repository, @NotNull List<String> hashes) {
+  private static void processGrafting(@Nonnull HgRepository repository, @Nonnull List<String> hashes) {
     Project project = repository.getProject();
     VirtualFile root = repository.getRoot();
     HgGraftCommand command = new HgGraftCommand(project, repository);
@@ -96,7 +97,7 @@ public class HgCherryPicker extends VcsCherryPicker {
   }
 
   @Override
-  public boolean canHandleForRoots(@NotNull Collection<VirtualFile> roots) {
+  public boolean canHandleForRoots(@Nonnull Collection<VirtualFile> roots) {
     HgRepositoryManager hgRepositoryManager = HgUtil.getRepositoryManager(myProject);
     return roots.stream().allMatch(r -> hgRepositoryManager.getRepositoryForRoot(r) != null);
   }

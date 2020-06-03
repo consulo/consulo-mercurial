@@ -24,7 +24,7 @@ import static hg4idea.test.HgExecutor.hgMergeWith;
 import java.io.File;
 import java.util.Arrays;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.repo.HgRepositoryImpl;
 import org.zmlx.hg4idea.repo.HgRepositoryReader;
@@ -35,7 +35,8 @@ import hg4idea.test.HgPlatformTest;
 
 public class HgRealRepositoryReaderTest extends HgPlatformTest {
 
-  @NotNull private HgRepositoryReader myRepositoryReader;
+  @Nonnull
+  private HgRepositoryReader myRepositoryReader;
 
   @Override
   public void setUp() throws Exception {

@@ -24,7 +24,7 @@ import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.messages.MessageBus;
 import com.intellij.vcsUtil.VcsFileUtil;
 import consulo.container.boot.ContainerPathManager;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.HgFile;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.HgVcsMessages;
@@ -43,15 +43,19 @@ public abstract class HgCommitTypeCommand {
 
   private static final String TEMP_FILE_NAME = ".hg4idea-commit.tmp";
 
-  @NotNull protected final Project myProject;
-  @NotNull protected final HgRepository myRepository;
-  @NotNull private final String myMessage;
-  @NotNull private final Charset myCharset;
+  @Nonnull
+  protected final Project myProject;
+  @Nonnull
+  protected final HgRepository myRepository;
+  @Nonnull
+  private final String myMessage;
+  @Nonnull
+  private final Charset myCharset;
   protected final boolean myAmend;
 
   private Set<HgFile> myFiles = Collections.emptySet();
 
-  public HgCommitTypeCommand(@NotNull Project project, @NotNull HgRepository repository, @NotNull String message, boolean amend) {
+  public HgCommitTypeCommand(@Nonnull Project project, @Nonnull HgRepository repository, @Nonnull String message, boolean amend) {
     myProject = project;
     myRepository = repository;
     myMessage = message;
@@ -59,7 +63,7 @@ public abstract class HgCommitTypeCommand {
     myCharset = HgEncodingUtil.getDefaultCharset(myProject);
   }
 
-  public void setFiles(@NotNull Set<HgFile> files) {
+  public void setFiles(@Nonnull Set<HgFile> files) {
     myFiles = files;
   }
 
@@ -98,5 +102,5 @@ public abstract class HgCommitTypeCommand {
     messageBus.syncPublisher(HgVcs.REMOTE_TOPIC).update(myProject, null);
   }
 
-  protected abstract void executeChunked(@NotNull List<List<String>> chunkedCommits) throws HgCommandException, VcsException;
+  protected abstract void executeChunked(@Nonnull List<List<String>> chunkedCommits) throws HgCommandException, VcsException;
 }

@@ -22,9 +22,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
 import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nullable;
+
 import com.intellij.ide.errorTreeView.HotfixData;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.AbstractVcs;
@@ -59,16 +62,16 @@ public class HgMockVcsHelper extends AbstractVcsHelper {
 
   private Collection<VcsHelperListener> myListeners = new THashSet<>();
 
-  public HgMockVcsHelper(@NotNull Project project) {
+  public HgMockVcsHelper(@Nonnull Project project) {
     super(project);
   }
 
   @Override
-  public void showErrors(List<VcsException> abstractVcsExceptions, @NotNull String tabDisplayName) {
+  public void showErrors(List<VcsException> abstractVcsExceptions, @Nonnull String tabDisplayName) {
   }
 
   @Override
-  public void showErrors(Map<HotfixData, List<VcsException>> exceptionGroups, @NotNull String tabDisplayName) {
+  public void showErrors(Map<HotfixData, List<VcsException>> exceptionGroups, @Nonnull String tabDisplayName) {
   }
 
   @Override
@@ -108,7 +111,7 @@ public class HgMockVcsHelper extends AbstractVcsHelper {
   }
 
   @Override
-  public <T extends CommittedChangeList, U extends ChangeBrowserSettings> T chooseCommittedChangeList(@NotNull CommittedChangesProvider<T, U> provider,
+  public <T extends CommittedChangeList, U extends ChangeBrowserSettings> T chooseCommittedChangeList(@Nonnull CommittedChangesProvider<T, U> provider,
                                                                                                       RepositoryLocation location) {
     return null;
   }
@@ -125,22 +128,22 @@ public class HgMockVcsHelper extends AbstractVcsHelper {
                                       String title) {
   }
 
-  @NotNull
+  @Nonnull
   @Override
-  public List<VirtualFile> showMergeDialog(List<VirtualFile> files, MergeProvider provider, @NotNull MergeDialogCustomizer mergeDialogCustomizer) {
+  public List<VirtualFile> showMergeDialog(List<VirtualFile> files, MergeProvider provider, @Nonnull MergeDialogCustomizer mergeDialogCustomizer) {
     return null;
   }
 
   @Override
-  public void showFileHistory(@NotNull VcsHistoryProvider historyProvider, @NotNull FilePath path, @NotNull AbstractVcs vcs, String repositoryPath) {
+  public void showFileHistory(@Nonnull VcsHistoryProvider historyProvider, @Nonnull FilePath path, @Nonnull AbstractVcs vcs, String repositoryPath) {
   }
 
   @Override
-  public void showFileHistory(@NotNull VcsHistoryProvider historyProvider,
+  public void showFileHistory(@Nonnull VcsHistoryProvider historyProvider,
                               AnnotationProvider annotationProvider,
-                              @NotNull FilePath path,
+                              @Nonnull FilePath path,
                               String repositoryPath,
-                              @NotNull AbstractVcs vcs) {
+                              @Nonnull AbstractVcs vcs) {
   }
 
   @Override
@@ -172,16 +175,16 @@ public class HgMockVcsHelper extends AbstractVcsHelper {
   }
 
   @Override
-  public boolean commitChanges(@NotNull Collection<Change> changes, @NotNull LocalChangeList initialChangeList,
-                               @NotNull String commitMessage, @Nullable CommitResultHandler customResultHandler) {
+  public boolean commitChanges(@Nonnull Collection<Change> changes, @Nonnull LocalChangeList initialChangeList,
+							   @Nonnull String commitMessage, @Nullable CommitResultHandler customResultHandler) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void loadAndShowCommittedChangesDetails(@NotNull Project project,
-                                                 @NotNull VcsRevisionNumber revision,
-                                                 @NotNull VirtualFile file,
-                                                 @NotNull VcsKey key,
+  public void loadAndShowCommittedChangesDetails(@Nonnull Project project,
+                                                 @Nonnull VcsRevisionNumber revision,
+                                                 @Nonnull VirtualFile file,
+                                                 @Nonnull VcsKey key,
                                                  @Nullable RepositoryLocation location,
                                                  boolean local) {
 

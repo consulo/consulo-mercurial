@@ -15,7 +15,7 @@ package org.zmlx.hg4idea.command;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.vcsUtil.VcsFileUtil;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.HgFile;
 import org.zmlx.hg4idea.execution.HgCommandExecutor;
 import org.zmlx.hg4idea.util.HgUtil;
@@ -37,7 +37,7 @@ public class HgRemoveCommand {
    * Removes given files from their Mercurial repositories.
    * @param hgFiles files to be removed.
    */
-  public void executeInCurrentThread(@NotNull HgFile... hgFiles) {
+  public void executeInCurrentThread(@Nonnull HgFile... hgFiles) {
     executeInCurrentThread(Arrays.asList(hgFiles));
   }
 
@@ -45,7 +45,7 @@ public class HgRemoveCommand {
    * Removes given files from their Mercurial repositories.
    * @param hgFiles files to be removed.
    */
-  public void executeInCurrentThread(@NotNull Collection<HgFile> hgFiles) {
+  public void executeInCurrentThread(@Nonnull Collection<HgFile> hgFiles) {
     for( Map.Entry<VirtualFile, List<String>> entry : HgUtil.getRelativePathsByRepository(hgFiles).entrySet()) {
       List<String> filePaths = entry.getValue();
       for (List<String> chunkFiles : VcsFileUtil.chunkArguments(filePaths)) {

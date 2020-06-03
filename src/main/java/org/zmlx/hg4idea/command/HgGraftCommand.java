@@ -15,8 +15,8 @@ package org.zmlx.hg4idea.command;
 import com.intellij.dvcs.DvcsUtil;
 import com.intellij.openapi.application.AccessToken;
 import com.intellij.openapi.project.Project;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.execution.HgCommandExecutor;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 import org.zmlx.hg4idea.repo.HgRepository;
@@ -27,10 +27,12 @@ import java.util.List;
 
 public class HgGraftCommand {
 
-  @NotNull private final Project myProject;
-  @NotNull private final HgRepository myRepository;
+  @Nonnull
+  private final Project myProject;
+  @Nonnull
+  private final HgRepository myRepository;
 
-  public HgGraftCommand(@NotNull Project project, @NotNull HgRepository repo) {
+  public HgGraftCommand(@Nonnull Project project, @Nonnull HgRepository repo) {
     myProject = project;
     myRepository = repo;
   }
@@ -46,7 +48,7 @@ public class HgGraftCommand {
   }
 
   @Nullable
-  private HgCommandResult graft(@NotNull List<String> params) {
+  private HgCommandResult graft(@Nonnull List<String> params) {
     List<String> args = new ArrayList<>();
     args.add("--log");
     args.addAll(params);

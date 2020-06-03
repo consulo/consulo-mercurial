@@ -18,7 +18,7 @@ package org.zmlx.hg4idea.action.mq;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.DumbAwareAction;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.ui.HgMqUnAppliedPatchesPanel;
 
@@ -47,12 +47,12 @@ public abstract class HgActionFromMqPatches extends DumbAwareAction {
     e.getPresentation().setEnabled(patchInfo != null && patchInfo.getSelectedRowsCount() != 0 && isEnabled(patchInfo.getRepository()));
   }
 
-  protected boolean isEnabled(@NotNull HgRepository repository) {
+  protected boolean isEnabled(@Nonnull HgRepository repository) {
     return true;        //todo should be improved, param not needed
   }
 
-  protected abstract void executeInCurrentThread(@NotNull HgRepository repository, @NotNull List<String> patchNames);
+  protected abstract void executeInCurrentThread(@Nonnull HgRepository repository, @Nonnull List<String> patchNames);
 
-  @NotNull
+  @Nonnull
   protected abstract String getTitle();
 }

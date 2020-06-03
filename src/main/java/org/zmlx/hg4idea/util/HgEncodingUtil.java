@@ -2,7 +2,7 @@ package org.zmlx.hg4idea.util;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.encoding.EncodingProjectManager;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import java.nio.charset.Charset;
 
@@ -13,8 +13,8 @@ import static org.zmlx.hg4idea.HgVcs.HGENCODING;
  */
 public class HgEncodingUtil {
 
-  @NotNull
-  public static Charset getDefaultCharset(@NotNull Project project) {
+  @Nonnull
+  public static Charset getDefaultCharset(@Nonnull Project project) {
     if (HGENCODING != null && HGENCODING.length() > 0 && Charset.isSupported(HGENCODING)) {
       return Charset.forName(HGENCODING);
     }
@@ -25,8 +25,8 @@ public class HgEncodingUtil {
     return defaultCharset != null ? defaultCharset : Charset.defaultCharset();
   }
 
-  @NotNull
-  public static String getNameFor(@NotNull Charset charset) {
+  @Nonnull
+  public static String getNameFor(@Nonnull Charset charset) {
     //workaround for x_MacRoman encoding etc; todo: create map with encoding aliases because some encodings name are not supported by hg
     String name = charset.name();
     if (name.startsWith("x-M")) {

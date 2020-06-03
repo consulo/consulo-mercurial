@@ -21,8 +21,8 @@ import com.intellij.testFramework.vcs.AbstractVcsTestCase;
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory;
 import com.intellij.testFramework.fixtures.TempDirTestFixture;
 import com.intellij.vcsUtil.VcsUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -33,12 +33,14 @@ import java.io.IOException;
  * @author Kirill Likhodedov
  */
 public class HgTestRepository {
-  @NotNull private final HgTest myTest;
-  @NotNull private final TempDirTestFixture myDirFixture;
+  @Nonnull
+  private final HgTest myTest;
+  @Nonnull
+  private final TempDirTestFixture myDirFixture;
   private VirtualFile myDir;
   @Nullable private final HgTestRepository myParent; // cloned from
 
-  public HgTestRepository(@NotNull HgTest test, @NotNull TempDirTestFixture dir) {
+  public HgTestRepository(@Nonnull HgTest test, @Nonnull TempDirTestFixture dir) {
     this(test, dir, null);
   }
 
@@ -47,7 +49,7 @@ public class HgTestRepository {
    * @param dir    repository root
    * @param parent parent repository where this repository is cloned from, if one exists.
    */
-  public HgTestRepository(@NotNull HgTest test, @NotNull TempDirTestFixture dir, @Nullable HgTestRepository parent) {
+  public HgTestRepository(@Nonnull HgTest test, @Nonnull TempDirTestFixture dir, @Nullable HgTestRepository parent) {
     myTest = test;
     myDirFixture = dir;
     myParent = parent;
@@ -83,7 +85,7 @@ public class HgTestRepository {
     return new HgTestRepository(myTest, dirFixture);
   }
 
-  @NotNull
+  @Nonnull
   public TempDirTestFixture getDirFixture() {
     return myDirFixture;
   }

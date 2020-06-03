@@ -12,7 +12,7 @@
 // limitations under the License.
 package org.zmlx.hg4idea;
 
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 public enum HgFileStatusEnum {
 

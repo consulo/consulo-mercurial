@@ -12,16 +12,17 @@
 // limitations under the License.
 package org.zmlx.hg4idea;
 
+import javax.annotation.Nonnull;
+
 import com.intellij.execution.ExecutableValidator;
 import com.intellij.openapi.project.Project;
-import org.jetbrains.annotations.NotNull;
 import org.zmlx.hg4idea.util.HgUtil;
 
 public class HgExecutableValidator extends ExecutableValidator {
 
   private final HgVcs myVcs;
 
-  public HgExecutableValidator(@NotNull Project project, @NotNull HgVcs vcs) {
+  public HgExecutableValidator(@Nonnull Project project, @Nonnull HgVcs vcs) {
     super(project,
           HgVcsMessages.message("hg4idea.executable.notification.title"),
           HgVcsMessages.message("hg4idea.executable.notification.description"));
@@ -33,14 +34,14 @@ public class HgExecutableValidator extends ExecutableValidator {
     return myVcs.getGlobalSettings().getHgExecutable();
   }
 
-  @NotNull
+  @Nonnull
   @Override
   protected String getConfigurableDisplayName() {
     return HgProjectConfigurable.DISPLAY_NAME;
   }
 
   @Override
-  public boolean isExecutableValid(@NotNull String executable) {
+  public boolean isExecutableValid(@Nonnull String executable) {
     return HgUtil.isExecutableValid(executable);
   }
 }

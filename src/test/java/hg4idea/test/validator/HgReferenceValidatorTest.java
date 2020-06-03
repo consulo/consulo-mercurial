@@ -18,7 +18,7 @@ package hg4idea.test.validator;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.ui.UIUtil;
 import hg4idea.test.HgPlatformTest;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +41,8 @@ public class HgReferenceValidatorTest extends HgPlatformTest {
   private static final String BRANCH_NAME = "ABranch";
   private static final String UNCOMMITTED_BRANCH = "uncommitted new branch";
 
-  @NotNull private final String myBranchName;
+  @Nonnull
+  private final String myBranchName;
   private final boolean myExpected;
 
   @Override
@@ -77,7 +78,7 @@ public class HgReferenceValidatorTest extends HgPlatformTest {
   }
 
   @SuppressWarnings({"JUnitTestCaseWithNonTrivialConstructors", "UnusedParameters"})
-  public HgReferenceValidatorTest(@NotNull String name, @NotNull String branchName, boolean expected) {
+  public HgReferenceValidatorTest(@Nonnull String name, @Nonnull String branchName, boolean expected) {
     myBranchName = branchName;
     myExpected = expected;
   }

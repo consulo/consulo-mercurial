@@ -16,7 +16,7 @@
 package org.zmlx.hg4idea.branch;
 
 import com.intellij.util.containers.ContainerUtil;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.HgNameWithHashInfo;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.util.HgUtil;
@@ -31,8 +31,8 @@ public class HgBranchUtil {
   /**
    * Only common hg heavy branches
    */
-  @NotNull
-  public static List<String> getCommonBranches(@NotNull Collection<HgRepository> repositories) {
+  @Nonnull
+  public static List<String> getCommonBranches(@Nonnull Collection<HgRepository> repositories) {
     Collection<String> commonBranches = null;
     for (HgRepository repository : repositories) {
       Collection<String> names = repository.getOpenedBranches();
@@ -53,8 +53,8 @@ public class HgBranchUtil {
     }
   }
 
-  @NotNull
-  public static List<String> getCommonBookmarks(@NotNull Collection<HgRepository> repositories) {
+  @Nonnull
+  public static List<String> getCommonBookmarks(@Nonnull Collection<HgRepository> repositories) {
     Collection<String> commonBookmarkNames = null;
     for (HgRepository repository : repositories) {
       Collection<HgNameWithHashInfo> bookmarksInfo = repository.getBookmarks();

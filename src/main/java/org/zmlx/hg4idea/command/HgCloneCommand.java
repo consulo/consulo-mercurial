@@ -1,12 +1,13 @@
 package org.zmlx.hg4idea.command;
 
 import com.intellij.openapi.project.Project;
-import org.jetbrains.annotations.Nullable;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 import org.zmlx.hg4idea.execution.HgRemoteCommandExecutor;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 public class HgCloneCommand {
   private final Project project;

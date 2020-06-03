@@ -18,14 +18,14 @@ package org.zmlx.hg4idea.action;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.vcs.update.UpdatedFiles;
 import com.intellij.vcs.log.Hash;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.command.HgMergeCommand;
 import org.zmlx.hg4idea.repo.HgRepository;
 
 public class HgMergeWithRevisionFromLog extends HgLogSingleCommitAction {
 
   @Override
-  protected void actionPerformed(@NotNull HgRepository repository, @NotNull Hash commit) {
+  protected void actionPerformed(@Nonnull HgRepository repository, @Nonnull Hash commit) {
     FileDocumentManager.getInstance().saveAllDocuments();
     HgMergeCommand.mergeWith(repository, commit.asString(), UpdatedFiles.create());
   }

@@ -23,7 +23,8 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.command.HgWorkingCopyRevisionsCommand;
 import org.zmlx.hg4idea.log.HgLogProvider;
@@ -48,8 +49,8 @@ public class HgUserFilterTest extends HgPlatformTest {
     cd(myProject.getBaseDir());
 
     myVcsLogUserFilterTest = new VcsLogUserFilterTest(findLogProvider(myProject), myProject) {
-      @NotNull
-      protected String commit(@NotNull VcsUser user) throws IOException {
+      @Nonnull
+      protected String commit(@Nonnull VcsUser user) throws IOException {
         String file = "file.txt";
         overwrite(file, "content" + Math.random());
         myProject.getBaseDir().refresh(false, true);
@@ -90,7 +91,7 @@ public class HgUserFilterTest extends HgPlatformTest {
     myVcsLogUserFilterTest.testTurkishLocale();
   }
 
-  public static HgLogProvider findLogProvider(@NotNull Project project) {
+  public static HgLogProvider findLogProvider(@Nonnull Project project) {
     List<VcsLogProvider> providers =
       ContainerUtil.filter(Extensions.getExtensions(VcsLogManager.LOG_PROVIDER_EP, project), new Condition<VcsLogProvider>() {
         @Override

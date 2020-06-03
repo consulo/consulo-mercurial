@@ -16,7 +16,6 @@
 
 package org.zmlx.hg4idea.log;
 
-import com.intellij.openapi.Disposable;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Couple;
@@ -33,8 +32,10 @@ import com.intellij.vcs.log.*;
 import com.intellij.vcs.log.impl.LogDataImpl;
 import com.intellij.vcs.log.util.UserNameRegex;
 import com.intellij.vcs.log.util.VcsUserUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import consulo.disposer.Disposable;
+
+import javax.annotation.Nonnull;
+
 import org.zmlx.hg4idea.HgNameWithHashInfo;
 import org.zmlx.hg4idea.HgUpdater;
 import org.zmlx.hg4idea.HgVcs;
@@ -52,34 +53,40 @@ import java.util.*;
 import static org.zmlx.hg4idea.util.HgUtil.HEAD_REFERENCE;
 import static org.zmlx.hg4idea.util.HgUtil.TIP_REFERENCE;
 
+import javax.annotation.Nullable;
+
 public class HgLogProvider implements VcsLogProvider {
 
   private static final Logger LOG = Logger.getInstance(HgLogProvider.class);
 
-  @NotNull private final Project myProject;
-  @NotNull private final HgRepositoryManager myRepositoryManager;
-  @NotNull private final VcsLogRefManager myRefSorter;
-  @NotNull private final VcsLogObjectsFactory myVcsObjectsFactory;
+  @Nonnull
+  private final Project myProject;
+  @Nonnull
+  private final HgRepositoryManager myRepositoryManager;
+  @Nonnull
+  private final VcsLogRefManager myRefSorter;
+  @Nonnull
+  private final VcsLogObjectsFactory myVcsObjectsFactory;
 
-  public HgLogProvider(@NotNull Project project, @NotNull HgRepositoryManager repositoryManager, @NotNull VcsLogObjectsFactory factory) {
+  public HgLogProvider(@Nonnull Project project, @Nonnull HgRepositoryManager repositoryManager, @Nonnull VcsLogObjectsFactory factory) {
     myProject = project;
     myRepositoryManager = repositoryManager;
     myRefSorter = new HgRefManager();
     myVcsObjectsFactory = factory;
   }
 
-  @NotNull
+  @Nonnull
   @Override
-  public DetailedLogData readFirstBlock(@NotNull VirtualFile root,
-                                        @NotNull Requirements requirements) throws VcsException {
+  public DetailedLogData readFirstBlock(@Nonnull VirtualFile root,
+                                        @Nonnull Requirements requirements) throws VcsException {
     List<VcsCommitMetadata> commits = HgHistoryUtil.loadMetadata(myProject, root, requirements.getCommitCount(),
                                                                  Collections.<String>emptyList());
     return new LogDataImpl(readAllRefs(root), commits);
   }
 
   @Override
-  @NotNull
-  public LogData readAllHashes(@NotNull VirtualFile root, @NotNull final Consumer<TimedVcsCommit> commitConsumer) throws VcsException {
+  @Nonnull
+  public LogData readAllHashes(@Nonnull VirtualFile root, @Nonnull final Consumer<TimedVcsCommit> commitConsumer) throws VcsException {
     Set<VcsUser> userRegistry = ContainerUtil.newHashSet();
     List<TimedVcsCommit> commits = HgHistoryUtil.readAllHashes(myProject, root, new CollectConsumer<>(userRegistry),
                                                                Collections.<String>emptyList());
@@ -90,14 +97,14 @@ public class HgLogProvider implements VcsLogProvider {
   }
 
   @Override
-  public void readAllFullDetails(@NotNull VirtualFile root, @NotNull Consumer<VcsFullCommitDetails> commitConsumer) throws VcsException {
+  public void readAllFullDetails(@Nonnull VirtualFile root, @Nonnull Consumer<VcsFullCommitDetails> commitConsumer) throws VcsException {
     readFullDetails(root, ContainerUtil.newArrayList(), commitConsumer);
   }
 
   @Override
-  public void readFullDetails(@NotNull VirtualFile root,
-                              @NotNull List<String> hashes,
-                              @NotNull Consumer<VcsFullCommitDetails> commitConsumer)
+  public void readFullDetails(@Nonnull VirtualFile root,
+                              @Nonnull List<String> hashes,
+                              @Nonnull Consumer<VcsFullCommitDetails> commitConsumer)
     throws VcsException {
     // this method currently is very slow and time consuming
     // so indexing is not to be used for mercurial for now
@@ -113,21 +120,21 @@ public class HgLogProvider implements VcsLogProvider {
     HgHistoryUtil.createFullCommitsFromResult(myProject, root, logResult, version, false).forEach(commitConsumer::consume);
   }
 
-  @NotNull
+  @Nonnull
   @Override
-  public List<? extends VcsShortCommitDetails> readShortDetails(@NotNull VirtualFile root, @NotNull List<String> hashes)
+  public List<? extends VcsShortCommitDetails> readShortDetails(@Nonnull VirtualFile root, @Nonnull List<String> hashes)
     throws VcsException {
     return HgHistoryUtil.readMiniDetails(myProject, root, hashes);
   }
 
-  @NotNull
+  @Nonnull
   @Override
-  public List<? extends VcsFullCommitDetails> readFullDetails(@NotNull VirtualFile root, @NotNull List<String> hashes) throws VcsException {
+  public List<? extends VcsFullCommitDetails> readFullDetails(@Nonnull VirtualFile root, @Nonnull List<String> hashes) throws VcsException {
     return HgHistoryUtil.history(myProject, root, -1, HgHistoryUtil.prepareHashes(hashes));
   }
 
-  @NotNull
-  private Set<VcsRef> readAllRefs(@NotNull VirtualFile root) throws VcsException {
+  @Nonnull
+  private Set<VcsRef> readAllRefs(@Nonnull VirtualFile root) throws VcsException {
     if (myProject.isDisposed()) {
       return Collections.emptySet();
     }
@@ -181,21 +188,21 @@ public class HgLogProvider implements VcsLogProvider {
     return refs;
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public VcsKey getSupportedVcs() {
     return HgVcs.getKey();
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public VcsLogRefManager getReferenceManager() {
     return myRefSorter;
   }
 
-  @NotNull
+  @Nonnull
   @Override
-  public Disposable subscribeToRootRefreshEvents(@NotNull final Collection<VirtualFile> roots, @NotNull final VcsLogRefresher refresher) {
+  public Disposable subscribeToRootRefreshEvents(@Nonnull final Collection<VirtualFile> roots, @Nonnull final VcsLogRefresher refresher) {
     MessageBusConnection connection = myProject.getMessageBus().connect(myProject);
     connection.subscribe(HgVcs.STATUS_TOPIC, new HgUpdater() {
       @Override
@@ -208,10 +215,10 @@ public class HgLogProvider implements VcsLogProvider {
     return connection::disconnect;
   }
 
-  @NotNull
+  @Nonnull
   @Override
-  public List<TimedVcsCommit> getCommitsMatchingFilter(@NotNull final VirtualFile root,
-                                                       @NotNull VcsLogFilterCollection filterCollection,
+  public List<TimedVcsCommit> getCommitsMatchingFilter(@Nonnull final VirtualFile root,
+                                                       @Nonnull VcsLogFilterCollection filterCollection,
                                                        int maxCount) throws VcsException {
     List<String> filterParameters = ContainerUtil.newArrayList();
 
@@ -302,7 +309,7 @@ public class HgLogProvider implements VcsLogProvider {
 
   @Nullable
   @Override
-  public VcsUser getCurrentUser(@NotNull VirtualFile root) throws VcsException {
+  public VcsUser getCurrentUser(@Nonnull VirtualFile root) throws VcsException {
     String userName = HgConfig.getInstance(myProject, root).getNamedConfig("ui", "username");
     //order of variables to identify hg username see at mercurial/ui.py
     if (userName == null) {
@@ -321,15 +328,15 @@ public class HgLogProvider implements VcsLogProvider {
     return myVcsObjectsFactory.createUser(userArgs.getFirst(), userArgs.getSecond());
   }
 
-  @NotNull
+  @Nonnull
   @Override
-  public Collection<String> getContainingBranches(@NotNull VirtualFile root, @NotNull Hash commitHash) throws VcsException {
+  public Collection<String> getContainingBranches(@Nonnull VirtualFile root, @Nonnull Hash commitHash) throws VcsException {
     return HgHistoryUtil.getDescendingHeadsOfBranches(myProject, root, commitHash);
   }
 
   @Nullable
   @Override
-  public String getCurrentBranch(@NotNull VirtualFile root) {
+  public String getCurrentBranch(@Nonnull VirtualFile root) {
     HgRepository repository = myRepositoryManager.getRepositoryForRoot(root);
     if (repository == null) return null;
     return repository.getCurrentBranchName();

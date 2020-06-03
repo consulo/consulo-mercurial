@@ -23,8 +23,8 @@ import com.intellij.util.ArrayUtil;
 import com.intellij.util.Function;
 import com.intellij.util.SmartList;
 import com.intellij.util.containers.ContainerUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.HgRevisionNumber;
 import org.zmlx.hg4idea.util.HgChangesetUtil;
 import org.zmlx.hg4idea.util.HgUtil;
@@ -59,7 +59,7 @@ public abstract class HgBaseLogParser<CommitT> implements Function<String, Commi
   protected static final int FILES_COPIED_INDEX = 10;
 
   @Nullable
-  public CommitT convert(@NotNull String line) {
+  public CommitT convert(@Nonnull String line) {
 
     // we need to get all attributes, include empty trailing strings, so use non-positive limit as second argument
     List<String> attributes = StringUtil.split(line, HgChangesetUtil.ITEM_SEPARATOR, true, false);
@@ -95,15 +95,15 @@ public abstract class HgBaseLogParser<CommitT> implements Function<String, Commi
   }
 
   @Nullable
-  protected abstract CommitT convertDetails(@NotNull String rev,
-                                            @NotNull String changeset,
-                                            @NotNull SmartList<HgRevisionNumber> parents,
-                                            @NotNull Date revisionDate,
-                                            @NotNull String author,
-                                            @NotNull String email,
-                                            @NotNull List<String> attributes);
+  protected abstract CommitT convertDetails(@Nonnull String rev,
+                                            @Nonnull String changeset,
+                                            @Nonnull SmartList<HgRevisionNumber> parents,
+                                            @Nonnull Date revisionDate,
+                                            @Nonnull String author,
+                                            @Nonnull String email,
+                                            @Nonnull List<String> attributes);
 
-  @NotNull
+  @Nonnull
   public static List<String> constructDefaultTemplate(HgVersion currentVersion) {
     List<String> templates = new ArrayList<>();
     templates.add("{rev}");
@@ -118,8 +118,8 @@ public abstract class HgBaseLogParser<CommitT> implements Function<String, Commi
     return templates;
   }
 
-  @NotNull
-  public static String[] constructFullTemplateArgument(boolean includeFiles, @NotNull HgVersion currentVersion) {
+  @Nonnull
+  public static String[] constructFullTemplateArgument(boolean includeFiles, @Nonnull HgVersion currentVersion) {
     List<String> templates = new ArrayList<>();
     templates.add("{rev}");
     templates.add("{node}");
@@ -138,14 +138,14 @@ public abstract class HgBaseLogParser<CommitT> implements Function<String, Commi
     return ArrayUtil.toStringArray(templates);
   }
 
-  @NotNull
-  private static List<String> wrapIn(@NotNull List<String> fileTemplates, @NotNull HgVersion currentVersion) {
+  @Nonnull
+  private static List<String> wrapIn(@Nonnull List<String> fileTemplates, @Nonnull HgVersion currentVersion) {
     final boolean supported = currentVersion.isBuiltInFunctionSupported();
     return ContainerUtil.map(fileTemplates, s -> supported ? "{join(" + s + ",'" + HgChangesetUtil.FILE_SEPARATOR + "')}" : "{" + s + "}");
   }
 
-  @NotNull
-  protected static SmartList<HgRevisionNumber> parseParentRevisions(@NotNull String parentsString, @NotNull String currentRevisionString) {
+  @Nonnull
+  protected static SmartList<HgRevisionNumber> parseParentRevisions(@Nonnull String parentsString, @Nonnull String currentRevisionString) {
     SmartList<HgRevisionNumber> parents = new SmartList<>();
     if (StringUtil.isEmptyOrSpaces(parentsString)) {
       // parents shouldn't be empty  only if not supported
@@ -167,7 +167,7 @@ public abstract class HgBaseLogParser<CommitT> implements Function<String, Commi
     return parents;
   }
 
-  @NotNull
+  @Nonnull
   protected static String parseAdditionalStringAttribute(final List<String> attributes, int index) {
     int numAttributes = attributes.size();
     if (numAttributes > index) {
@@ -177,8 +177,8 @@ public abstract class HgBaseLogParser<CommitT> implements Function<String, Commi
     return "";
   }
 
-  @NotNull
-  public static String extractSubject(@NotNull String message) {
+  @Nonnull
+  public static String extractSubject(@Nonnull String message) {
     int subjectIndex = message.indexOf('\n');
     return subjectIndex == -1 ? message : message.substring(0, subjectIndex);
   }

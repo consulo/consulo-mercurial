@@ -12,10 +12,10 @@
 // limitations under the License.
 package org.zmlx.hg4idea;
 
+import javax.annotation.Nonnull;
 import javax.swing.JComponent;
 
 import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NotNull;
 import org.zmlx.hg4idea.ui.HgConfigurationProjectPanel;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SearchableConfigurable;
@@ -26,9 +26,10 @@ public class HgProjectConfigurable implements SearchableConfigurable {
   public static final String DISPLAY_NAME = HgVcsMessages.message("hg4idea.mercurial");
 
   private final HgConfigurationProjectPanel myPanel;
-  @NotNull private final Project myProject;
+  @Nonnull
+  private final Project myProject;
 
-  public HgProjectConfigurable(@NotNull Project project, HgProjectSettings projectSettings) {
+  public HgProjectConfigurable(@Nonnull Project project, HgProjectSettings projectSettings) {
     myProject = project;
     myPanel = new HgConfigurationProjectPanel(projectSettings, myProject);
   }
@@ -67,7 +68,7 @@ public class HgProjectConfigurable implements SearchableConfigurable {
   public void disposeUIResources() {
   }
 
-  @NotNull
+  @Nonnull
   public String getId() {
     return "Mercurial.Project";
   }

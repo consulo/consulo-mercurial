@@ -24,8 +24,8 @@ import com.intellij.openapi.vcs.update.UpdatedFiles;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.Function;
 import com.intellij.util.containers.ContainerUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.branch.HgBranchUtil;
 import org.zmlx.hg4idea.command.HgBookmarkCommand;
 import org.zmlx.hg4idea.command.HgCommitCommand;
@@ -45,21 +45,21 @@ public class HgTaskHandler extends DvcsTaskHandler<HgRepository> {
 
   private HgReferenceValidator myNameValidator;
 
-  public HgTaskHandler(@NotNull HgRepositoryManager repositoryManager,
-                       @NotNull Project project) {
+  public HgTaskHandler(@Nonnull HgRepositoryManager repositoryManager,
+                       @Nonnull Project project) {
     super(repositoryManager, project, "bookmark");
     myNameValidator = HgReferenceValidator.getInstance();
   }
 
   @Override
-  protected void checkout(@NotNull String taskName, @NotNull List<HgRepository> repos, @Nullable Runnable callInAwtLater) {
+  protected void checkout(@Nonnull String taskName, @Nonnull List<HgRepository> repos, @Nullable Runnable callInAwtLater) {
     HgUpdateCommand.updateTo(
       !HgBranchUtil.getCommonBookmarks(repos).contains(taskName) ? "head() and not bookmark() and branch(\"" + taskName + "\")" : taskName,
       repos, callInAwtLater);
   }
 
   @Override
-  protected void checkoutAsNewBranch(@NotNull String name, @NotNull List<HgRepository> repositories) {
+  protected void checkoutAsNewBranch(@Nonnull String name, @Nonnull List<HgRepository> repositories) {
     HgBookmarkCommand.createBookmarkAsynchronously(repositories, name, true);
   }
 
@@ -69,9 +69,9 @@ public class HgTaskHandler extends DvcsTaskHandler<HgRepository> {
     return bookmark == null ? repository.getCurrentBranch() : bookmark;
   }
 
-  @NotNull
+  @Nonnull
   @Override
-  protected Iterable<TaskInfo> getAllBranches(@NotNull HgRepository repository) {
+  protected Iterable<TaskInfo> getAllBranches(@Nonnull HgRepository repository) {
     //be careful with equality names of branches/bookmarks =(
     Iterable<String> names =
       ContainerUtil.concat(HgUtil.getSortedNamesWithoutHashes(repository.getBookmarks()), repository.getOpenedBranches());
@@ -84,7 +84,7 @@ public class HgTaskHandler extends DvcsTaskHandler<HgRepository> {
   }
 
   @Override
-  protected void mergeAndClose(@NotNull final String branch, @NotNull final List<HgRepository> repositories) {
+  protected void mergeAndClose(@Nonnull final String branch, @Nonnull final List<HgRepository> repositories) {
     String bookmarkRevisionArg = "bookmark(\"" + branch + "\")";
     FileDocumentManager.getInstance().saveAllDocuments();
     final UpdatedFiles updatedFiles = UpdatedFiles.create();
@@ -112,18 +112,18 @@ public class HgTaskHandler extends DvcsTaskHandler<HgRepository> {
   }
 
   @Override
-  protected boolean hasBranch(@NotNull HgRepository repository, @NotNull TaskInfo name) {
+  protected boolean hasBranch(@Nonnull HgRepository repository, @Nonnull TaskInfo name) {
     return HgUtil.getNamesWithoutHashes(repository.getBookmarks()).contains(name.getName()) || repository.getOpenedBranches().contains(name.getName());
   }
 
   @Override
-  public boolean isBranchNameValid(@NotNull String branchName) {
+  public boolean isBranchNameValid(@Nonnull String branchName) {
     return myNameValidator.checkInput(branchName);
   }
 
-  @NotNull
+  @Nonnull
   @Override
-  public String cleanUpBranchName(@NotNull String suggestedName) {
+  public String cleanUpBranchName(@Nonnull String suggestedName) {
     return myNameValidator.cleanUpBranchName(suggestedName);
   }
 }

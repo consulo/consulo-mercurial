@@ -12,46 +12,49 @@
 // limitations under the License.
 package org.zmlx.hg4idea;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import java.util.Objects;
 
 public final class HgChange {
 
-  @NotNull private HgFile beforeFile;
-  @NotNull private HgFile afterFile;
-  @NotNull private HgFileStatusEnum status;
+  @Nonnull
+  private HgFile beforeFile;
+  @Nonnull
+  private HgFile afterFile;
+  @Nonnull
+  private HgFileStatusEnum status;
 
-  public HgChange(@NotNull HgFile hgFile, @NotNull HgFileStatusEnum status) {
+  public HgChange(@Nonnull HgFile hgFile, @Nonnull HgFileStatusEnum status) {
     this.beforeFile = hgFile;
     this.afterFile = hgFile;
     this.status = status;
   }
 
-  @NotNull
+  @Nonnull
   public HgFile beforeFile() {
     return beforeFile;
   }
 
-  @NotNull
+  @Nonnull
   public HgFile afterFile() {
     return afterFile;
   }
 
-  @NotNull
+  @Nonnull
   public HgFileStatusEnum getStatus() {
     return status;
   }
 
-  public void setBeforeFile(@NotNull HgFile beforeFile) {
+  public void setBeforeFile(@Nonnull HgFile beforeFile) {
     this.beforeFile = beforeFile;
   }
 
-  public void setAfterFile(@NotNull HgFile afterFile) {
+  public void setAfterFile(@Nonnull HgFile afterFile) {
     this.afterFile = afterFile;
   }
 
-  public void setStatus(@NotNull HgFileStatusEnum status) {
+  public void setStatus(@Nonnull HgFileStatusEnum status) {
     this.status = status;
   }
 

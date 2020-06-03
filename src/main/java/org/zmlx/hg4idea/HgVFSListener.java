@@ -34,7 +34,7 @@ import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.ui.UIUtil;
 import com.intellij.util.ui.VcsBackgroundTask;
 import com.intellij.vcsUtil.VcsUtil;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.command.*;
 import org.zmlx.hg4idea.provider.HgLocalIgnoredHolder;
 import org.zmlx.hg4idea.util.HgUtil;
@@ -96,7 +96,7 @@ public class HgVFSListener extends VcsVFSListener {
     final HashSet<VirtualFile> untrackedFiles = new HashSet<>();
     new Task.Backgroundable(myProject, HgVcsMessages.message("hg4idea.progress.checking.ignored"), false) {
       @Override
-      public void run(@NotNull ProgressIndicator pi) {
+      public void run(@Nonnull ProgressIndicator pi) {
         for (Map.Entry<VirtualFile, Collection<VirtualFile>> e : sortedFiles.entrySet()) {
           VirtualFile repo = e.getKey();
           final Collection<VirtualFile> files = e.getValue();
@@ -131,8 +131,8 @@ public class HgVFSListener extends VcsVFSListener {
     }.queue();
   }
 
-  @NotNull
-  HgLocalIgnoredHolder getIgnoreRepoHolder(@NotNull VirtualFile repoRoot) {
+  @Nonnull
+  HgLocalIgnoredHolder getIgnoreRepoHolder(@Nonnull VirtualFile repoRoot) {
     return ObjectUtils.assertNotNull(HgUtil.getRepositoryManager(myProject).getRepositoryForRootQuick(repoRoot)).getLocalIgnoredHolder();
   }
   /**
@@ -151,7 +151,7 @@ public class HgVFSListener extends VcsVFSListener {
                                HgVcsMessages.message("hg4idea.add.progress"),
                                false,
                                VcsConfiguration.getInstance(myProject).getAddRemoveOption() ) {
-      @Override public void run(@NotNull ProgressIndicator aProgressIndicator) {
+      @Override public void run(@Nonnull ProgressIndicator aProgressIndicator) {
         final ArrayList<VirtualFile> adds = new ArrayList<>();
         final HashMap<VirtualFile, VirtualFile> copies = new HashMap<>(); // from -> to
         //delete unversioned and ignored files from copy source
@@ -256,7 +256,7 @@ public class HgVFSListener extends VcsVFSListener {
                               HgVcsMessages.message("hg4idea.remove.progress"),
                               false,
                               VcsConfiguration.getInstance(myProject).getAddRemoveOption()) {
-      @Override public void run( @NotNull ProgressIndicator indicator ) {
+      @Override public void run( @Nonnull ProgressIndicator indicator ) {
         // confirm removal from the VCS if needed
         if (myRemoveOption.getValue() != VcsShowConfirmationOption.Value.DO_NOTHING_SILENTLY) {
           if (myRemoveOption.getValue() == VcsShowConfirmationOption.Value.DO_ACTION_SILENTLY || filesToConfirmDeletion.isEmpty()) {
@@ -278,8 +278,8 @@ public class HgVFSListener extends VcsVFSListener {
     }.queue();
   }
 
-  @NotNull
-  private List<FilePath> processAndGetVcsIgnored(@NotNull List<FilePath> filePaths) {
+  @Nonnull
+  private List<FilePath> processAndGetVcsIgnored(@Nonnull List<FilePath> filePaths) {
     Map<VirtualFile, Collection<FilePath>> groupFilePathsByHgRoots = HgUtil.groupFilePathsByHgRoots(myProject, filePaths);
     return groupFilePathsByHgRoots.entrySet().stream()
       .map(entry -> getIgnoreRepoHolder(entry.getKey()).removeIgnoredFiles(entry.getValue()))

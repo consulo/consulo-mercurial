@@ -15,7 +15,7 @@ package org.zmlx.hg4idea.command;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.action.HgCommandResultNotifier;
 import org.zmlx.hg4idea.execution.HgCommandResult;
@@ -37,7 +37,7 @@ public class HgPullCommand {
   private boolean update;
   private boolean rebase;
 
-  public HgPullCommand(Project project, @NotNull VirtualFile repo) {
+  public HgPullCommand(Project project, @Nonnull VirtualFile repo) {
     this.project = project;
     this.repo = repo;
   }

@@ -18,8 +18,8 @@ package org.zmlx.hg4idea.roots;
 import com.intellij.openapi.vcs.VcsNotifier;
 import com.intellij.openapi.vcs.roots.VcsIntegrationEnabler;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.command.HgInitCommand;
 import org.zmlx.hg4idea.execution.HgCommandResult;
@@ -31,12 +31,12 @@ import static org.zmlx.hg4idea.HgVcsMessages.message;
 
 public class HgIntegrationEnabler extends VcsIntegrationEnabler {
 
-  public HgIntegrationEnabler(@NotNull HgVcs vcs) {
+  public HgIntegrationEnabler(@Nonnull HgVcs vcs) {
     super(vcs);
   }
 
   @Override
-  protected boolean initOrNotifyError(@NotNull final VirtualFile projectDir) {
+  protected boolean initOrNotifyError(@Nonnull final VirtualFile projectDir) {
     final boolean[] success = new boolean[1];
     new HgInitCommand(myProject).executeAsynchronously(projectDir, new HgCommandResultHandler() {
       @Override

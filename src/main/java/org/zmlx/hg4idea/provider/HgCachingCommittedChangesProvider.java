@@ -35,8 +35,8 @@ import com.intellij.util.PlatformIcons;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.vcsUtil.VcsUtil;
 import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.*;
 import org.zmlx.hg4idea.command.HgLogCommand;
 import org.zmlx.hg4idea.ui.HgVersionFilterComponent;
@@ -158,7 +158,7 @@ public class HgCachingCommittedChangesProvider implements CachingCommittedChange
     return false;
   }
 
-  @NotNull
+  @Nonnull
   public ChangeBrowserSettings createDefaultSettings() {
     return new ChangeBrowserSettings();
   }
@@ -387,13 +387,14 @@ public class HgCachingCommittedChangesProvider implements CachingCommittedChange
 
   private static class HgLogArgsBuilder {
 
-    @NotNull private final ChangeBrowserSettings myBrowserSettings;
+    @Nonnull
+	private final ChangeBrowserSettings myBrowserSettings;
 
-    HgLogArgsBuilder(@NotNull ChangeBrowserSettings browserSettings) {
+    HgLogArgsBuilder(@Nonnull ChangeBrowserSettings browserSettings) {
       myBrowserSettings = browserSettings;
     }
 
-    @NotNull
+    @Nonnull
     List<String> getLogArgs() {
 
       StringBuilder args = new StringBuilder();

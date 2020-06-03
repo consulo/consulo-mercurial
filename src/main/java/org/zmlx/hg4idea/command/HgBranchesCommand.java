@@ -14,8 +14,8 @@ package org.zmlx.hg4idea.command;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+
 import org.zmlx.hg4idea.execution.HgCommandExecutor;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 
@@ -23,6 +23,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.annotation.Nullable;
 
 public class HgBranchesCommand {
 
@@ -32,7 +34,7 @@ public class HgBranchesCommand {
   private final Project project;
   private final VirtualFile repo;
 
-  public HgBranchesCommand(Project project, @NotNull VirtualFile repo) {
+  public HgBranchesCommand(Project project, @Nonnull VirtualFile repo) {
     this.project = project;
     this.repo = repo;
   }
@@ -42,8 +44,8 @@ public class HgBranchesCommand {
     return new HgCommandExecutor(project).executeInCurrentThread(repo, "branches", null);
   }
 
-  @NotNull
-  public static Set<String> collectNames(@NotNull HgCommandResult result) {
+  @Nonnull
+  public static Set<String> collectNames(@Nonnull HgCommandResult result) {
     Set<String> branches = new TreeSet<>();
     for (final String line : result.getOutputLines()) {
       Matcher matcher = BRANCH_LINE.matcher(line);

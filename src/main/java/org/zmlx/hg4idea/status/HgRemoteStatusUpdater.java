@@ -25,8 +25,8 @@ import com.intellij.openapi.vcs.ProjectLevelVcsManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.messages.MessageBusConnection;
 import com.intellij.xml.util.XmlStringUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+
 import org.zmlx.hg4idea.*;
 import org.zmlx.hg4idea.command.HgIncomingCommand;
 import org.zmlx.hg4idea.command.HgOutgoingCommand;
@@ -36,6 +36,8 @@ import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.annotation.Nullable;
 
 public class HgRemoteStatusUpdater implements HgUpdater {
 
@@ -50,7 +52,7 @@ public class HgRemoteStatusUpdater implements HgUpdater {
   private ScheduledFuture<?> changesUpdaterScheduledFuture;
 
 
-  public HgRemoteStatusUpdater(@NotNull HgVcs vcs,
+  public HgRemoteStatusUpdater(@Nonnull HgVcs vcs,
                                HgChangesetStatus incomingStatus,
                                HgChangesetStatus outgoingStatus,
                                HgProjectSettings projectSettings) {
@@ -72,7 +74,7 @@ public class HgRemoteStatusUpdater implements HgUpdater {
     ApplicationManager.getApplication().invokeLater(new Runnable() {
       public void run() {
         new Task.Backgroundable(project, getProgressTitle(), true) {
-          public void run(@NotNull ProgressIndicator indicator) {
+          public void run(@Nonnull ProgressIndicator indicator) {
             if (project.isDisposed()) return;
             final VirtualFile[] roots =
               root != null ? new VirtualFile[]{root} : ProjectLevelVcsManager.getInstance(project).getRootsUnderVcs(myVcs);

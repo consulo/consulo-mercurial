@@ -15,10 +15,11 @@
  */
 package org.zmlx.hg4idea.action.mq;
 
+import javax.annotation.Nonnull;
+
 import com.intellij.openapi.util.Condition;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.vcs.log.Hash;
-import org.jetbrains.annotations.NotNull;
 import org.zmlx.hg4idea.HgNameWithHashInfo;
 import org.zmlx.hg4idea.action.HgLogSingleCommitAction;
 import org.zmlx.hg4idea.repo.HgRepository;
@@ -26,11 +27,11 @@ import org.zmlx.hg4idea.repo.HgRepository;
 public abstract class HgMqAppliedPatchAction extends HgLogSingleCommitAction {
 
   @Override
-  protected boolean isEnabled(@NotNull HgRepository repository, @NotNull Hash commit) {
+  protected boolean isEnabled(@Nonnull HgRepository repository, @Nonnull Hash commit) {
     return super.isEnabled(repository, commit) && isAppliedPatch(repository, commit);
   }
 
-  public static boolean isAppliedPatch(@NotNull HgRepository repository, @NotNull final Hash hash) {
+  public static boolean isAppliedPatch(@Nonnull HgRepository repository, @Nonnull final Hash hash) {
     return ContainerUtil.exists(repository.getMQAppliedPatches(), new Condition<HgNameWithHashInfo>() {
       @Override
       public boolean value(HgNameWithHashInfo info) {

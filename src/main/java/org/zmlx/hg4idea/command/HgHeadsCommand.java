@@ -15,7 +15,7 @@ package org.zmlx.hg4idea.command;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.HgRevisionNumber;
 
 import java.util.List;
@@ -25,7 +25,7 @@ public class HgHeadsCommand {
   private final Project project;
   private final VirtualFile repo;
 
-  public HgHeadsCommand(Project project, @NotNull VirtualFile repo) {
+  public HgHeadsCommand(Project project, @Nonnull VirtualFile repo) {
     this.project = project;
     this.repo = repo;
   }

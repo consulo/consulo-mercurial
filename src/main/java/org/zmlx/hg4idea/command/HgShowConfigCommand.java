@@ -15,22 +15,25 @@ package org.zmlx.hg4idea.command;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+
 import org.zmlx.hg4idea.execution.HgCommandExecutor;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 
 import java.util.*;
 
+import javax.annotation.Nullable;
+
 public class HgShowConfigCommand {
 
-  @NotNull private final Project project;
+  @Nonnull
+  private final Project project;
 
-  public HgShowConfigCommand(@NotNull Project project) {
+  public HgShowConfigCommand(@Nonnull Project project) {
     this.project = project;
   }
 
-  @NotNull
+  @Nonnull
   public Map<String, Map<String, String>> execute(@Nullable VirtualFile repo) {
     if (repo == null) {
       return Collections.emptyMap();

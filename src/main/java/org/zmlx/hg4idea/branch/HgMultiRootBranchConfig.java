@@ -16,24 +16,24 @@
 package org.zmlx.hg4idea.branch;
 
 import com.intellij.dvcs.branch.DvcsMultiRootBranchConfig;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.repo.HgRepository;
 
 import java.util.Collection;
 
 public class HgMultiRootBranchConfig extends DvcsMultiRootBranchConfig<HgRepository> {
 
-  public HgMultiRootBranchConfig(@NotNull Collection<HgRepository> repositories) {
+  public HgMultiRootBranchConfig(@Nonnull Collection<HgRepository> repositories) {
     super(repositories);
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public Collection<String> getLocalBranchNames() {
     return HgBranchUtil.getCommonBranches(myRepositories);
   }
 
-  @NotNull
+  @Nonnull
   Collection<String> getBookmarkNames() {
     return HgBranchUtil.getCommonBookmarks(myRepositories);
   }

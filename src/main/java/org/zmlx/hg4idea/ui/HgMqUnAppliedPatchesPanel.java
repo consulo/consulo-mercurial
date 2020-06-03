@@ -39,8 +39,8 @@ import com.intellij.util.Function;
 import com.intellij.util.containers.ContainerUtil;
 import consulo.util.dataholder.Key;
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+
 import org.zmlx.hg4idea.HgUpdater;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.command.mq.HgQDeleteCommand;
@@ -50,6 +50,7 @@ import org.zmlx.hg4idea.mq.MqPatchDetails;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.util.HgUtil;
 
+import javax.annotation.Nullable;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.table.AbstractTableModel;
@@ -70,14 +71,19 @@ public class HgMqUnAppliedPatchesPanel extends JPanel implements DataProvider, H
   private static final Logger LOG = Logger.getInstance(HgMqUnAppliedPatchesPanel.class);
   private static final String START_EDITING = "startEditing";
 
-  @NotNull private final Project myProject;
-  @NotNull private final HgRepository myRepository;
-  @NotNull private final MyPatchTable myPatchTable;
-  @Nullable private final VirtualFile myMqPatchDir;
+  @Nonnull
+  private final Project myProject;
+  @Nonnull
+  private final HgRepository myRepository;
+  @Nonnull
+  private final MyPatchTable myPatchTable;
+  @Nullable
+  private final VirtualFile myMqPatchDir;
   private volatile boolean myNeedToUpdateFileContent;
-  @Nullable private final File mySeriesFile;
+  @Nullable
+  private final File mySeriesFile;
 
-  public HgMqUnAppliedPatchesPanel(@NotNull HgRepository repository) {
+  public HgMqUnAppliedPatchesPanel(@Nonnull HgRepository repository) {
     super(new BorderLayout());
     myRepository = repository;
     myProject = myRepository.getProject();
@@ -135,7 +141,7 @@ public class HgMqUnAppliedPatchesPanel extends JPanel implements DataProvider, H
     myNeedToUpdateFileContent = false;
     new Task.Backgroundable(myProject, "Updating patch series for " + myRepository.getPresentableUrl()) {
       @Override
-      public void run(@NotNull ProgressIndicator indicator) {
+      public void run(@Nonnull ProgressIndicator indicator) {
         if (newContent != null) {
           writeSeriesFile(newContent);
         }
@@ -146,7 +152,7 @@ public class HgMqUnAppliedPatchesPanel extends JPanel implements DataProvider, H
     }.queue();
   }
 
-  private void writeSeriesFile(@NotNull String newContent) {
+  private void writeSeriesFile(@Nonnull String newContent) {
     if (mySeriesFile == null || !mySeriesFile.exists()) return;
     try {
       FileUtil.writeToFile(mySeriesFile, newContent);
@@ -157,7 +163,7 @@ public class HgMqUnAppliedPatchesPanel extends JPanel implements DataProvider, H
     myRepository.update();
   }
 
-  @NotNull
+  @Nonnull
   @CalledInAwt
   private String getContentFromModel() {
     StringBuilder content = new StringBuilder();
@@ -200,13 +206,13 @@ public class HgMqUnAppliedPatchesPanel extends JPanel implements DataProvider, H
     return VfsUtil.findFileByIoFile(new File(myMqPatchDir.getPath(), patchName), true);
   }
 
-  @NotNull
+  @Nonnull
   @CalledInAwt
   public List<String> getSelectedPatchNames() {
     return getPatchNames(myPatchTable.getSelectedRows());
   }
 
-  @NotNull
+  @Nonnull
   @CalledInAny
   private List<String> getPatchNames(int[] rows) {
     return ContainerUtil.map(Ints.asList(rows), new Function<Integer, String>() {
@@ -217,7 +223,7 @@ public class HgMqUnAppliedPatchesPanel extends JPanel implements DataProvider, H
     });
   }
 
-  @NotNull
+  @Nonnull
   public HgRepository getRepository() {
     return myRepository;
   }
@@ -295,11 +301,14 @@ public class HgMqUnAppliedPatchesPanel extends JPanel implements DataProvider, H
 
   private class MyPatchModel extends AbstractTableModel implements MultiReorderedModel {
 
-    @NotNull private final MqPatchDetails.MqPatchEnum[] myColumnNames = MqPatchDetails.MqPatchEnum.values();
-    @NotNull private final Map<String, MqPatchDetails> myPatchesWithDetails = ContainerUtil.newHashMap();
-    @NotNull private final List<String> myPatches;
+    @Nonnull
+	private final MqPatchDetails.MqPatchEnum[] myColumnNames = MqPatchDetails.MqPatchEnum.values();
+    @Nonnull
+	private final Map<String, MqPatchDetails> myPatchesWithDetails = ContainerUtil.newHashMap();
+    @Nonnull
+	private final List<String> myPatches;
 
-    public MyPatchModel(@NotNull List<String> names) {
+    public MyPatchModel(@Nonnull List<String> names) {
       myPatches = ContainerUtil.newArrayList(names);
       readMqPatchesDetails();
     }
@@ -345,7 +354,7 @@ public class HgMqUnAppliedPatchesPanel extends JPanel implements DataProvider, H
       return mapDetail != null ? mapDetail : "";
     }
 
-    @NotNull
+    @Nonnull
     private String getPatchName(int rowIndex) {
       return myPatches.get(rowIndex);
     }

@@ -17,8 +17,8 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.vcsUtil.VcsFileUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.execution.HgCommandExecutor;
 import org.zmlx.hg4idea.util.HgUtil;
 
@@ -41,7 +41,7 @@ public class HgAddCommand {
    * Adds given files to their Mercurial repositories.
    * @param files files to be added.
    */
-  public void executeInCurrentThread(@NotNull Collection<VirtualFile> files) {
+  public void executeInCurrentThread(@Nonnull Collection<VirtualFile> files) {
     executeInCurrentThread(files, null);
   }
 
@@ -49,7 +49,7 @@ public class HgAddCommand {
     if (files.size() >= HgUtil.MANY_FILES) {
       new Task.Backgroundable(myProject, "Adding Files to Mercurial", true) {
         @Override
-        public void run(@NotNull ProgressIndicator indicator) {
+        public void run(@Nonnull ProgressIndicator indicator) {
           indicator.setIndeterminate(false);
           executeInCurrentThread(files, indicator);
         }
@@ -65,7 +65,7 @@ public class HgAddCommand {
     }
   }
 
-  private void executeInCurrentThread(@NotNull Collection<VirtualFile> files, @Nullable ProgressIndicator indicator) {
+  private void executeInCurrentThread(@Nonnull Collection<VirtualFile> files, @Nullable ProgressIndicator indicator) {
     final Map<VirtualFile, Collection<VirtualFile>> sorted = HgUtil.sortByHgRoots(myProject, files);
     for (Map.Entry<VirtualFile, Collection<VirtualFile>> entry : sorted.entrySet()) {
       if (indicator != null) {

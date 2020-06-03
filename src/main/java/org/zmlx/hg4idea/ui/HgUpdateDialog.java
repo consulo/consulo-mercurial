@@ -15,7 +15,7 @@ package org.zmlx.hg4idea.ui;
 import com.intellij.ui.IdeBorderFactory;
 import com.intellij.ui.components.JBCheckBox;
 import net.miginfocom.swing.MigLayout;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.provider.update.HgUpdateConfigurationSettings;
 import org.zmlx.hg4idea.provider.update.HgUpdateType;
 
@@ -40,7 +40,7 @@ public class HgUpdateDialog {
     myContentPanel = createCenterPanel();
   }
 
-  @NotNull
+  @Nonnull
   public JComponent getContentPanel() {
     return myContentPanel;
   }
@@ -49,7 +49,7 @@ public class HgUpdateDialog {
     myCommitAfterMergeCheckBox.setEnabled(myMergeRadioButton.isSelected());
   }
 
-  public void applyTo(@NotNull HgUpdateConfigurationSettings updateConfiguration) {
+  public void applyTo(@Nonnull HgUpdateConfigurationSettings updateConfiguration) {
     updateConfiguration.setShouldPull(myPullCheckBox.isSelected());
     if (myOnlyUpdateButton.isSelected()) {
       updateConfiguration.setUpdateType(HgUpdateType.ONLY_UPDATE);
@@ -63,7 +63,7 @@ public class HgUpdateDialog {
     updateConfiguration.setShouldCommitAfterMerge(myCommitAfterMergeCheckBox.isSelected());
   }
 
-  @NotNull
+  @Nonnull
   public JComponent createCenterPanel() {
     String panelConstraints = "flowy, ins 0, fill";
     MigLayout migLayout = new MigLayout(panelConstraints);
@@ -114,7 +114,7 @@ public class HgUpdateDialog {
     return contentPane;
   }
 
-  public void updateFrom(@NotNull HgUpdateConfigurationSettings updateConfiguration) {
+  public void updateFrom(@Nonnull HgUpdateConfigurationSettings updateConfiguration) {
     myPullCheckBox.setSelected(updateConfiguration.shouldPull());
     HgUpdateType updateType = updateConfiguration.getUpdateType();
     switch (updateType) {

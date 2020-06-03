@@ -18,19 +18,21 @@ package org.zmlx.hg4idea.action;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vcs.update.UpdatedFiles;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+
 import org.zmlx.hg4idea.command.HgMergeCommand;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.ui.HgMergeDialog;
 
 import java.util.Collection;
 
+import javax.annotation.Nullable;
+
 public class HgMerge extends HgAbstractGlobalSingleRepoAction {
 
   @Override
-  public void execute(@NotNull final Project project,
-                      @NotNull final Collection<HgRepository> repos,
+  public void execute(@Nonnull final Project project,
+                      @Nonnull final Collection<HgRepository> repos,
                       @Nullable final HgRepository selectedRepo) {
     final HgMergeDialog mergeDialog = new HgMergeDialog(project, repos, selectedRepo);
     if (mergeDialog.showAndGet()) {

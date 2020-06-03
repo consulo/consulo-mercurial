@@ -17,7 +17,8 @@ package org.zmlx.hg4idea;
 
 import java.util.Objects;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+
 import com.intellij.vcs.log.Hash;
 
 /**
@@ -28,10 +29,12 @@ import com.intellij.vcs.log.Hash;
  */
 public class HgNameWithHashInfo {
 
-  @NotNull protected final String myName;
-  @NotNull private final Hash myHash;
+  @Nonnull
+  protected final String myName;
+  @Nonnull
+  private final Hash myHash;
 
-  public HgNameWithHashInfo(@NotNull String name, @NotNull Hash hash) {
+  public HgNameWithHashInfo(@Nonnull String name, @Nonnull Hash hash) {
     myName = name;
     myHash = hash;
   }
@@ -39,12 +42,12 @@ public class HgNameWithHashInfo {
   /**
    * <p>Returns the hash on which this bookmark or tag is reference to.</p>
    */
-  @NotNull
+  @Nonnull
   public Hash getHash() {
     return myHash;
   }
 
-  @NotNull
+  @Nonnull
   public String getName() {
     return myName;
   }

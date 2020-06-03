@@ -21,8 +21,8 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.vcs.LineHandlerHelper;
 import com.intellij.vcs.VcsLocaleHelper;
 import consulo.util.dataholder.Key;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -32,7 +32,7 @@ import java.util.List;
 public final class ShellCommand {
   private final GeneralCommandLine myCommandLine;
 
-  public ShellCommand(@NotNull List<String> commandLine, @Nullable String dir, @Nullable Charset charset) {
+  public ShellCommand(@Nonnull List<String> commandLine, @Nullable String dir, @Nullable Charset charset) {
     if (commandLine.isEmpty()) {
       throw new IllegalArgumentException("commandLine is empty");
     }
@@ -50,7 +50,7 @@ public final class ShellCommand {
     myCommandLine.withEnvironment(VcsLocaleHelper.getDefaultLocaleEnvironmentVars("hg"));
   }
 
-  @NotNull
+  @Nonnull
   public HgCommandResult execute(final boolean showTextOnIndicator, boolean isBinary) throws ShellCommandException, InterruptedException {
     final ProgressIndicator indicator = ProgressManager.getInstance().getProgressIndicator();
     try {

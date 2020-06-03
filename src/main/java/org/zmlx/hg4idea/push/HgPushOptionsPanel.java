@@ -17,7 +17,7 @@ package org.zmlx.hg4idea.push;
 
 import com.intellij.dvcs.push.VcsPushOptionsPanel;
 import com.intellij.ui.components.JBCheckBox;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 import java.awt.*;
 

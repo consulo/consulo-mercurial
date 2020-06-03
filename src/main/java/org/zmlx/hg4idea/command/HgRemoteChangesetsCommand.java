@@ -21,8 +21,8 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+
 import org.zmlx.hg4idea.HgProjectSettings;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.action.HgCommandResultNotifier;
@@ -31,6 +31,7 @@ import org.zmlx.hg4idea.execution.HgRemoteCommandExecutor;
 import org.zmlx.hg4idea.util.HgErrorUtil;
 import org.zmlx.hg4idea.util.HgUtil;
 
+import javax.annotation.Nullable;
 import javax.swing.event.HyperlinkEvent;
 import java.util.List;
 
@@ -80,8 +81,8 @@ public abstract class HgRemoteChangesetsCommand extends HgChangesetsCommand {
                                                        "<br/>You may enable checking for changes <a href='#'>in the Settings</a>.",
                                                        new NotificationListener() {
                                                          @Override
-                                                         public void hyperlinkUpdate(@NotNull Notification notification,
-                                                                                     @NotNull HyperlinkEvent event) {
+                                                         public void hyperlinkUpdate(@Nonnull Notification notification,
+                                                                                     @Nonnull HyperlinkEvent event) {
                                                            ShowSettingsUtil.getInstance()
                                                              .showSettingsDialog(project, vcs.getConfigurable().getDisplayName());
                                                          }

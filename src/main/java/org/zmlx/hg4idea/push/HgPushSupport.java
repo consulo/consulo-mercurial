@@ -15,6 +15,8 @@
  */
 package org.zmlx.hg4idea.push;
 
+import javax.annotation.Nonnull;
+
 import com.intellij.dvcs.branch.DvcsSyncSettings;
 import com.intellij.dvcs.push.*;
 import com.intellij.dvcs.repo.RepositoryManager;
@@ -22,8 +24,8 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.AbstractVcs;
 import com.intellij.util.ObjectUtils;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.HgProjectSettings;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.repo.HgRepository;
@@ -31,31 +33,35 @@ import org.zmlx.hg4idea.util.HgUtil;
 
 public class HgPushSupport extends PushSupport<HgRepository, HgPushSource, HgTarget> {
 
-  @NotNull private final Project myProject;
-  @NotNull private final HgVcs myVcs;
-  @NotNull private final HgProjectSettings mySettings;
-  @NotNull private final PushSettings myCommonPushSettings;
+  @Nonnull
+  private final Project myProject;
+  @Nonnull
+  private final HgVcs myVcs;
+  @Nonnull
+  private final HgProjectSettings mySettings;
+  @Nonnull
+  private final PushSettings myCommonPushSettings;
 
-  public HgPushSupport(@NotNull Project project) {
+  public HgPushSupport(@Nonnull Project project) {
     myProject = project;
     myVcs = ObjectUtils.assertNotNull(HgVcs.getInstance(myProject));
     mySettings = myVcs.getProjectSettings();
     myCommonPushSettings = ServiceManager.getService(project, PushSettings.class);
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public AbstractVcs getVcs() {
     return myVcs;
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public Pusher<HgRepository, HgPushSource, HgTarget> getPusher() {
     return new HgPusher();
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public OutgoingCommitsProvider<HgRepository, HgPushSource, HgTarget> getOutgoingCommitsProvider() {
     return new HgOutgoingCommitsProvider();
@@ -63,19 +69,19 @@ public class HgPushSupport extends PushSupport<HgRepository, HgPushSource, HgTar
 
   @Nullable
   @Override
-  public HgTarget getDefaultTarget(@NotNull HgRepository repository) {
+  public HgTarget getDefaultTarget(@Nonnull HgRepository repository) {
     String defaultPushPath = repository.getRepositoryConfig().getDefaultPushPath();
     return defaultPushPath == null ? null : new HgTarget(defaultPushPath, repository.getCurrentBranchName());
   }
 
-  @NotNull
+  @Nonnull
   @Override
-  public HgPushSource getSource(@NotNull HgRepository repository) {
+  public HgPushSource getSource(@Nonnull HgRepository repository) {
     String localBranch = repository.getCurrentBranchName();
     return new HgPushSource(localBranch);
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public RepositoryManager<HgRepository> getRepositoryManager() {
     return HgUtil.getRepositoryManager(myProject);
@@ -87,13 +93,13 @@ public class HgPushSupport extends PushSupport<HgRepository, HgPushSource, HgTar
   }
 
   @Override
-  @NotNull
-  public PushTargetPanel<HgTarget> createTargetPanel(@NotNull HgRepository repository, @Nullable HgTarget defaultTarget) {
+  @Nonnull
+  public PushTargetPanel<HgTarget> createTargetPanel(@Nonnull HgRepository repository, @Nullable HgTarget defaultTarget) {
     return new HgPushTargetPanel(repository, defaultTarget);
   }
 
   @Override
-  public boolean isForcePushAllowed(@NotNull HgRepository repo, @NotNull HgTarget target) {
+  public boolean isForcePushAllowed(@Nonnull HgRepository repo, @Nonnull HgTarget target) {
     return true;
   }
 
@@ -109,12 +115,12 @@ public class HgPushSupport extends PushSupport<HgRepository, HgPushSource, HgTar
   }
 
   @Override
-  public void saveSilentForcePushTarget(@NotNull HgTarget target) {
+  public void saveSilentForcePushTarget(@Nonnull HgTarget target) {
     myCommonPushSettings.addForcePushTarget(target.getPresentation(), target.getBranchName());
   }
 
   @Override
-  public boolean isSilentForcePushAllowed(@NotNull HgTarget target) {
+  public boolean isSilentForcePushAllowed(@Nonnull HgTarget target) {
     return myCommonPushSettings.containsForcePushTarget(target.getPresentation(), target.getBranchName());
   }
 }

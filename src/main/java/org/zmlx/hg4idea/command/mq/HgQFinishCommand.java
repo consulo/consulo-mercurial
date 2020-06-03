@@ -16,8 +16,8 @@
 package org.zmlx.hg4idea.command.mq;
 
 import com.intellij.openapi.project.Project;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.action.HgCommandResultNotifier;
 import org.zmlx.hg4idea.execution.HgCommandExecutor;
 import org.zmlx.hg4idea.execution.HgCommandResult;
@@ -28,13 +28,14 @@ import org.zmlx.hg4idea.util.HgErrorUtil;
 import java.util.Collections;
 
 public class HgQFinishCommand {
-  @NotNull private final HgRepository myRepository;
+  @Nonnull
+  private final HgRepository myRepository;
 
-  public HgQFinishCommand(@NotNull HgRepository repository) {
+  public HgQFinishCommand(@Nonnull HgRepository repository) {
     myRepository = repository;
   }
 
-  public void execute(@NotNull final String revision) {
+  public void execute(@Nonnull final String revision) {
     final Project project = myRepository.getProject();
     new HgCommandExecutor(project)
       .execute(myRepository.getRoot(), "qfinish", Collections.singletonList("qbase:" + revision), new HgCommandResultHandler() {

@@ -18,8 +18,8 @@ package org.zmlx.hg4idea.mq;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.text.DateFormatUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.log.HgBaseLogParser;
 
 import java.util.Date;
@@ -30,12 +30,15 @@ public class MqPatchDetails {
 
   public enum MqPatchEnum {Name, Subject, Author, Branch, Date}
 
-  @NotNull private final Map<MqPatchEnum, String> myPatchDetailsPresentationMap = ContainerUtil.newEnumMap(MqPatchEnum.class);
+  @Nonnull
+  private final Map<MqPatchEnum, String> myPatchDetailsPresentationMap = ContainerUtil.newEnumMap(MqPatchEnum.class);
 
   @Nullable private final String myNodeId;
   @Nullable private final String myParent;
-  @Nullable private final Date myDate;
-  @Nullable private final VirtualFile myRoot;
+  @Nullable
+  private final Date myDate;
+  @Nullable
+  private final VirtualFile myRoot;
   @Nullable private final String myBranch;
   @Nullable private final String myMessage;
   @Nullable private final String myUser;

@@ -18,13 +18,15 @@ package org.zmlx.hg4idea.command;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+
 import org.zmlx.hg4idea.execution.HgCommandException;
 import org.zmlx.hg4idea.execution.HgCommandExecutor;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 
 import java.util.Collections;
+
+import javax.annotation.Nullable;
 
 /**
  * @author Nadya Zabrodina
@@ -35,7 +37,7 @@ public class HgBranchCreateCommand {
   private final VirtualFile repo;
   private final String branchName;
 
-  public HgBranchCreateCommand(@NotNull Project project, @NotNull VirtualFile repo, @Nullable String branchName) {
+  public HgBranchCreateCommand(@Nonnull Project project, @Nonnull VirtualFile repo, @Nullable String branchName) {
     this.project = project;
     this.repo = repo;
     this.branchName = branchName;

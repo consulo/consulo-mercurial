@@ -19,8 +19,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.containers.ContainerUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import java.awt.*;
 import java.io.DataInputStream;
@@ -32,14 +32,14 @@ import java.util.List;
 
 public class HgPromptCommandExecutor extends HgCommandExecutor {
 
-  public HgPromptCommandExecutor(@NotNull Project project) {
+  public HgPromptCommandExecutor(@Nonnull Project project) {
     super(project);
   }
 
   @Override
   @Nullable
   public HgCommandResult executeInCurrentThread(@Nullable final VirtualFile repo,
-                                                @NotNull final String operation,
+                                                @Nonnull final String operation,
                                                 @Nullable final List<String> arguments) {
     SocketServer promptServer = new SocketServer(new PromptReceiver(new HgDeleteModifyPromptHandler()));
     try {
@@ -123,7 +123,7 @@ public class HgPromptCommandExecutor extends HgCommandExecutor {
       }
     }
 
-    private static void sendChoiceToHg(@NotNull DataOutputStream outStream, int choice) throws IOException {
+    private static void sendChoiceToHg(@Nonnull DataOutputStream outStream, int choice) throws IOException {
       if (choice == HgPromptChoice.CLOSED_OPTION) {
         outStream.writeInt(-1);
       }

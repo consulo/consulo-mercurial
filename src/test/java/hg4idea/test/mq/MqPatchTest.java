@@ -23,8 +23,8 @@ import com.intellij.vcs.log.Hash;
 import com.intellij.vcs.log.TimedVcsCommit;
 import hg4idea.test.HgPlatformTest;
 import hg4idea.test.HgTestUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.HgNameWithHashInfo;
 import org.zmlx.hg4idea.command.mq.HgQImportCommand;
 import org.zmlx.hg4idea.command.mq.HgQNewCommand;
@@ -91,7 +91,7 @@ public class MqPatchTest extends HgPlatformTest {
     assertEqualsCommitInfo(null, patchDetails);
   }
 
-  @NotNull
+  @Nonnull
   private MqPatchDetails updateAndGetDetails() {
     myHgRepository.update();
     List<HgNameWithHashInfo> appliedPatches = myHgRepository.getMQAppliedPatches();
@@ -107,7 +107,7 @@ public class MqPatchTest extends HgPlatformTest {
                                                                   Arrays.asList("-r", "tip")));
   }
 
-  private File getFileByPatchName(@NotNull String patchName) {
+  private File getFileByPatchName(@Nonnull String patchName) {
     return new File(myMqPatchDir.getPath(), patchName);
   }
 

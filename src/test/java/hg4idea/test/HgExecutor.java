@@ -19,7 +19,7 @@ import com.intellij.openapi.application.PluginPathManager;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.testFramework.vcs.ExecutableHelper;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 import org.zmlx.hg4idea.execution.ShellCommand;
 
@@ -33,7 +33,8 @@ public class HgExecutor {
 
   private static final String HG_EXECUTABLE_ENV = "IDEA_TEST_HG_EXECUTABLE";
 
-  @NotNull private static final String HG_EXECUTABLE = doFindExecutable();
+  @Nonnull
+  private static final String HG_EXECUTABLE = doFindExecutable();
 
   private static String doFindExecutable() {
     final String programName = "hg";
@@ -61,11 +62,11 @@ public class HgExecutor {
     return null;
   }
 
-  public static String hg(@NotNull String command) {
+  public static String hg(@Nonnull String command) {
     return hg(command, false);
   }
 
-  public static String hg(@NotNull String command, boolean ignoreNonZeroExitCode) {
+  public static String hg(@Nonnull String command, boolean ignoreNonZeroExitCode) {
     List<String> split = splitCommandInParameters(command);
     split.add(0, HG_EXECUTABLE);
     debug("hg " + command);
@@ -89,11 +90,11 @@ public class HgExecutor {
     hgMergeWith("");
   }
 
-  public static void hgMergeWith(@NotNull String mergeWith) {
+  public static void hgMergeWith(@Nonnull String mergeWith) {
     hg("merge " + mergeWith, true);
   }
 
-  @NotNull
+  @Nonnull
   public static String getHgExecutable() {
     return HG_EXECUTABLE;
   }

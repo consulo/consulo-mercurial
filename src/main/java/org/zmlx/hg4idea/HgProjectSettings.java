@@ -12,8 +12,8 @@
 // limitations under the License.
 package org.zmlx.hg4idea;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import com.intellij.dvcs.branch.DvcsSyncSettings;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ServiceManager;
@@ -29,12 +29,14 @@ import com.intellij.openapi.vcs.changes.VcsAnnotationRefresher;
 public class HgProjectSettings implements PersistentStateComponent<HgProjectSettings.State>, DvcsSyncSettings
 {
 
-  @NotNull private final HgGlobalSettings myAppSettings;
-  @NotNull private final Project myProject;
+  @Nonnull
+  private final HgGlobalSettings myAppSettings;
+  @Nonnull
+  private final Project myProject;
 
   private State myState = new State();
 
-  public HgProjectSettings(@NotNull Project project, @NotNull HgGlobalSettings appSettings) {
+  public HgProjectSettings(@Nonnull Project project, @Nonnull HgGlobalSettings appSettings) {
     myProject = project;
     myAppSettings = appSettings;
   }
@@ -60,7 +62,7 @@ public class HgProjectSettings implements PersistentStateComponent<HgProjectSett
     }
   }
 
-  public static HgProjectSettings getInstance(@NotNull Project project) {
+  public static HgProjectSettings getInstance(@Nonnull Project project) {
     return ServiceManager.getService(project, HgProjectSettings.class);
   }
 
@@ -69,7 +71,7 @@ public class HgProjectSettings implements PersistentStateComponent<HgProjectSett
     return myState.RECENT_HG_ROOT_PATH;
   }
 
-  public void setRecentRootPath(@NotNull String recentRootPath) {
+  public void setRecentRootPath(@Nonnull String recentRootPath) {
     myState.RECENT_HG_ROOT_PATH = recentRootPath;
   }
 
@@ -84,12 +86,12 @@ public class HgProjectSettings implements PersistentStateComponent<HgProjectSett
     return myState.myIgnoreWhitespacesInAnnotations;
   }
 
-  @NotNull
+  @Nonnull
   public Value getSyncSetting() {
     return myState.ROOT_SYNC;
   }
 
-  public void setSyncSetting(@NotNull Value syncSetting) {
+  public void setSyncSetting(@Nonnull Value syncSetting) {
     myState.ROOT_SYNC = syncSetting;
   }
 
@@ -112,7 +114,7 @@ public class HgProjectSettings implements PersistentStateComponent<HgProjectSett
     myAppSettings.setHgExecutable(text);
   }
 
-  @NotNull
+  @Nonnull
   public HgGlobalSettings getGlobalSettings() {
     return myAppSettings;
   }

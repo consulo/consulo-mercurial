@@ -16,27 +16,29 @@
 
 package org.zmlx.hg4idea.action;
 
+import javax.annotation.Nonnull;
+
 import com.intellij.dvcs.repo.AbstractRepositoryManager;
 import com.intellij.dvcs.ui.VcsLogSingleCommitAction;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.repo.HgRepositoryManager;
 
 public abstract class HgLogSingleCommitAction extends VcsLogSingleCommitAction<HgRepository> {
 
-  @NotNull
+  @Nonnull
   @Override
-  protected AbstractRepositoryManager<HgRepository> getRepositoryManager(@NotNull Project project) {
+  protected AbstractRepositoryManager<HgRepository> getRepositoryManager(@Nonnull Project project) {
     return ServiceManager.getService(project, HgRepositoryManager.class);
   }
 
   @Nullable
   @Override
-  protected HgRepository getRepositoryForRoot(@NotNull Project project, @NotNull VirtualFile root) {
+  protected HgRepository getRepositoryForRoot(@Nonnull Project project, @Nonnull VirtualFile root) {
     return getRepositoryManager(project).getRepositoryForRoot(root);
   }
 

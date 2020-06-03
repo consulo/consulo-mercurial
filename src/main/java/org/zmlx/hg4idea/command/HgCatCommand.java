@@ -14,8 +14,8 @@ package org.zmlx.hg4idea.command;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.HgFile;
 import org.zmlx.hg4idea.HgRevisionNumber;
 import org.zmlx.hg4idea.execution.HgCommandExecutor;
@@ -34,7 +34,7 @@ public class HgCatCommand {
   }
 
   @Nullable
-  public HgCommandResult execute(@NotNull HgFile hgFile, @Nullable HgRevisionNumber vcsRevisionNumber, @Nullable Charset charset) {
+  public HgCommandResult execute(@Nonnull HgFile hgFile, @Nullable HgRevisionNumber vcsRevisionNumber, @Nullable Charset charset) {
     final List<String> arguments = createArguments(vcsRevisionNumber, hgFile.getRelativePath());
     final HgCommandExecutor executor = new HgCommandExecutor(myProject);
     executor.setSilent(true);

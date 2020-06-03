@@ -17,8 +17,8 @@ package org.zmlx.hg4idea.execution;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.ui.Messages;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
@@ -38,9 +38,9 @@ public class HgDeleteModifyPromptHandler implements HgPromptHandler {
     "\\slocal\\schanged(.+)which\\sremote\\sdeleted\\s.+");
 
 
-  public HgPromptChoice promptUser(@NotNull final String message,
-                                   @NotNull final HgPromptChoice[] choices,
-                                   @NotNull final HgPromptChoice defaultChoice) {
+  public HgPromptChoice promptUser(@Nonnull final String message,
+                                   @Nonnull final HgPromptChoice[] choices,
+                                   @Nonnull final HgPromptChoice defaultChoice) {
 
     Matcher localDelMatcher = LOCAL_DELETE_REMOTE_MODIFIED_CONFLICT_MESSAGE_PATTERN.matcher(message);
     Matcher localModifyMatcher = REMOTE_DELETE_LOCAL_MODIFIED_CONFLICT_MESSAGE_PATTERN.matcher(message);

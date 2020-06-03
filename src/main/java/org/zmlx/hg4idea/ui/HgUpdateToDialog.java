@@ -14,15 +14,16 @@ package org.zmlx.hg4idea.ui;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.IdeBorderFactory;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.zmlx.hg4idea.repo.HgRepository;
 
 import java.util.Collection;
 
 public class HgUpdateToDialog extends HgCommonDialogWithChoices {
 
-  public HgUpdateToDialog(Project project, @NotNull Collection<HgRepository> repos, @Nullable HgRepository selectedRepo) {
+  public HgUpdateToDialog(Project project, @Nonnull Collection<HgRepository> repos, @Nullable HgRepository selectedRepo) {
     super(project, repos, selectedRepo);
     myBranchesBorderPanel.setBorder(IdeBorderFactory.createTitledBorder("Switch to", true));
     hgRepositorySelectorComponent.setTitle("Select repository to switch");

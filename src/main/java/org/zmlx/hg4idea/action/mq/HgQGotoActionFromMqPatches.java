@@ -15,18 +15,18 @@
  */
 package org.zmlx.hg4idea.action.mq;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.command.mq.HgQGotoCommand;
 import org.zmlx.hg4idea.repo.HgRepository;
 
 public class HgQGotoActionFromMqPatches extends HgSingleActionFomMqPatches {
 
   @Override
-  protected void executeInCurrentThread(@NotNull HgRepository repository, @NotNull String patchName) {
+  protected void executeInCurrentThread(@Nonnull HgRepository repository, @Nonnull String patchName) {
     new HgQGotoCommand(repository).executeInCurrentThread(patchName);
   }
 
-  @NotNull
+  @Nonnull
   @Override
   protected String getTitle() {
     return "Goto...";

@@ -22,8 +22,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.vcsUtil.VcsImplUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+
 import org.zmlx.hg4idea.HgGlobalSettings;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.HgVcsMessages;
@@ -36,6 +36,8 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 /**
  * <p>Executes an hg external command synchronously or asynchronously with the consequent call of {@link HgCommandResultHandler}</p>
@@ -56,7 +58,8 @@ public class HgCommandExecutor {
   protected final HgVcs myVcs;
   protected final String myDestination;
 
-  @NotNull private Charset myCharset;
+  @Nonnull
+  private Charset myCharset;
   private boolean myIsSilent = false;
   private boolean myShowOutput = false;
   private boolean myIsBinary = false;
@@ -96,8 +99,8 @@ public class HgCommandExecutor {
     myOutputAlwaysSuppressed = outputAlwaysSuppressed;
   }
 
-  public void execute(@Nullable final VirtualFile repo, @NotNull final String operation, @Nullable final List<String> arguments,
-                      @Nullable final HgCommandResultHandler handler) {
+  public void execute(@Nullable final VirtualFile repo, @Nonnull final String operation, @Nullable final List<String> arguments,
+					  @Nullable final HgCommandResultHandler handler) {
     HgUtil.executeOnPooledThread(new Runnable() {
       @Override
       public void run() {
@@ -110,7 +113,7 @@ public class HgCommandExecutor {
   }
 
   public HgCommandResult executeInCurrentThread(@Nullable final VirtualFile repo,
-                                                @NotNull final String operation,
+                                                @Nonnull final String operation,
                                                 @Nullable final List<String> arguments) {
     HgCommandResult result = executeInCurrentThreadAndLog(repo, operation, arguments);
     if (HgErrorUtil.isUnknownEncodingError(result)) {
@@ -122,7 +125,7 @@ public class HgCommandExecutor {
 
   @Nullable
   private HgCommandResult executeInCurrentThreadAndLog(@Nullable final VirtualFile repo,
-                                                       @NotNull final String operation,
+                                                       @Nonnull final String operation,
                                                        @Nullable final List<String> arguments) {
     if (myProject == null || myProject.isDisposed() || myVcs == null) return null;
 
@@ -145,7 +148,7 @@ public class HgCommandExecutor {
     }
   }
 
-  private void processError(@NotNull ShellCommandException e) {
+  private void processError(@Nonnull ShellCommandException e) {
     if (myVcs.getExecutableValidator().checkExecutableAndNotifyIfNeeded()) {
       // if the problem was not with invalid executable - show error.
       showError(e);
@@ -153,8 +156,8 @@ public class HgCommandExecutor {
     }
   }
 
-  @NotNull
-  private ShellCommand createShellCommandWithArgs(@Nullable VirtualFile repo, @NotNull String operation, @Nullable List<String> arguments) {
+  @Nonnull
+  private ShellCommand createShellCommandWithArgs(@Nullable VirtualFile repo, @Nonnull String operation, @Nullable List<String> arguments) {
 
     logCommand(operation, arguments);
 
@@ -185,7 +188,7 @@ public class HgCommandExecutor {
 
   // logging to the Version Control console (without extensions and configs)
   @SuppressWarnings("UseOfSystemOutOrSystemErr")
-  protected void logCommand(@NotNull String operation, @Nullable List<String> arguments) {
+  protected void logCommand(@Nonnull String operation, @Nullable List<String> arguments) {
     if (myProject.isDisposed()) {
       return;
     }
@@ -212,7 +215,7 @@ public class HgCommandExecutor {
   }
 
   @SuppressWarnings("UseOfSystemOutOrSystemErr")
-  private void logResult(@NotNull HgCommandResult result) {
+  private void logResult(@Nonnull HgCommandResult result) {
     final boolean unitTestMode = ApplicationManager.getApplication().isUnitTestMode();
 
     // log output if needed

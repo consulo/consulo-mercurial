@@ -15,16 +15,18 @@
  */
 package org.zmlx.hg4idea.util;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+
 import org.zmlx.hg4idea.repo.HgRepository;
 
 import java.util.Collection;
 
+import javax.annotation.Nullable;
+
 public class HgBranchReferenceValidator extends HgReferenceValidator {
   private final HgRepository myRepository;
 
-  public HgBranchReferenceValidator(@NotNull HgRepository repository) {
+  public HgBranchReferenceValidator(@Nonnull HgRepository repository) {
     myRepository = repository;
   }
 

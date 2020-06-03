@@ -20,7 +20,7 @@ import com.intellij.openapi.vcs.update.FileGroup;
 import com.intellij.openapi.vcs.update.UpdatedFiles;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.containers.ContainerUtil;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.HgFile;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.command.HgResolveCommand;
@@ -36,14 +36,15 @@ import static com.intellij.dvcs.DvcsUtil.sortVirtualFilesByPresentation;
 
 public final class HgConflictResolver {
 
-  @NotNull private final Project myProject;
+  @Nonnull
+  private final Project myProject;
   private final UpdatedFiles updatedFiles;
 
-  public HgConflictResolver(@NotNull Project project) {
+  public HgConflictResolver(@Nonnull Project project) {
     this(project, null);
   }
 
-  public HgConflictResolver(@NotNull Project project, UpdatedFiles updatedFiles) {
+  public HgConflictResolver(@Nonnull Project project, UpdatedFiles updatedFiles) {
     this.myProject = project;
     this.updatedFiles = updatedFiles;
   }
@@ -74,7 +75,7 @@ public final class HgConflictResolver {
     });
   }
 
-  private void updateUpdatedFiles(@NotNull File file, boolean unresolved) {
+  private void updateUpdatedFiles(@Nonnull File file, boolean unresolved) {
     if (updatedFiles != null) {
       updatedFiles.getGroupById(FileGroup.UPDATED_ID).remove(file.getAbsolutePath());
       //TODO get the correct revision to pass to the UpdatedFiles

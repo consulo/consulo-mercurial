@@ -15,8 +15,9 @@ package org.zmlx.hg4idea.action;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.zmlx.hg4idea.command.HgPullCommand;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.ui.HgPullDialog;
@@ -27,7 +28,7 @@ import java.util.Collection;
 public class HgPullAction extends HgAbstractGlobalSingleRepoAction {
 
   @Override
-  protected void execute(@NotNull final Project project, @NotNull Collection<HgRepository> repos, @Nullable HgRepository selectedRepo) {
+  protected void execute(@Nonnull final Project project, @Nonnull Collection<HgRepository> repos, @Nullable HgRepository selectedRepo) {
     final HgPullDialog dialog = new HgPullDialog(project, repos, selectedRepo);
     if (dialog.showAndGet()) {
       final String source = dialog.getSource();
@@ -35,7 +36,7 @@ public class HgPullAction extends HgAbstractGlobalSingleRepoAction {
       new Task.Backgroundable(project, "Pulling changes from " + source, false) {
 
         @Override
-        public void run(@NotNull ProgressIndicator indicator) {
+        public void run(@Nonnull ProgressIndicator indicator) {
           executePull(project, hgRepository, source);
           HgErrorUtil.markDirtyAndHandleErrors(project, hgRepository.getRoot());
         }

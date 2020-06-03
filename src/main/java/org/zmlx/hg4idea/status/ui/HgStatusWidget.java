@@ -15,8 +15,9 @@
  */
 package org.zmlx.hg4idea.status.ui;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.zmlx.hg4idea.HgProjectSettings;
 import org.zmlx.hg4idea.HgUpdater;
 import org.zmlx.hg4idea.HgVcs;
@@ -37,10 +38,12 @@ import com.intellij.util.ObjectUtils;
  */
 public class HgStatusWidget extends DvcsStatusWidget<HgRepository> {
 
-  @NotNull private final HgVcs myVcs;
-  @NotNull private final HgProjectSettings myProjectSettings;
+  @Nonnull
+  private final HgVcs myVcs;
+  @Nonnull
+  private final HgProjectSettings myProjectSettings;
 
-  public HgStatusWidget(@NotNull HgVcs vcs, @NotNull Project project, @NotNull HgProjectSettings projectSettings) {
+  public HgStatusWidget(@Nonnull HgVcs vcs, @Nonnull Project project, @Nonnull HgProjectSettings projectSettings) {
     super(project, "Hg");
     myVcs = vcs;
     myProjectSettings = projectSettings;
@@ -54,30 +57,30 @@ public class HgStatusWidget extends DvcsStatusWidget<HgRepository> {
   @Nullable
   @Override
   @CalledInAwt
-  protected HgRepository guessCurrentRepository(@NotNull Project project) {
+  protected HgRepository guessCurrentRepository(@Nonnull Project project) {
     return DvcsUtil.guessCurrentRepositoryQuick(project, HgUtil.getRepositoryManager(project),
                                                 HgProjectSettings.getInstance(project).getRecentRootPath());
   }
 
-  @NotNull
+  @Nonnull
   @Override
-  protected String getFullBranchName(@NotNull HgRepository repository) {
+  protected String getFullBranchName(@Nonnull HgRepository repository) {
     return HgUtil.getDisplayableBranchOrBookmarkText(repository);
   }
 
   @Override
-  protected boolean isMultiRoot(@NotNull Project project) {
+  protected boolean isMultiRoot(@Nonnull Project project) {
     return HgUtil.getRepositoryManager(project).moreThanOneRoot();
   }
 
-  @NotNull
+  @Nonnull
   @Override
-  protected ListPopup getPopup(@NotNull Project project, @NotNull HgRepository repository) {
+  protected ListPopup getPopup(@Nonnull Project project, @Nonnull HgRepository repository) {
     return HgBranchPopup.getInstance(project, repository).asListPopup();
   }
 
   @Override
-  protected void subscribeToRepoChangeEvents(@NotNull Project project) {
+  protected void subscribeToRepoChangeEvents(@Nonnull Project project) {
     project.getMessageBus().connect().subscribe(HgVcs.STATUS_TOPIC, new HgUpdater() {
       @Override
       public void update(Project project, @Nullable VirtualFile root) {
@@ -87,7 +90,7 @@ public class HgStatusWidget extends DvcsStatusWidget<HgRepository> {
   }
 
   @Override
-  protected void rememberRecentRoot(@NotNull String path) {
+  protected void rememberRecentRoot(@Nonnull String path) {
     myProjectSettings.setRecentRootPath(path);
   }
 }

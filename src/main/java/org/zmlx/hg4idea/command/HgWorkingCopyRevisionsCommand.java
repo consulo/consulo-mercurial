@@ -20,8 +20,8 @@ import com.intellij.openapi.vcs.FilePath;
 import com.intellij.openapi.vcs.ObjectsConvertor;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.HgRevisionNumber;
 import org.zmlx.hg4idea.execution.HgCommandExecutor;
 import org.zmlx.hg4idea.execution.HgCommandResult;
@@ -52,16 +52,16 @@ public class HgWorkingCopyRevisionsCommand {
    * @see #parents(com.intellij.openapi.vfs.VirtualFile, com.intellij.openapi.vfs.VirtualFile, org.zmlx.hg4idea.HgRevisionNumber)
    * TODO: return Pair
    */
-  @NotNull
-  public List<HgRevisionNumber> parents(@NotNull VirtualFile repo) {
+  @Nonnull
+  public List<HgRevisionNumber> parents(@Nonnull VirtualFile repo) {
     return getRevisions(repo, "parents", null, null, true);
   }
 
   /**
    * @see #parents(com.intellij.openapi.vfs.VirtualFile, com.intellij.openapi.vfs.VirtualFile, org.zmlx.hg4idea.HgRevisionNumber)
    */
-  @NotNull
-  public Couple<HgRevisionNumber> parents(@NotNull VirtualFile repo, @Nullable VirtualFile file) {
+  @Nonnull
+  public Couple<HgRevisionNumber> parents(@Nonnull VirtualFile repo, @Nullable VirtualFile file) {
     return parents(repo, file, null);
   }
 
@@ -74,16 +74,16 @@ public class HgWorkingCopyRevisionsCommand {
    * @return One or two (in case of a merge commit) parents of the given revision. Or even zero in case of a fresh repository.
    *         So one should check pair elements for null.
    */
-  @NotNull
-  public Couple<HgRevisionNumber> parents(@NotNull VirtualFile repo, @Nullable VirtualFile file, @Nullable HgRevisionNumber revision) {
+  @Nonnull
+  public Couple<HgRevisionNumber> parents(@Nonnull VirtualFile repo, @Nullable VirtualFile file, @Nullable HgRevisionNumber revision) {
     return parents(repo, ObjectsConvertor.VIRTUAL_FILEPATH.convert(file), revision);
   }
 
   /**
    * @see #parents(VirtualFile, FilePath, HgRevisionNumber)
    */
-  @NotNull
-  public Couple<HgRevisionNumber> parents(@NotNull VirtualFile repo, @Nullable FilePath file) {
+  @Nonnull
+  public Couple<HgRevisionNumber> parents(@Nonnull VirtualFile repo, @Nullable FilePath file) {
     return parents(repo, file, null);
   }
 
@@ -96,8 +96,8 @@ public class HgWorkingCopyRevisionsCommand {
    * @return One or two (in case of a merge commit) parents of the given revision. Or even zero in case of a fresh repository.
    *         So one should check pair elements for null.
    */
-  @NotNull
-  public Couple<HgRevisionNumber> parents(@NotNull VirtualFile repo, @Nullable FilePath file, @Nullable HgRevisionNumber revision) {
+  @Nonnull
+  public Couple<HgRevisionNumber> parents(@Nonnull VirtualFile repo, @Nullable FilePath file, @Nullable HgRevisionNumber revision) {
     final List<HgRevisionNumber> revisions = getRevisions(repo, "parents", file, revision, true);
     switch (revisions.size()) {
       case 1: return Couple.of(revisions.get(0), null);
@@ -107,7 +107,7 @@ public class HgWorkingCopyRevisionsCommand {
   }
 
   @Nullable
-  public HgRevisionNumber firstParent(@NotNull VirtualFile repo) {
+  public HgRevisionNumber firstParent(@Nonnull VirtualFile repo) {
     List<HgRevisionNumber> parents = parents(repo);
     if (parents.isEmpty()) {
       //this is possible when we have a freshly initialized mercurial repository
@@ -119,7 +119,7 @@ public class HgWorkingCopyRevisionsCommand {
   }
 
   @Nullable
-  public HgRevisionNumber tip(@NotNull VirtualFile repo) {
+  public HgRevisionNumber tip(@Nonnull VirtualFile repo) {
     List<HgRevisionNumber> tips = getRevisions(repo, "tip", null, null, true);
     if (tips.size() > 1) {
       throw new IllegalStateException("There cannot be multiple tips");
@@ -134,8 +134,8 @@ public class HgWorkingCopyRevisionsCommand {
    * Returns the result of 'hg id' execution, i.e. current state of the repository.
    * @return one or two revision numbers. Two revisions is the case of unresolved merge. In other cases there are only one revision.
    */
-  @NotNull
-  public Couple<HgRevisionNumber> identify(@NotNull VirtualFile repo) {
+  @Nonnull
+  public Couple<HgRevisionNumber> identify(@Nonnull VirtualFile repo) {
     HgCommandExecutor commandExecutor = new HgCommandExecutor(myProject);
     commandExecutor.setSilent(true);
     HgCommandResult result = commandExecutor.executeInCurrentThread(repo, "identify", Arrays.asList("--num", "--id"));
@@ -177,11 +177,12 @@ public class HgWorkingCopyRevisionsCommand {
    * @param silent   pass true if this command shouldn't be mentioned in the VCS console.
    * @return List of revisions.
    */
-  public @NotNull List<HgRevisionNumber> getRevisions(@NotNull VirtualFile repo,
-                                              @NotNull String command,
-                                              @Nullable FilePath file,
-                                              @Nullable HgRevisionNumber revision,
-                                              boolean silent) {
+  public @Nonnull
+  List<HgRevisionNumber> getRevisions(@Nonnull VirtualFile repo,
+									  @Nonnull String command,
+									  @Nullable FilePath file,
+									  @Nullable HgRevisionNumber revision,
+									  boolean silent) {
     final List<String> args = new LinkedList<>();
     args.add("--template");
     args.add(HgChangesetUtil.makeTemplate("{rev}", "{node}"));

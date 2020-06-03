@@ -20,7 +20,7 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.vcs.log.Hash;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.HgVcsMessages;
 import org.zmlx.hg4idea.branch.HgBranchPopupActions;
 import org.zmlx.hg4idea.command.HgUpdateCommand;
@@ -32,7 +32,7 @@ import static org.zmlx.hg4idea.util.HgUtil.getNewBranchNameFromUser;
 
 public class HgCreateNewBranchFromLogAction extends HgLogSingleCommitAction {
   @Override
-  protected void actionPerformed(@NotNull final HgRepository repository, @NotNull final Hash commit) {
+  protected void actionPerformed(@Nonnull final HgRepository repository, @Nonnull final Hash commit) {
     final Project project = repository.getProject();
     FileDocumentManager.getInstance().saveAllDocuments();
     String shortHash = commit.toShortString();
@@ -40,7 +40,7 @@ public class HgCreateNewBranchFromLogAction extends HgLogSingleCommitAction {
     if (name != null) {
       new Task.Backgroundable(project, HgVcsMessages.message("hg4idea.progress.updatingTo", shortHash)) {
         @Override
-        public void run(@NotNull ProgressIndicator indicator) {
+        public void run(@Nonnull ProgressIndicator indicator) {
           if (HgUpdateCommand.updateRepoToInCurrentThread(project, repository.getRoot(), commit.asString(), false)) {
             new HgBranchPopupActions.HgNewBranchAction(project, Collections.singletonList(repository), repository)
               .createNewBranchInCurrentThread(name);

@@ -15,8 +15,9 @@
  */
 package org.zmlx.hg4idea.provider.update;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
@@ -31,7 +32,8 @@ public class HgUpdateConfigurationSettings implements PersistentStateComponent<H
 
   public static class State {
     public boolean shouldPull = true;
-    @NotNull public HgUpdateType updateType = HgUpdateType.ONLY_UPDATE;
+    @Nonnull
+	public HgUpdateType updateType = HgUpdateType.ONLY_UPDATE;
     public boolean shouldCommitAfterMerge = false;
   }
 
@@ -39,7 +41,7 @@ public class HgUpdateConfigurationSettings implements PersistentStateComponent<H
     myState.shouldPull = shouldPull;
   }
 
-  public void setUpdateType(@NotNull HgUpdateType updateType) {
+  public void setUpdateType(@Nonnull HgUpdateType updateType) {
     myState.updateType = updateType;
   }
 

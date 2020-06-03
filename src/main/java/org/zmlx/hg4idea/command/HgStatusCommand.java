@@ -21,8 +21,8 @@ import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vcs.VcsNotifier;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.vcsUtil.VcsFileUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.HgChange;
 import org.zmlx.hg4idea.HgFile;
 import org.zmlx.hg4idea.HgFileStatusEnum;
@@ -40,7 +40,8 @@ public class HgStatusCommand {
   private static final int ITEM_COUNT = 3;
   private static final int STATUS_INDEX = 0;
 
-  @NotNull private final Project myProject;
+  @Nonnull
+  private final Project myProject;
 
   private final boolean myIncludeAdded;
   private final boolean myIncludeModified;
@@ -112,13 +113,13 @@ public class HgStatusCommand {
       return this;
     }
 
-    public HgStatusCommand build(@NotNull Project project) {
+    public HgStatusCommand build(@Nonnull Project project) {
       return new HgStatusCommand(project, this);
     }
 
   }
 
-  private HgStatusCommand(@NotNull Project project, @NotNull Builder builder) {
+  private HgStatusCommand(@Nonnull Project project, @Nonnull Builder builder) {
     myProject = project;
     myIncludeAdded = builder.includeAdded;
     myIncludeModified = builder.includeModified;
@@ -237,8 +238,8 @@ public class HgStatusCommand {
     return changes;
   }
 
-  @NotNull
-  public Collection<VirtualFile> getFiles(@NotNull VirtualFile repo, @Nullable List<VirtualFile> files) throws VcsException {
+  @Nonnull
+  public Collection<VirtualFile> getFiles(@Nonnull VirtualFile repo, @Nullable List<VirtualFile> files) throws VcsException {
     Collection<VirtualFile> resultFiles = new HashSet<>();
     Set<HgChange> change = executeInCurrentThread(repo, files != null ? ObjectsConvertor.vf2fp(files) : null);
     for (HgChange hgChange : change) {

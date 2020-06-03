@@ -15,8 +15,8 @@ package org.zmlx.hg4idea;
 import java.io.File;
 import java.util.Objects;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.util.HgUtil;
 import com.google.common.base.MoreObjects;
 import com.intellij.openapi.project.Project;
@@ -33,20 +33,20 @@ public class HgFile {
 
   private String relativePath;
 
-  public HgFile(@NotNull VirtualFile vcsRoot, File file) {
+  public HgFile(@Nonnull VirtualFile vcsRoot, File file) {
     this.vcsRoot = vcsRoot;
     this.file = file;
   }
 
-  public HgFile(@NotNull VirtualFile vcsRoot, FilePath filePath) {
+  public HgFile(@Nonnull VirtualFile vcsRoot, FilePath filePath) {
     this(vcsRoot, filePath.getIOFile());
   }
 
-  public HgFile(@NotNull Project project, @NotNull VirtualFile file) {
+  public HgFile(@Nonnull Project project, @Nonnull VirtualFile file) {
     this(HgUtil.getHgRootOrNull(project, file), VcsUtil.getFilePath(file.getPath()));
   }
 
-  @NotNull
+  @Nonnull
   public VirtualFile getRepo() {
     return vcsRoot;
   }
@@ -64,7 +64,7 @@ public class HgFile {
     return relativePath;
   }
 
-  @NotNull
+  @Nonnull
   public FilePath toFilePath() {
     return VcsUtil.getFilePath(file);
   }

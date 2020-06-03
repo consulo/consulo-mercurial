@@ -22,11 +22,12 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vcs.VcsBundle;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.containers.ContainerUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+
 import org.zmlx.hg4idea.action.HgCommandResultNotifier;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 
+import javax.annotation.Nullable;
 import javax.swing.event.HyperlinkEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -52,7 +53,7 @@ public final class HgErrorUtil {
   }
 
   @Nullable
-  private static String getAbortLine(@NotNull HgCommandResult result) {
+  private static String getAbortLine(@Nonnull HgCommandResult result) {
     final List<String> errorLines = result.getErrorLines();
     return ContainerUtil.find(errorLines, new Condition<String>() {
       @Override
@@ -115,12 +116,12 @@ public final class HgErrorUtil {
     return HgUtil.URL_WITH_PASSWORD.matcher(destinationPath).matches();
   }
 
-  @NotNull
-  public static NotificationListener getMappingErrorNotificationListener(@NotNull final Project project) {
+  @Nonnull
+  public static NotificationListener getMappingErrorNotificationListener(@Nonnull final Project project) {
     return new NotificationListener.Adapter() {
       @Override
-      protected void hyperlinkActivated(@NotNull Notification notification,
-                                        @NotNull HyperlinkEvent e) {
+      protected void hyperlinkActivated(@Nonnull Notification notification,
+                                        @Nonnull HyperlinkEvent e) {
         if (SETTINGS_LINK.equals(e.getDescription())) {
           ShowSettingsUtil.getInstance()
             .showSettingsDialog(project, VcsBundle.message("version.control.main.configurable.name"));
@@ -161,11 +162,11 @@ public final class HgErrorUtil {
     return !StringUtil.isEmptyOrSpaces(line) && line.trim().startsWith("abort:");
   }
 
-  public static void handleException(@Nullable Project project, @NotNull Exception e) {
+  public static void handleException(@Nullable Project project, @Nonnull Exception e) {
     handleException(project, "Error", e);
   }
 
-  public static void handleException(@Nullable Project project, @NotNull String title, @NotNull Exception e) {
+  public static void handleException(@Nullable Project project, @Nonnull String title, @Nonnull Exception e) {
     LOG.info(e);
     new HgCommandResultNotifier(project).notifyError(null, title, e.getMessage());
   }

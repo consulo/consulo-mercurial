@@ -14,7 +14,7 @@ package org.zmlx.hg4idea;
 
 import com.intellij.openapi.vcs.history.VcsRevisionNumber;
 import com.intellij.vcs.log.util.VcsUserUtil;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.log.HgBaseLogParser;
 import org.zmlx.hg4idea.util.HgUtil;
 
@@ -25,13 +25,20 @@ import java.util.Objects;
 public class HgRevisionNumber implements VcsRevisionNumber {
 
   private static final int SHORT_HASH_SIZE = 12;
-  @NotNull private final String revision;
-  @NotNull private final String changeset;
-  @NotNull private final String commitMessage;
-  @NotNull private final String author;
-  @NotNull private final String email;
-  @NotNull private final List<HgRevisionNumber> parents;
-  @NotNull private final String mySubject;
+  @Nonnull
+  private final String revision;
+  @Nonnull
+  private final String changeset;
+  @Nonnull
+  private final String commitMessage;
+  @Nonnull
+  private final String author;
+  @Nonnull
+  private final String email;
+  @Nonnull
+  private final List<HgRevisionNumber> parents;
+  @Nonnull
+  private final String mySubject;
 
   private final boolean isWorkingVersion;
 
@@ -48,37 +55,37 @@ public class HgRevisionNumber implements VcsRevisionNumber {
     }
   };
 
-  public static HgRevisionNumber getInstance(@NotNull String revision,@NotNull  String changeset,@NotNull  String author,@NotNull  String commitMessage) {
+  public static HgRevisionNumber getInstance(@Nonnull String revision, @Nonnull String changeset, @Nonnull String author, @Nonnull String commitMessage) {
     return new HgRevisionNumber(revision, changeset, author, commitMessage, Collections.<HgRevisionNumber>emptyList());
   }
 
-  public static HgRevisionNumber getInstance(@NotNull String revision,@NotNull  String changeset) {
+  public static HgRevisionNumber getInstance(@Nonnull String revision, @Nonnull String changeset) {
     return new HgRevisionNumber(revision, changeset, "", "", Collections.<HgRevisionNumber>emptyList());
   }
 
-  public static HgRevisionNumber getInstance(@NotNull String revision,@NotNull  String changeset,@NotNull  List<HgRevisionNumber> parents) {
+  public static HgRevisionNumber getInstance(@Nonnull String revision, @Nonnull String changeset, @Nonnull List<HgRevisionNumber> parents) {
     return new HgRevisionNumber(revision, changeset, "", "", parents);
   }
 
-  public static HgRevisionNumber getLocalInstance(@NotNull String revision) {
+  public static HgRevisionNumber getLocalInstance(@Nonnull String revision) {
     return new HgRevisionNumber(revision, "", "", "", Collections.<HgRevisionNumber>emptyList());
   }
 
-  public HgRevisionNumber(@NotNull String revision,
-                          @NotNull String changeset,
-                          @NotNull String authorInfo,
-                          @NotNull String commitMessage,
-                          @NotNull List<HgRevisionNumber> parents) {
+  public HgRevisionNumber(@Nonnull String revision,
+                          @Nonnull String changeset,
+                          @Nonnull String authorInfo,
+                          @Nonnull String commitMessage,
+                          @Nonnull List<HgRevisionNumber> parents) {
     this(revision, changeset, HgUtil.parseUserNameAndEmail(authorInfo).getFirst(), HgUtil.parseUserNameAndEmail(authorInfo).getSecond(),
          commitMessage, parents);
   }
 
-  public HgRevisionNumber(@NotNull String revision,
-                          @NotNull String changeset,
-                          @NotNull String author,
-                          @NotNull String email,
-                          @NotNull String commitMessage,
-                          @NotNull List<HgRevisionNumber> parents) {
+  public HgRevisionNumber(@Nonnull String revision,
+                          @Nonnull String changeset,
+                          @Nonnull String author,
+                          @Nonnull String email,
+                          @Nonnull String commitMessage,
+                          @Nonnull List<HgRevisionNumber> parents) {
     this.commitMessage = commitMessage;
     this.author = author;
     this.email = email;
@@ -89,12 +96,12 @@ public class HgRevisionNumber implements VcsRevisionNumber {
     mySubject = HgBaseLogParser.extractSubject(commitMessage);
   }
 
-  @NotNull
+  @Nonnull
   public String getChangeset() {
     return changeset;
   }
 
-  @NotNull
+  @Nonnull
   public String getRevision() {
     return revision;
   }
@@ -103,22 +110,22 @@ public class HgRevisionNumber implements VcsRevisionNumber {
     return java.lang.Long.parseLong(revision);
   }
 
-  @NotNull
+  @Nonnull
   public String getCommitMessage() {
     return commitMessage;
   }
 
-  @NotNull
+  @Nonnull
   public String getName() {
     return author;
   }
 
-  @NotNull
+  @Nonnull
   public String getEmail() {
     return email;
   }
 
-  @NotNull
+  @Nonnull
   public String getAuthor() {
     return VcsUserUtil.getUserName(author, email);
   }
@@ -134,7 +141,7 @@ public class HgRevisionNumber implements VcsRevisionNumber {
     return revision + ":" + changeset;
   }
 
-  @NotNull
+  @Nonnull
   public List<HgRevisionNumber> getParents() {
     return parents;
   }
@@ -177,7 +184,7 @@ public class HgRevisionNumber implements VcsRevisionNumber {
     }
   }
 
-  private static String getShortHash(@NotNull String changeset) {
+  private static String getShortHash(@Nonnull String changeset) {
     return changeset.substring(0, SHORT_HASH_SIZE);
   }
 
@@ -214,7 +221,7 @@ public class HgRevisionNumber implements VcsRevisionNumber {
     return asString();
   }
 
-  @NotNull
+  @Nonnull
   public String getSubject() {
     return mySubject;
   }

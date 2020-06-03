@@ -23,8 +23,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.CheckoutProvider;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.HgVcsMessages;
 import org.zmlx.hg4idea.action.HgCommandResultNotifier;
@@ -36,9 +36,11 @@ import org.zmlx.hg4idea.util.HgErrorUtil;
 import java.io.File;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.annotation.Nullable;
+
 public class HgCheckoutProvider implements CheckoutProvider {
 
-  public void doCheckout(@NotNull final Project project, @Nullable final Listener listener) {
+  public void doCheckout(@Nonnull final Project project, @Nullable final Listener listener) {
     FileDocumentManager.getInstance().saveAllDocuments();
 
     final HgCloneDialog dialog = new HgCloneDialog(project);
@@ -55,7 +57,7 @@ public class HgCheckoutProvider implements CheckoutProvider {
     final AtomicReference<HgCommandResult> cloneResult = new AtomicReference<>();
     new Task.Backgroundable(project, HgVcsMessages.message("hg4idea.clone.progress", sourceRepositoryURL), true) {
       @Override
-      public void run(@NotNull ProgressIndicator indicator) {
+      public void run(@Nonnull ProgressIndicator indicator) {
         HgCloneCommand clone = new HgCloneCommand(project);
         clone.setRepositoryURL(sourceRepositoryURL);
         clone.setDirectory(targetDir);

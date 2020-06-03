@@ -16,8 +16,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.DocumentAdapter;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.util.HgBranchReferenceValidator;
 import org.zmlx.hg4idea.util.HgReferenceValidator;
@@ -33,7 +33,7 @@ public class HgTagDialog extends DialogWrapper {
   private JTextField tagTxt;
   private HgRepositorySelectorComponent hgRepositorySelectorComponent;
 
-  public HgTagDialog(@NotNull Project project, @NotNull Collection<HgRepository> repositories, @Nullable HgRepository selectedRepo) {
+  public HgTagDialog(@Nonnull Project project, @Nonnull Collection<HgRepository> repositories, @Nullable HgRepository selectedRepo) {
     super(project, false);
     hgRepositorySelectorComponent.setTitle("Select repository to tag");
     DocumentListener documentListener = new DocumentAdapter() {
@@ -59,7 +59,7 @@ public class HgTagDialog extends DialogWrapper {
     return hgRepositorySelectorComponent.getRepository().getRoot();
   }
 
-  private void setRoots(@NotNull Collection<HgRepository> repositories, @Nullable HgRepository selectedRepo) {
+  private void setRoots(@Nonnull Collection<HgRepository> repositories, @Nullable HgRepository selectedRepo) {
     hgRepositorySelectorComponent.setRoots(repositories);
     hgRepositorySelectorComponent.setSelectedRoot(selectedRepo);
   }

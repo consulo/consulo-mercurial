@@ -15,8 +15,8 @@ package org.zmlx.hg4idea.command;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+
 import org.zmlx.hg4idea.execution.HgCommandResult;
 import org.zmlx.hg4idea.execution.HgRemoteCommandExecutor;
 import org.zmlx.hg4idea.log.HgHistoryUtil;
@@ -24,6 +24,8 @@ import org.zmlx.hg4idea.util.HgUtil;
 
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 public class HgOutgoingCommand extends HgRemoteChangesetsCommand {
 
@@ -37,10 +39,10 @@ public class HgOutgoingCommand extends HgRemoteChangesetsCommand {
   }
 
   @Nullable
-  public HgCommandResult execute(@NotNull VirtualFile repo,
-                                 @NotNull String template,
-                                 @NotNull String source,
-                                 @NotNull String destination,
+  public HgCommandResult execute(@Nonnull VirtualFile repo,
+                                 @Nonnull String template,
+                                 @Nonnull String source,
+                                 @Nonnull String destination,
                                  boolean doNotShowAuthorizationRequest) {
 
     List<String> arguments = new LinkedList<>();

@@ -27,8 +27,8 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.ui.ColumnInfo;
 import com.intellij.vcsUtil.VcsUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.HgFile;
 import org.zmlx.hg4idea.HgFileRevision;
 import org.zmlx.hg4idea.HgRevisionNumber;
@@ -116,16 +116,16 @@ public class HgHistoryProvider implements VcsHistoryProvider {
     };
   }
 
-  public static List<HgFileRevision> getHistory(@NotNull FilePath filePath,
-                                                @NotNull VirtualFile vcsRoot,
-                                                @NotNull Project project) {
+  public static List<HgFileRevision> getHistory(@Nonnull FilePath filePath,
+                                                @Nonnull VirtualFile vcsRoot,
+                                                @Nonnull Project project) {
     VcsConfiguration vcsConfiguration = VcsConfiguration.getInstance(project);
     return getHistory(filePath, vcsRoot, project, null, vcsConfiguration.LIMIT_HISTORY ? vcsConfiguration.MAXIMUM_HISTORY_ROWS : -1);
   }
 
-  public static List<HgFileRevision> getHistory(@NotNull FilePath filePath,
-                                                @NotNull VirtualFile vcsRoot,
-                                                @NotNull Project project,
+  public static List<HgFileRevision> getHistory(@Nonnull FilePath filePath,
+                                                @Nonnull VirtualFile vcsRoot,
+                                                @Nonnull Project project,
                                                 @Nullable HgRevisionNumber revisionNumber, int limit) {
  /*  The standard way to get history following renames is to call hg log --follow. However:
   1. It is broken in case of uncommitted rename (i.e. if the file is currently renamed in the working dir):
@@ -157,9 +157,9 @@ public class HgHistoryProvider implements VcsHistoryProvider {
   /**
    * Workaround for getting follow file history in case of uncommitted move/rename change
    */
-  private static List<HgFileRevision> getHistoryForUncommittedRenamed(@NotNull FilePath originalHgFilePath,
-                                                                      @NotNull VirtualFile vcsRoot,
-                                                                      @NotNull Project project, int limit) {
+  private static List<HgFileRevision> getHistoryForUncommittedRenamed(@Nonnull FilePath originalHgFilePath,
+																	  @Nonnull VirtualFile vcsRoot,
+																	  @Nonnull Project project, int limit) {
     HgFile originalHgFile = new HgFile(vcsRoot, originalHgFilePath);
     final HgLogCommand logCommand = new HgLogCommand(project);
     logCommand.setIncludeRemoved(true);
@@ -185,7 +185,7 @@ public class HgHistoryProvider implements VcsHistoryProvider {
   }
 
   @Override
-  public boolean canShowHistoryFor(@NotNull VirtualFile file) {
+  public boolean canShowHistoryFor(@Nonnull VirtualFile file) {
     return true;
   }
 }

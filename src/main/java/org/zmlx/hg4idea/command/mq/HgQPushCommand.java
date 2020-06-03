@@ -16,7 +16,7 @@
 package org.zmlx.hg4idea.command.mq;
 
 import com.intellij.openapi.project.Project;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.action.HgCommandResultNotifier;
 import org.zmlx.hg4idea.execution.HgCommandExecutor;
 import org.zmlx.hg4idea.execution.HgCommandResult;
@@ -26,13 +26,14 @@ import org.zmlx.hg4idea.util.HgErrorUtil;
 import java.util.Arrays;
 
 public class HgQPushCommand {
-  @NotNull private final HgRepository myRepository;
+  @Nonnull
+  private final HgRepository myRepository;
 
-  public HgQPushCommand(@NotNull HgRepository repository) {
+  public HgQPushCommand(@Nonnull HgRepository repository) {
     myRepository = repository;
   }
 
-  public void executeInCurrentThread(@NotNull final String patchName) {
+  public void executeInCurrentThread(@Nonnull final String patchName) {
     final Project project = myRepository.getProject();
     HgCommandResult result =
       new HgCommandExecutor(project).executeInCurrentThread(myRepository.getRoot(), "qpush", Arrays.asList("--move", patchName));

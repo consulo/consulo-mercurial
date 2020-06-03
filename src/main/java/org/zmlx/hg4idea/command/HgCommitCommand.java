@@ -16,7 +16,7 @@ import com.intellij.dvcs.repo.Repository;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.VcsException;
 import com.intellij.util.containers.ContainerUtil;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.execution.HgCommandException;
 import org.zmlx.hg4idea.execution.HgCommandExecutor;
@@ -34,11 +34,12 @@ public class HgCommitCommand extends HgCommitTypeCommand {
   private final boolean myCloseBranch;
   private final boolean myShouldCommitWithSubrepos;
 
-  @NotNull private List<String> mySubrepos = Collections.emptyList();
+  @Nonnull
+  private List<String> mySubrepos = Collections.emptyList();
 
-  public HgCommitCommand(@NotNull Project project,
-                         @NotNull HgRepository repository,
-                         @NotNull String message,
+  public HgCommitCommand(@Nonnull Project project,
+                         @Nonnull HgRepository repository,
+                         @Nonnull String message,
                          boolean amend,
                          boolean closeBranch,
                          boolean shouldCommitWithSubrepos) {
@@ -47,15 +48,15 @@ public class HgCommitCommand extends HgCommitTypeCommand {
     myShouldCommitWithSubrepos = shouldCommitWithSubrepos;
   }
 
-  public HgCommitCommand(@NotNull Project project, @NotNull HgRepository repo, @NotNull String message, boolean amend) {
+  public HgCommitCommand(@Nonnull Project project, @Nonnull HgRepository repo, @Nonnull String message, boolean amend) {
     this(project, repo, message, amend, false, false);
   }
 
-  public HgCommitCommand(Project project, @NotNull HgRepository repo, @NotNull String message) {
+  public HgCommitCommand(Project project, @Nonnull HgRepository repo, @Nonnull String message) {
     this(project, repo, message, false);
   }
 
-  protected void executeChunked(@NotNull List<List<String>> chunkedCommits) throws HgCommandException, VcsException {
+  protected void executeChunked(@Nonnull List<List<String>> chunkedCommits) throws HgCommandException, VcsException {
     if (chunkedCommits.isEmpty()) {
       commitChunkFiles(ContainerUtil.<String>emptyList(), myAmend, myCloseBranch);
     }
@@ -74,11 +75,11 @@ public class HgCommitCommand extends HgCommitTypeCommand {
     }
   }
 
-  private void commitChunkFiles(@NotNull List<String> chunk, boolean amendCommit, boolean closeBranch) throws VcsException {
+  private void commitChunkFiles(@Nonnull List<String> chunk, boolean amendCommit, boolean closeBranch) throws VcsException {
     commitChunkFiles(chunk, amendCommit, false, closeBranch);
   }
 
-  private void commitChunkFiles(@NotNull List<String> chunk, boolean amendCommit, boolean withSubrepos, boolean closeBranch)
+  private void commitChunkFiles(@Nonnull List<String> chunk, boolean amendCommit, boolean withSubrepos, boolean closeBranch)
     throws VcsException {
     List<String> parameters = new LinkedList<>();
     parameters.add("--logfile");

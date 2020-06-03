@@ -19,14 +19,16 @@ import com.intellij.dvcs.repo.Repository;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+
 import org.zmlx.hg4idea.command.HgRebaseCommand;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.util.HgErrorUtil;
 
 import java.util.Collection;
+
+import javax.annotation.Nullable;
 
 public class HgContinueRebaseAction extends HgProcessStateAction {
 
@@ -35,13 +37,13 @@ public class HgContinueRebaseAction extends HgProcessStateAction {
   }
 
   @Override
-  protected void execute(@NotNull final Project project,
-                         @NotNull Collection<HgRepository> repositories,
+  protected void execute(@Nonnull final Project project,
+                         @Nonnull Collection<HgRepository> repositories,
                          @Nullable final HgRepository selectedRepo) {
 
     new Task.Backgroundable(project, "Continue Rebasing...") {
       @Override
-      public void run(@NotNull ProgressIndicator indicator) {
+      public void run(@Nonnull ProgressIndicator indicator) {
         if (selectedRepo != null) {
           HgRebaseCommand rebaseCommand = new HgRebaseCommand(project, selectedRepo);
           HgCommandResult result = rebaseCommand.continueRebase();

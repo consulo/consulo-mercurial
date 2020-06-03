@@ -15,9 +15,11 @@ package org.zmlx.hg4idea;
 import java.io.File;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nullable;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.RoamingType;
 import com.intellij.openapi.components.State;
@@ -68,7 +70,7 @@ public class HgGlobalSettings implements PersistentStateComponent<HgGlobalSettin
   /**
    * @return the default executable name depending on the platform
    */
-  @NotNull
+  @Nonnull
   public String defaultHgExecutable() {
     String hgExecutable = myState.myHgExecutable;
     if (hgExecutable != null) {
@@ -109,7 +111,7 @@ public class HgGlobalSettings implements PersistentStateComponent<HgGlobalSettin
    * @return the (probably empty) login remembered for this URL.
    */
   @Nullable
-  public String getRememberedUserName(@NotNull String stringUrl) {
+  public String getRememberedUserName(@Nonnull String stringUrl) {
     return myState.myRememberedUserNames.get(stringUrl);
   }
 
@@ -129,7 +131,7 @@ public class HgGlobalSettings implements PersistentStateComponent<HgGlobalSettin
     myState.myRememberedUserNames.put(stringUrl, username);
   }
 
-  @NotNull
+  @Nonnull
   public String getHgExecutable() {
     return myState.myHgExecutable == null ? defaultHgExecutable() : myState.myHgExecutable;
   }

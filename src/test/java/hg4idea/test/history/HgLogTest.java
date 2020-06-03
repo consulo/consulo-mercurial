@@ -6,7 +6,7 @@ import static hg4idea.test.HgExecutor.hg;
 
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.HgFile;
 import org.zmlx.hg4idea.HgFileRevision;
 import org.zmlx.hg4idea.command.HgLogCommand;
@@ -28,7 +28,7 @@ public class HgLogTest extends HgPlatformTest {
     parseCopied("(f.txt)");
   }
 
-  private void parseCopied(@NotNull String sourceFileName) throws HgCommandException {
+  private void parseCopied(@Nonnull String sourceFileName) throws HgCommandException {
     cd(myRepository);
     String copiedFileName = "copy".concat(sourceFileName);
     touch(sourceFileName);

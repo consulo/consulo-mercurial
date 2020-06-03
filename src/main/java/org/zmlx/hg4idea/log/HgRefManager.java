@@ -27,7 +27,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+
 import com.intellij.ui.JBColor;
 import com.intellij.util.Function;
 import com.intellij.util.containers.ContainerUtil;
@@ -111,16 +112,16 @@ public class HgRefManager implements VcsLogRefManager
 		}
 	};
 
-	@NotNull
+	@Nonnull
 	@Override
 	public Comparator<VcsRef> getLabelsOrderComparator()
 	{
 		return REF_COMPARATOR;
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
-	public List<RefGroup> groupForBranchFilter(@NotNull Collection<VcsRef> refs)
+	public List<RefGroup> groupForBranchFilter(@Nonnull Collection<VcsRef> refs)
 	{
 		return ContainerUtil.map(sort(refs), new Function<VcsRef, RefGroup>()
 		{
@@ -132,9 +133,9 @@ public class HgRefManager implements VcsLogRefManager
 		});
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
-	public List<RefGroup> groupForTable(@NotNull Collection<VcsRef> references, boolean compact, boolean showTagNames)
+	public List<RefGroup> groupForTable(@Nonnull Collection<VcsRef> references, boolean compact, boolean showTagNames)
 	{
 		List<VcsRef> sortedReferences = sort(references);
 		MultiMap<VcsRefType, VcsRef> groupedRefs = ContainerUtil.groupBy(sortedReferences, VcsRef::getType);
@@ -156,14 +157,14 @@ public class HgRefManager implements VcsLogRefManager
 	}
 
 	@Override
-	public void serialize(@NotNull DataOutput out, @NotNull VcsRefType type) throws IOException
+	public void serialize(@Nonnull DataOutput out, @Nonnull VcsRefType type) throws IOException
 	{
 		out.writeInt(REF_TYPE_INDEX.indexOf(type));
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
-	public VcsRefType deserialize(@NotNull DataInput in) throws IOException
+	public VcsRefType deserialize(@Nonnull DataInput in) throws IOException
 	{
 		int id = in.readInt();
 		if(id < 0 || id > REF_TYPE_INDEX.size() - 1)
@@ -173,28 +174,28 @@ public class HgRefManager implements VcsLogRefManager
 		return REF_TYPE_INDEX.get(id);
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
 	public Comparator<VcsRef> getBranchLayoutComparator()
 	{
 		return REF_COMPARATOR;
 	}
 
-	@NotNull
-	private List<VcsRef> sort(@NotNull Collection<VcsRef> refs)
+	@Nonnull
+	private List<VcsRef> sort(@Nonnull Collection<VcsRef> refs)
 	{
 		return ContainerUtil.sorted(refs, getLabelsOrderComparator());
 	}
 
 	private static class SimpleRefType implements VcsRefType
 	{
-		@NotNull
+		@Nonnull
 		private final String myName;
 		private final boolean myIsBranch;
-		@NotNull
+		@Nonnull
 		private final Color myColor;
 
-		public SimpleRefType(@NotNull String name, boolean isBranch, @NotNull Color color)
+		public SimpleRefType(@Nonnull String name, boolean isBranch, @Nonnull Color color)
 		{
 			myName = name;
 			myIsBranch = isBranch;
@@ -207,7 +208,7 @@ public class HgRefManager implements VcsLogRefManager
 			return myIsBranch;
 		}
 
-		@NotNull
+		@Nonnull
 		@Override
 		public Color getBackgroundColor()
 		{

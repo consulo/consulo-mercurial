@@ -15,7 +15,7 @@
  */
 package org.zmlx.hg4idea.ui;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.HgRememberedInputs;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.command.HgIdentifyCommand;
@@ -32,7 +32,7 @@ import com.intellij.openapi.project.Project;
  */
 public class HgCloneDialog extends CloneDvcsDialog {
 
-  public HgCloneDialog(@NotNull Project project) {
+  public HgCloneDialog(@Nonnull Project project) {
     super(project, HgVcs.DISPLAY_NAME, HgUtil.DOT_HG);
   }
 
@@ -46,15 +46,15 @@ public class HgCloneDialog extends CloneDvcsDialog {
     return "reference.mercurial.clone.mercurial.repository";
   }
 
-  @NotNull
+  @Nonnull
   @Override
   protected DvcsRememberedInputs getRememberedInputs() {
     return ServiceManager.getService(HgRememberedInputs.class);
   }
 
-  @NotNull
+  @Nonnull
   @Override
-  protected TestResult test(@NotNull final String url) {
+  protected TestResult test(@Nonnull final String url) {
     HgIdentifyCommand identifyCommand = new HgIdentifyCommand(myProject);
     identifyCommand.setSource(url);
     HgCommandResult result = identifyCommand.execute(ModalityState.stateForComponent(getRootPane()));

@@ -15,8 +15,8 @@
  */
 package org.zmlx.hg4idea.execution;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * HgPromptHandler is used by {@link HgPromptCommandExecutor, when you want to change the behavior of
@@ -42,7 +42,7 @@ public interface HgPromptHandler {
    * @param defaultChoice
    * @return
    */
-  HgPromptChoice promptUser(@NotNull final String message,
-                            @NotNull final HgPromptChoice[] choices,
-                            @NotNull final HgPromptChoice defaultChoice);
+  HgPromptChoice promptUser(@Nonnull final String message,
+                            @Nonnull final HgPromptChoice[] choices,
+                            @Nonnull final HgPromptChoice defaultChoice);
 }

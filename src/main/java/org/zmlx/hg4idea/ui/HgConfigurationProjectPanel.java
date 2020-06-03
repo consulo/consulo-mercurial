@@ -15,11 +15,11 @@ package org.zmlx.hg4idea.ui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.annotation.Nonnull;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
-import org.jetbrains.annotations.NotNull;
 import org.zmlx.hg4idea.HgProjectSettings;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.HgVcsMessages;
@@ -35,7 +35,8 @@ import com.intellij.ui.components.JBCheckBox;
 
 public class HgConfigurationProjectPanel {
 
-  @NotNull private final HgProjectSettings myProjectSettings;
+  @Nonnull
+  private final HgProjectSettings myProjectSettings;
 
   private JPanel myMainPanel;
   private JCheckBox myCheckIncomingOutgoingCbx;
@@ -45,7 +46,7 @@ public class HgConfigurationProjectPanel {
   private JBCheckBox mySyncControl;
   private final HgVcs myVcs;
 
-  public HgConfigurationProjectPanel(@NotNull HgProjectSettings projectSettings, @NotNull Project project) {
+  public HgConfigurationProjectPanel(@Nonnull HgProjectSettings projectSettings, @Nonnull Project project) {
     myProjectSettings = projectSettings;
     myVcs = HgVcs.getInstance(project);
     loadSettings();
@@ -110,7 +111,7 @@ public class HgConfigurationProjectPanel {
     myPathSelector = new HgSetExecutablePathPanel(myProjectSettings);
   }
 
-  @NotNull
+  @Nonnull
   public HgProjectSettings getProjectSettings() {
     return myProjectSettings;
   }

@@ -21,7 +21,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.vcs.log.Hash;
 import com.intellij.vcs.log.impl.HashImpl;
 import hg4idea.test.HgPlatformTest;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.log.HgHistoryUtil;
 
 import java.util.Arrays;
@@ -40,7 +40,7 @@ public class HgLogHistoryTest extends HgPlatformTest {
     VcsTestUtil.assertEqualCollections(branches, Arrays.asList("default", "branchA", "branchB", "A_BookMark", "C_BookMark"));
   }
 
-  private static void createBookmarksAndBranches(@NotNull VirtualFile repositoryRoot) {
+  private static void createBookmarksAndBranches(@Nonnull VirtualFile repositoryRoot) {
     cd(repositoryRoot);
     hg("bookmark A_BookMark");
     String aFile = "A.txt";

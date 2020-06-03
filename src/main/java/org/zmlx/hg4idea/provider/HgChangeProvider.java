@@ -22,8 +22,8 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.JBColor;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.vcsUtil.VcsUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.*;
 import org.zmlx.hg4idea.command.HgResolveCommand;
 import org.zmlx.hg4idea.command.HgResolveStatusEnum;
@@ -69,8 +69,8 @@ public class HgChangeProvider implements ChangeProvider {
   public void doCleanup(List<VirtualFile> files) {
   }
 
-  public void getChanges(@NotNull VcsDirtyScope dirtyScope, @NotNull ChangelistBuilder builder,
-                         @NotNull ProgressIndicator progress, @NotNull ChangeListManagerGate addGate) throws VcsException {
+  public void getChanges(@Nonnull VcsDirtyScope dirtyScope, @Nonnull ChangelistBuilder builder,
+						 @Nonnull ProgressIndicator progress, @Nonnull ChangeListManagerGate addGate) throws VcsException {
     if (myProject.isDisposed()) return;
     final Collection<HgChange> changes = new HashSet<>();
     changes.addAll(process(builder, dirtyScope.getRecursivelyDirtyDirectories()));
@@ -99,7 +99,7 @@ public class HgChangeProvider implements ChangeProvider {
   }
 
   @Nullable
-  private HgChange findChange(@NotNull HgRepository hgRepo, @NotNull HgNameWithHashInfo info) {
+  private HgChange findChange(@Nonnull HgRepository hgRepo, @Nonnull HgNameWithHashInfo info) {
     File file = new File(hgRepo.getRoot().getPath(), info.getName());
     VirtualFile virtualSubrepoFile = VfsUtil.findFileByIoFile(file, false);
     HgRepository subrepo = HgUtil.getRepositoryForFile(myProject, virtualSubrepoFile);
@@ -142,7 +142,7 @@ public class HgChangeProvider implements ChangeProvider {
     }
   }
 
-  private static boolean isDeleteOfCopiedFile(@NotNull HgChange change, Set<HgChange> changes) {
+  private static boolean isDeleteOfCopiedFile(@Nonnull HgChange change, Set<HgChange> changes) {
     if (change.getStatus().equals(HgFileStatusEnum.DELETED)) {
       for (HgChange otherChange : changes) {
         if (otherChange.getStatus().equals(HgFileStatusEnum.COPY) &&

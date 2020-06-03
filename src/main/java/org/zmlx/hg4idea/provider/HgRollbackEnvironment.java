@@ -24,7 +24,7 @@ import com.intellij.openapi.vcs.rollback.RollbackEnvironment;
 import com.intellij.openapi.vcs.rollback.RollbackProgressListener;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.vcsUtil.VcsFileUtil;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.HgRevisionNumber;
 import org.zmlx.hg4idea.HgVcsMessages;
 import org.zmlx.hg4idea.command.HgResolveCommand;
@@ -51,7 +51,7 @@ public class HgRollbackEnvironment implements RollbackEnvironment {
   }
 
   public void rollbackChanges(List<Change> changes, List<VcsException> vcsExceptions,
-    @NotNull RollbackProgressListener listener) {
+    @Nonnull RollbackProgressListener listener) {
     if (changes == null || changes.isEmpty()) {
       return;
     }
@@ -123,7 +123,7 @@ public class HgRollbackEnvironment implements RollbackEnvironment {
   public void rollbackIfUnchanged(VirtualFile file) {
   }
 
-  private void revert(@NotNull List<FilePath> filePaths) {
+  private void revert(@Nonnull List<FilePath> filePaths) {
     for (Map.Entry<VirtualFile, Collection<FilePath>> entry : HgUtil.groupFilePathsByHgRoots(project, filePaths).entrySet()) {
       final VirtualFile repo = entry.getKey();
       final Collection<FilePath> files = entry.getValue();

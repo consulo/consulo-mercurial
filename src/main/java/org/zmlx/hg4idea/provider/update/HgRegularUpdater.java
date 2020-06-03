@@ -20,8 +20,8 @@ import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vcs.update.FileGroup;
 import com.intellij.openapi.vcs.update.UpdatedFiles;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+
 import org.zmlx.hg4idea.*;
 import org.zmlx.hg4idea.action.HgCommandResultNotifier;
 import org.zmlx.hg4idea.command.*;
@@ -39,14 +39,19 @@ import static org.zmlx.hg4idea.HgErrorHandler.ensureSuccess;
 import static org.zmlx.hg4idea.provider.update.HgUpdateType.MERGE;
 import static org.zmlx.hg4idea.provider.update.HgUpdateType.ONLY_UPDATE;
 
+import javax.annotation.Nullable;
+
 public class HgRegularUpdater implements HgUpdater {
 
-  @NotNull private final Project project;
-  @NotNull private final VirtualFile repoRoot;
-  @NotNull private final HgUpdateConfigurationSettings updateConfiguration;
+  @Nonnull
+  private final Project project;
+  @Nonnull
+  private final VirtualFile repoRoot;
+  @Nonnull
+  private final HgUpdateConfigurationSettings updateConfiguration;
   private static final Logger LOG = Logger.getInstance(HgRegularUpdater.class);
 
-  public HgRegularUpdater(@NotNull Project project, @NotNull VirtualFile repository, @NotNull HgUpdateConfigurationSettings configuration) {
+  public HgRegularUpdater(@Nonnull Project project, @Nonnull VirtualFile repository, @Nonnull HgUpdateConfigurationSettings configuration) {
     this.project = project;
     this.repoRoot = repository;
     this.updateConfiguration = configuration;
@@ -170,7 +175,8 @@ public class HgRegularUpdater implements HgUpdater {
     addUpdatedFiles(repo, updatedFiles, commonParent, newHead);
   }
 
-  private @Nullable HgRevisionNumber findCommonParent(HgRevisionNumber newHead, HgRevisionNumber parentBeforeUpdate) {
+  private @Nullable
+  HgRevisionNumber findCommonParent(HgRevisionNumber newHead, HgRevisionNumber parentBeforeUpdate) {
     // hg log -r 0:source --prune dest --limit 1
     final List<HgRevisionNumber> pulledRevisions = new HgMergePreviewCommand(project, newHead, parentBeforeUpdate, 1).executeInCurrentThread(repoRoot);
     if (pulledRevisions == null || pulledRevisions.isEmpty()) {
@@ -260,7 +266,7 @@ public class HgRegularUpdater implements HgUpdater {
     return statusCommand.executeInCurrentThread(repoRoot);
   }
 
-  private HgCommandExitCode pull(@NotNull VirtualFile repo, @NotNull ProgressIndicator indicator) {
+  private HgCommandExitCode pull(@Nonnull VirtualFile repo, @Nonnull ProgressIndicator indicator) {
     indicator.setText2(HgVcsMessages.message("hg4idea.progress.pull.with.update"));
     HgPullCommand hgPullCommand = new HgPullCommand(project, repo);
     final String defaultPath = HgUtil.getRepositoryDefaultPath(project, repo);
@@ -268,7 +274,7 @@ public class HgRegularUpdater implements HgUpdater {
     return hgPullCommand.executeInCurrentThread();
   }
 
-  private void update(@NotNull VirtualFile repo, ProgressIndicator indicator, UpdatedFiles updatedFiles, List<VcsException> warnings) throws VcsException {
+  private void update(@Nonnull VirtualFile repo, ProgressIndicator indicator, UpdatedFiles updatedFiles, List<VcsException> warnings) throws VcsException {
     indicator.setText2(HgVcsMessages.message("hg4idea.progress.updatingworkingdir"));
 
     HgRevisionNumber parentBeforeUpdate = new HgWorkingCopyRevisionsCommand(project).firstParent(repo);

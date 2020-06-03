@@ -17,7 +17,7 @@ package org.zmlx.hg4idea.command.mq;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.util.containers.ContainerUtil;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.action.HgCommandResultNotifier;
 import org.zmlx.hg4idea.execution.HgCommandExecutor;
 import org.zmlx.hg4idea.execution.HgCommandResult;
@@ -29,13 +29,14 @@ import java.util.List;
 
 public class HgQImportCommand {
 
-  @NotNull private final HgRepository myRepository;
+  @Nonnull
+  private final HgRepository myRepository;
 
-  public HgQImportCommand(@NotNull HgRepository repository) {
+  public HgQImportCommand(@Nonnull HgRepository repository) {
     myRepository = repository;
   }
 
-  public void execute(@NotNull final String startRevisionNumber) {
+  public void execute(@Nonnull final String startRevisionNumber) {
     HgUtil.executeOnPooledThread(new Runnable() {
       @Override
       public void run() {
@@ -44,7 +45,7 @@ public class HgQImportCommand {
     }, myRepository.getProject());
   }
 
-  public void executeInCurrentThread(@NotNull final String startRevisionNumber) {
+  public void executeInCurrentThread(@Nonnull final String startRevisionNumber) {
     final Project project = myRepository.getProject();
     String lastRevisionName = myRepository.getMQAppliedPatches().isEmpty() ? "tip" : "qparent";
     List<String> arguments = ContainerUtil.newArrayList("--rev", startRevisionNumber + ":" + lastRevisionName);

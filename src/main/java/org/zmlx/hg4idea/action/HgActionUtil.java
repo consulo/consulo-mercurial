@@ -18,14 +18,14 @@ package org.zmlx.hg4idea.action;
 import java.util.Collection;
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.repo.HgRepositoryManager;
 import org.zmlx.hg4idea.util.HgUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
-import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.CalledInAwt;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -34,9 +34,9 @@ import com.intellij.util.containers.ContainerUtil;
 
 public class HgActionUtil {
 
-  @NotNull
-  public static List<HgRepository> collectRepositoriesFromFiles(@NotNull final HgRepositoryManager repositoryManager,
-                                                                @NotNull Collection<VirtualFile> files) {
+  @Nonnull
+  public static List<HgRepository> collectRepositoriesFromFiles(@Nonnull final HgRepositoryManager repositoryManager,
+                                                                @Nonnull Collection<VirtualFile> files) {
     return ContainerUtil.mapNotNull(files, new Function<VirtualFile, HgRepository>() {
       @Override
       public HgRepository fun(VirtualFile file) {

@@ -30,8 +30,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.HgNameWithHashInfo;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.util.HgVersion;
@@ -62,25 +62,38 @@ public class HgRepositoryReader {
   private static final Pattern HASH_STATUS_NAME = Pattern.compile("\\s*([0-9a-fA-F]+)\\s+\\w\\s+(.+)");
   //hash + name_or_revision_num; hash + status_character +  name_or_revision_num
 
-  @NotNull private final File myHgDir;            // .hg
-  @NotNull private File myBranchHeadsFile;  // .hg/cache/branch* + part depends on version
-  @NotNull private final File myCacheDir; // .hg/cache (does not exist before first commit)
-  @NotNull private final File myCurrentBranch;    // .hg/branch
-  @NotNull private final File myBookmarksFile; //.hg/bookmarks
-  @NotNull private final File myCurrentBookmark; //.hg/bookmarks.current
-  @NotNull private final File myTagsFile; //.hgtags  - not in .hg directory!!!
-  @NotNull private final File myLocalTagsFile;  // .hg/localtags
-  @NotNull private final File myDirStateFile;  // .hg/dirstate
-  @NotNull private final File mySubrepoFile;  // .hgsubstate
+  @Nonnull
+  private final File myHgDir;            // .hg
+  @Nonnull
+  private File myBranchHeadsFile;  // .hg/cache/branch* + part depends on version
+  @Nonnull
+  private final File myCacheDir; // .hg/cache (does not exist before first commit)
+  @Nonnull
+  private final File myCurrentBranch;    // .hg/branch
+  @Nonnull
+  private final File myBookmarksFile; //.hg/bookmarks
+  @Nonnull
+  private final File myCurrentBookmark; //.hg/bookmarks.current
+  @Nonnull
+  private final File myTagsFile; //.hgtags  - not in .hg directory!!!
+  @Nonnull
+  private final File myLocalTagsFile;  // .hg/localtags
+  @Nonnull
+  private final File myDirStateFile;  // .hg/dirstate
+  @Nonnull
+  private final File mySubrepoFile;  // .hgsubstate
 
   //mq internal files
-  @NotNull private final File myMqInternalDir; //.hg/patches
+  @Nonnull
+  private final File myMqInternalDir; //.hg/patches
 
-  @NotNull private final VcsLogObjectsFactory myVcsObjectsFactory;
+  @Nonnull
+  private final VcsLogObjectsFactory myVcsObjectsFactory;
   private final boolean myStatusInBranchFile;
-  @NotNull private final HgVcs myVcs;
+  @Nonnull
+  private final HgVcs myVcs;
 
-  public HgRepositoryReader(@NotNull HgVcs vcs, @NotNull File hgDir) {
+  public HgRepositoryReader(@Nonnull HgVcs vcs, @Nonnull File hgDir) {
     myHgDir = hgDir;
     DvcsUtil.assertFileExists(myHgDir, ".hg directory not found in " + myHgDir);
     myVcs = vcs;
@@ -102,8 +115,8 @@ public class HgRepositoryReader {
   /**
    * Identify file with branches and heads information depends on hg version;
    */
-  @NotNull
-  private static File identifyBranchHeadFile(@NotNull HgVersion version, @NotNull File parentCacheFile) {
+  @Nonnull
+  private static File identifyBranchHeadFile(@Nonnull HgVersion version, @Nonnull File parentCacheFile) {
     //before 2.5 only branchheads exist; branchheads-served after mercurial 2.5; branch2-served after 2.9;
     // when project is  recently  cloned there are only base file
     if (version.hasBranch2()) {
@@ -135,8 +148,8 @@ public class HgRepositoryReader {
     }
   }
 
-  @NotNull
-  private static byte[] readHashBytesFromFile(@NotNull File file) throws IOException {
+  @Nonnull
+  private static byte[] readHashBytesFromFile(@Nonnull File file) throws IOException {
     byte[] bytes;
     final InputStream stream = new FileInputStream(file);
     try {
@@ -184,12 +197,12 @@ public class HgRepositoryReader {
   /**
    * Return current branch
    */
-  @NotNull
+  @Nonnull
   public String readCurrentBranch() {
     return branchExist() ? DvcsUtil.tryLoadFileOrReturn(myCurrentBranch, HgRepository.DEFAULT_BRANCH) : HgRepository.DEFAULT_BRANCH;
   }
 
-  @NotNull
+  @Nonnull
   public Map<String, LinkedHashSet<Hash>> readBranches() {
     Map<String, LinkedHashSet<Hash>> branchesWithHashes = new HashMap<>();
     // Set<String> branchNames = new HashSet<String>();
@@ -231,7 +244,7 @@ public class HgRepositoryReader {
     return new File(myHgDir, "graftstate").exists();
   }
 
-  @NotNull
+  @Nonnull
   public Repository.State readState() {
     if (isRebaseInProgress()) {
       return Repository.State.REBASING;
@@ -250,29 +263,29 @@ public class HgRepositoryReader {
     return myCurrentBranch.exists();
   }
 
-  @NotNull
+  @Nonnull
   public Collection<HgNameWithHashInfo> readBookmarks() {
     return readReferences(myBookmarksFile);
   }
 
-  @NotNull
+  @Nonnull
   public Collection<HgNameWithHashInfo> readTags() {
     return readReferences(myTagsFile);
   }
 
-  @NotNull
+  @Nonnull
   public Collection<HgNameWithHashInfo> readLocalTags() {
     return readReferences(myLocalTagsFile);
   }
 
-  @NotNull
-  private Collection<HgNameWithHashInfo> readReferences(@NotNull File fileWithReferences) {
+  @Nonnull
+  private Collection<HgNameWithHashInfo> readReferences(@Nonnull File fileWithReferences) {
     HashSet<HgNameWithHashInfo> result = ContainerUtil.newHashSet();
     readReferences(fileWithReferences, result);
     return result;
   }
 
-  private void readReferences(@NotNull File fileWithReferences, @NotNull Collection<HgNameWithHashInfo> resultRefs) {
+  private void readReferences(@Nonnull File fileWithReferences, @Nonnull Collection<HgNameWithHashInfo> resultRefs) {
     // files like .hg/bookmarks which contains hash + name, f.e. 25e44c95b2612e3cdf29a704dabf82c77066cb67 A_BookMark or
     //files like .hg/patches/status hash:name, f.e. 25e44c95b2612e3cdf29a704dabf82c77066cb67:1.diff
     if (!fileWithReferences.exists()) return;
@@ -291,20 +304,20 @@ public class HgRepositoryReader {
     return myCurrentBookmark.exists() ? DvcsUtil.tryLoadFileOrReturn(myCurrentBookmark, "") : null;
   }
 
-  @NotNull
+  @Nonnull
   public Collection<HgNameWithHashInfo> readSubrepos() {
     if (!hasSubrepos()) return Collections.emptySet();
     return readReferences(mySubrepoFile);
   }
 
-  @NotNull
+  @Nonnull
   public List<HgNameWithHashInfo> readMQAppliedPatches() {
     ArrayList<HgNameWithHashInfo> mqPatchRefs = ContainerUtil.newArrayList();
     readReferences(new File(myMqInternalDir, "status"), mqPatchRefs);
     return mqPatchRefs;
   }
 
-  @NotNull
+  @Nonnull
   public List<String> readMqPatchNames() {
     File seriesFile = new File(myMqInternalDir, "series");
     return seriesFile.exists() ? StringUtil.split(DvcsUtil.tryLoadFileOrReturn(seriesFile, ""), "\n") : ContainerUtil.<String>emptyList();

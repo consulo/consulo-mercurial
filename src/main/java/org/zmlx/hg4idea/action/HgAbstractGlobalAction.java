@@ -17,14 +17,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.repo.HgRepositoryManager;
 import org.zmlx.hg4idea.util.HgUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
-import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.ProjectLevelVcsManager;
@@ -34,7 +34,7 @@ import com.intellij.util.containers.ContainerUtil;
 
 public abstract class HgAbstractGlobalAction extends DumbAwareAction {
 
-  public void actionPerformed(@NotNull AnActionEvent event) {
+  public void actionPerformed(@Nonnull AnActionEvent event) {
     final Project project = event.getProject();
     if (project == null) {
       return;
@@ -59,9 +59,9 @@ public abstract class HgAbstractGlobalAction extends DumbAwareAction {
     e.getPresentation().setEnabled(enabled);
   }
 
-  protected abstract void execute(@NotNull Project project,
-                                  @NotNull Collection<HgRepository> repositories,
-                                  @NotNull List<HgRepository> selectedRepositories);
+  protected abstract void execute(@Nonnull Project project,
+                                  @Nonnull Collection<HgRepository> repositories,
+                                  @Nonnull List<HgRepository> selectedRepositories);
 
   public boolean isEnabled(AnActionEvent e) {
     Project project = e.getData(CommonDataKeys.PROJECT);

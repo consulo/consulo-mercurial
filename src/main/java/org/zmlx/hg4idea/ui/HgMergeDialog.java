@@ -14,16 +14,16 @@ package org.zmlx.hg4idea.ui;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.IdeBorderFactory;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.repo.HgRepository;
 
 import java.util.Collection;
 
 public class HgMergeDialog extends HgCommonDialogWithChoices {
 
-  public HgMergeDialog(@NotNull Project project,
-                       @NotNull Collection<HgRepository> repositories,
+  public HgMergeDialog(@Nonnull Project project,
+                       @Nonnull Collection<HgRepository> repositories,
                        @Nullable HgRepository selectedRepo) {
     super(project, repositories, selectedRepo);
     hgRepositorySelectorComponent.setTitle("Select repository to merge");

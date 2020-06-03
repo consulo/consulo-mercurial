@@ -36,8 +36,8 @@ import com.intellij.util.ui.GridBag;
 import com.intellij.util.ui.JBUI;
 import com.intellij.vcsUtil.VcsUtil;
 import com.intellij.xml.util.XmlStringUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+
 import org.zmlx.hg4idea.*;
 import org.zmlx.hg4idea.action.HgActionUtil;
 import org.zmlx.hg4idea.command.*;
@@ -50,6 +50,7 @@ import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.repo.HgRepositoryManager;
 import org.zmlx.hg4idea.util.HgUtil;
 
+import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -68,7 +69,8 @@ public class HgCheckinEnvironment implements CheckinEnvironment {
   private boolean myShouldCommitSubrepos;
   private boolean myMqNewPatch;
   private boolean myCloseBranch;
-  @Nullable private Collection<HgRepository> myRepos;
+  @Nullable
+  private Collection<HgRepository> myRepos;
 
   public HgCheckinEnvironment(Project project) {
     myProject = project;
@@ -102,7 +104,7 @@ public class HgCheckinEnvironment implements CheckinEnvironment {
 
   public List<VcsException> commit(List<Change> changes,
                                    String preparedComment,
-                                   @NotNull NullableFunction<Object, Object> parametersHolder,
+                                   @Nonnull NullableFunction<Object, Object> parametersHolder,
                                    Set<String> feedback) {
     List<VcsException> exceptions = new LinkedList<>();
     Map<HgRepository, Set<HgFile>> repositoriesMap = getFilesByRepository(changes);
@@ -227,7 +229,7 @@ public class HgCheckinEnvironment implements CheckinEnvironment {
     }
     new Task.Backgroundable(myProject, "Removing Files...") {
       @Override
-      public void run(@NotNull ProgressIndicator indicator) {
+      public void run(@Nonnull ProgressIndicator indicator) {
         new HgRemoveCommand(myProject).executeInCurrentThread(filesWithRoots);
       }
     }.queue();
@@ -248,7 +250,7 @@ public class HgCheckinEnvironment implements CheckinEnvironment {
     return false;
   }
 
-  @NotNull
+  @Nonnull
   private Map<HgRepository, Set<HgFile>> getFilesByRepository(List<Change> changes) {
     Map<HgRepository, Set<HgFile>> result = new HashMap<>();
     for (Change change : changes) {
@@ -296,11 +298,11 @@ public class HgCheckinEnvironment implements CheckinEnvironment {
     myCloseBranch = closeBranch;
   }
 
-  public void setRepos(@NotNull Collection<HgRepository> repos) {
+  public void setRepos(@Nonnull Collection<HgRepository> repos) {
     myRepos = repos;
   }
 
-  private void addRepositoriesWithoutChanges(@NotNull Map<HgRepository, Set<HgFile>> repositoryMap) {
+  private void addRepositoriesWithoutChanges(@Nonnull Map<HgRepository, Set<HgFile>> repositoryMap) {
     if (myRepos == null) return;
     for (HgRepository repository : myRepos) {
       if (!repositoryMap.keySet().contains(repository)) {
@@ -313,11 +315,14 @@ public class HgCheckinEnvironment implements CheckinEnvironment {
    * Commit options for hg
    */
   public class HgCommitAdditionalComponent implements RefreshableOnComponent {
-    @NotNull private final JPanel myPanel;
-    @NotNull private final AmendComponent myAmend;
-    @NotNull private final JCheckBox myCommitSubrepos;
+    @Nonnull
+	private final JPanel myPanel;
+    @Nonnull
+	private final AmendComponent myAmend;
+    @Nonnull
+	private final JCheckBox myCommitSubrepos;
 
-    HgCommitAdditionalComponent(@NotNull Project project, @NotNull CheckinProjectPanel panel) {
+    HgCommitAdditionalComponent(@Nonnull Project project, @Nonnull CheckinProjectPanel panel) {
       HgVcs vcs = assertNotNull(HgVcs.getInstance(myProject));
 
       myAmend = new MyAmendComponent(project, getRepositoryManager(project), panel, "Amend Commit (QRefresh)");
@@ -372,22 +377,22 @@ public class HgCheckinEnvironment implements CheckinEnvironment {
     }
 
     private class MyAmendComponent extends AmendComponent {
-      public MyAmendComponent(@NotNull Project project,
-                              @NotNull HgRepositoryManager repoManager,
-                              @NotNull CheckinProjectPanel panel,
-                              @NotNull String title) {
+      public MyAmendComponent(@Nonnull Project project,
+                              @Nonnull HgRepositoryManager repoManager,
+                              @Nonnull CheckinProjectPanel panel,
+                              @Nonnull String title) {
         super(project, repoManager, panel, title);
       }
 
-      @NotNull
+      @Nonnull
       @Override
-      protected Set<VirtualFile> getVcsRoots(@NotNull Collection<FilePath> filePaths) {
+      protected Set<VirtualFile> getVcsRoots(@Nonnull Collection<FilePath> filePaths) {
         return HgUtil.hgRoots(myProject, filePaths);
       }
 
       @Nullable
       @Override
-      protected String getLastCommitMessage(@NotNull VirtualFile repo) throws VcsException {
+      protected String getLastCommitMessage(@Nonnull VirtualFile repo) throws VcsException {
         HgCommandExecutor commandExecutor = new HgCommandExecutor(myProject);
         List<String> args = new ArrayList<>();
         args.add("-r");

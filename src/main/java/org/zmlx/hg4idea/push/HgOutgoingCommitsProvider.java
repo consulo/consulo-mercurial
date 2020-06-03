@@ -20,7 +20,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.vcs.log.VcsFullCommitDetails;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.command.HgOutgoingCommand;
 import org.zmlx.hg4idea.execution.HgCommandResult;
@@ -41,10 +41,10 @@ public class HgOutgoingCommitsProvider extends OutgoingCommitsProvider<HgReposit
   private static final Logger LOG = Logger.getInstance(HgOutgoingCommitsProvider.class);
   private static final String LOGIN_AND_REFRESH_LINK = "Enter Password & Refresh";
 
-  @NotNull
+  @Nonnull
   @Override
-  public OutgoingResult getOutgoingCommits(@NotNull final HgRepository repository,
-                                           @NotNull final PushSpec<HgPushSource, HgTarget> pushSpec,
+  public OutgoingResult getOutgoingCommits(@Nonnull final HgRepository repository,
+                                           @Nonnull final PushSpec<HgPushSource, HgTarget> pushSpec,
                                            boolean initial) {
     final Project project = repository.getProject();
     HgVcs hgvcs = HgVcs.getInstance(project);
@@ -72,7 +72,7 @@ public class HgOutgoingCommitsProvider extends OutgoingCommitsProvider<HgReposit
           if (HgErrorUtil.isAuthorizationError(error)) {
             VcsError authorizationError =
               new VcsError(error + "<a href='authenticate'>" + LOGIN_AND_REFRESH_LINK + "</a>", new VcsErrorHandler() {
-                public void handleError(@NotNull CommitLoader commitLoader) {
+                public void handleError(@Nonnull CommitLoader commitLoader) {
                   commitLoader.reloadCommits();
                 }
               });

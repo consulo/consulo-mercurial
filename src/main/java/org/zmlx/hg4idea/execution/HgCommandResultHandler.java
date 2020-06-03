@@ -12,7 +12,7 @@
 // limitations under the License.
 package org.zmlx.hg4idea.execution;
 
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 public interface HgCommandResultHandler {
 

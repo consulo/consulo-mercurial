@@ -12,8 +12,8 @@
 // limitations under the License.
 package org.zmlx.hg4idea.execution;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.HgGlobalSettings;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.HgVcsMessages;
@@ -83,7 +83,7 @@ class HgCommandAuthenticator
 		}
 	}
 
-	public boolean promptForAuthentication(Project project, @NotNull String proposedLogin, @NotNull String uri, @NotNull String path, @Nullable ModalityState state)
+	public boolean promptForAuthentication(Project project, @Nonnull String proposedLogin, @Nonnull String uri, @Nonnull String path, @Nullable ModalityState state)
 	{
 		GetPasswordRunnable runnable = new GetPasswordRunnable(project, proposedLogin, uri, path, myForceAuthorization, mySilentMode);
 		ApplicationManager.getApplication().invokeAndWait(runnable, state == null ? ModalityState.defaultModalityState() : state);
@@ -116,7 +116,7 @@ class HgCommandAuthenticator
 		private boolean myForceAuthorization;
 		private final boolean mySilent;
 
-		public GetPasswordRunnable(Project project, @NotNull String proposedLogin, @NotNull String uri, @NotNull String path, boolean forceAuthorization, boolean silent)
+		public GetPasswordRunnable(Project project, @Nonnull String proposedLogin, @Nonnull String uri, @Nonnull String path, boolean forceAuthorization, boolean silent)
 		{
 			this.myProject = project;
 			this.myProposedLogin = proposedLogin;
@@ -136,7 +136,7 @@ class HgCommandAuthenticator
 				return;
 			}
 
-			@NotNull final HgGlobalSettings hgGlobalSettings = vcs.getGlobalSettings();
+			@Nonnull final HgGlobalSettings hgGlobalSettings = vcs.getGlobalSettings();
 			@Nullable String rememberedLoginsForUrl = null;
 			String url = VirtualFileManager.extractPath(myURL);
 			if(!StringUtil.isEmptyOrSpaces(myURL))
@@ -215,7 +215,7 @@ class HgCommandAuthenticator
 			return ok;
 		}
 
-		@NotNull
+		@Nonnull
 		public String getURL()
 		{
 			return myURL;

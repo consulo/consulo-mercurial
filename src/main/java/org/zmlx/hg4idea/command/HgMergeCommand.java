@@ -23,8 +23,8 @@ import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vcs.VcsNotifier;
 import com.intellij.openapi.vcs.update.UpdatedFiles;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 import org.zmlx.hg4idea.execution.HgPromptCommandExecutor;
 import org.zmlx.hg4idea.provider.update.HgConflictResolver;
@@ -42,16 +42,19 @@ public class HgMergeCommand {
 
   private static final Logger LOG = Logger.getInstance(HgMergeCommand.class.getName());
 
-  @NotNull private final Project project;
-  @NotNull private final HgRepository repo;
-  @Nullable private String revision;
+  @Nonnull
+  private final Project project;
+  @Nonnull
+  private final HgRepository repo;
+  @Nullable
+  private String revision;
 
-  public HgMergeCommand(@NotNull Project project, @NotNull HgRepository repo) {
+  public HgMergeCommand(@Nonnull Project project, @Nonnull HgRepository repo) {
     this.project = project;
     this.repo = repo;
   }
 
-  private void setRevision(@NotNull String revision) {
+  private void setRevision(@Nonnull String revision) {
     this.revision = revision;
   }
 
@@ -88,15 +91,15 @@ public class HgMergeCommand {
     return commandResult;
   }
 
-  public static void mergeWith(@NotNull final HgRepository repository,
-                               @NotNull final String branchName,
-                               @NotNull final UpdatedFiles updatedFiles) {
+  public static void mergeWith(@Nonnull final HgRepository repository,
+                               @Nonnull final String branchName,
+                               @Nonnull final UpdatedFiles updatedFiles) {
     mergeWith(repository, branchName, updatedFiles, null);
   }
 
-  public static void mergeWith(@NotNull final HgRepository repository,
-                               @NotNull final String branchName,
-                               @NotNull final UpdatedFiles updatedFiles, @Nullable final Runnable onSuccessHandler) {
+  public static void mergeWith(@Nonnull final HgRepository repository,
+							   @Nonnull final String branchName,
+							   @Nonnull final UpdatedFiles updatedFiles, @Nullable final Runnable onSuccessHandler) {
     final Project project = repository.getProject();
     final VirtualFile repositoryRoot = repository.getRoot();
     final HgMergeCommand hgMergeCommand = new HgMergeCommand(project, repository);
@@ -104,7 +107,7 @@ public class HgMergeCommand {
     // we need just a string
     new Task.Backgroundable(project, "Merging Changes...") {
       @Override
-      public void run(@NotNull ProgressIndicator indicator) {
+      public void run(@Nonnull ProgressIndicator indicator) {
         try {
           HgCommandResult result = hgMergeCommand.mergeSynchronously();
           if (HgErrorUtil.isAncestorMergeError(result)) {
@@ -130,7 +133,7 @@ public class HgMergeCommand {
     }.queue();
   }
 
-  private static void throwException(@NotNull Exception e) throws VcsException {
+  private static void throwException(@Nonnull Exception e) throws VcsException {
     String msg = "Exception during marking directory dirty: " + e;
     LOG.info(msg, e);
     throw new VcsException(msg);

@@ -17,7 +17,7 @@ package org.zmlx.hg4idea.push;
 
 import com.intellij.execution.process.ProcessOutput;
 import com.intellij.util.containers.ContainerUtil;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -30,11 +30,12 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Parameterized.class)
 public class HgPushParseTest {
 
-  @NotNull private final String myOutput;
+  @Nonnull
+  private final String myOutput;
   private final int myExpected;
 
   @SuppressWarnings({"JUnitTestCaseWithNonTrivialConstructors", "UnusedParameters"})
-  public HgPushParseTest(@NotNull String name, @NotNull String output, int expected) {
+  public HgPushParseTest(@Nonnull String name, @Nonnull String output, int expected) {
     myOutput = output;
     myExpected = expected;
   }

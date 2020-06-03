@@ -23,8 +23,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vcs.VcsNotifier;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+
 import org.zmlx.hg4idea.action.HgCommandResultNotifier;
 import org.zmlx.hg4idea.command.HgPushCommand;
 import org.zmlx.hg4idea.execution.HgCommandResult;
@@ -34,6 +34,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.annotation.Nullable;
 
 public class HgPusher extends Pusher<HgRepository, HgPushSource, HgTarget> {
 
@@ -46,8 +48,8 @@ public class HgPusher extends Pusher<HgRepository, HgPushSource, HgTarget> {
   static int NOTHING_TO_PUSH_EXIT_VALUE = 1;
 
   @Override
-  public void push(@NotNull Map<HgRepository, PushSpec<HgPushSource, HgTarget>> pushSpecs,
-                   @Nullable VcsPushOptionValue vcsPushOptionValue, boolean force) {
+  public void push(@Nonnull Map<HgRepository, PushSpec<HgPushSource, HgTarget>> pushSpecs,
+				   @Nullable VcsPushOptionValue vcsPushOptionValue, boolean force) {
     for (Map.Entry<HgRepository, PushSpec<HgPushSource, HgTarget>> entry : pushSpecs.entrySet()) {
       HgRepository repository = entry.getKey();
       PushSpec<HgPushSource, HgTarget> hgSpec = entry.getValue();
@@ -73,7 +75,7 @@ public class HgPusher extends Pusher<HgRepository, HgPushSource, HgTarget> {
     }
   }
 
-  public static void pushSynchronously(@NotNull final Project project, @NotNull HgPushCommand command) {
+  public static void pushSynchronously(@Nonnull final Project project, @Nonnull HgPushCommand command) {
     final VirtualFile repo = command.getRepo();
     HgCommandResult result = command.executeInCurrentThread();
     if (result == null) {
@@ -96,7 +98,7 @@ public class HgPusher extends Pusher<HgRepository, HgPushSource, HgTarget> {
     }
   }
 
-  static int getNumberOfPushedCommits(@NotNull HgCommandResult result) {
+  static int getNumberOfPushedCommits(@Nonnull HgCommandResult result) {
     int numberOfCommitsInAllSubrepos = 0;
     final List<String> outputLines = result.getOutputLines();
     for (String outputLine : outputLines) {

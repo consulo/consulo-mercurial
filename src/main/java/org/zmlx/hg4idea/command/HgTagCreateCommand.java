@@ -15,7 +15,7 @@ package org.zmlx.hg4idea.command;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.execution.HgCommandException;
 import org.zmlx.hg4idea.execution.HgCommandExecutor;
 import org.zmlx.hg4idea.execution.HgCommandResultHandler;
@@ -32,7 +32,7 @@ public class HgTagCreateCommand {
   private final String tagName;
   private final String revisionNumberOrHash;
 
-  public HgTagCreateCommand(Project project, @NotNull VirtualFile repo, String tagName, String revisionNumberOrHash) {
+  public HgTagCreateCommand(Project project, @Nonnull VirtualFile repo, String tagName, String revisionNumberOrHash) {
     this.project = project;
     this.repo = repo;
     this.tagName = tagName;

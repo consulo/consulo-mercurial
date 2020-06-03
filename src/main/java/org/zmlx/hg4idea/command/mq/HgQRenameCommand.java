@@ -21,8 +21,8 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.Condition;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.vcs.log.Hash;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.HgNameWithHashInfo;
 import org.zmlx.hg4idea.action.HgCommandResultNotifier;
 import org.zmlx.hg4idea.execution.HgCommandExecutor;
@@ -37,13 +37,14 @@ import java.util.Arrays;
 public class HgQRenameCommand {
 
   private static final Logger LOG = Logger.getInstance(HgQRenameCommand.class);
-  @NotNull private final HgRepository myRepository;
+  @Nonnull
+  private final HgRepository myRepository;
 
-  public HgQRenameCommand(@NotNull HgRepository repository) {
+  public HgQRenameCommand(@Nonnull HgRepository repository) {
     myRepository = repository;
   }
 
-  public void execute(@NotNull final Hash patchHash) {
+  public void execute(@Nonnull final Hash patchHash) {
     final Project project = myRepository.getProject();
     HgNameWithHashInfo patchInfo = ContainerUtil.find(myRepository.getMQAppliedPatches(), new Condition<HgNameWithHashInfo>() {
       @Override
@@ -64,9 +65,9 @@ public class HgQRenameCommand {
     }
   }
 
-  public static void performPatchRename(@NotNull final HgRepository repository,
-                                        @NotNull final String oldName,
-                                        @NotNull final String newName) {
+  public static void performPatchRename(@Nonnull final HgRepository repository,
+                                        @Nonnull final String oldName,
+                                        @Nonnull final String newName) {
     if (oldName.equals(newName)) return;
     final Project project = repository.getProject();
     new HgCommandExecutor(project)

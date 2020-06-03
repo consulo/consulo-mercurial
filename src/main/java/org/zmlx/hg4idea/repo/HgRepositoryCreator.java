@@ -15,28 +15,30 @@
  */
 package org.zmlx.hg4idea.repo;
 
+import javax.annotation.Nonnull;
+
 import com.intellij.dvcs.repo.Repository;
 import com.intellij.dvcs.repo.VcsRepositoryCreator;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.VcsKey;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.jetbrains.annotations.NotNull;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.util.HgUtil;
 
 public class HgRepositoryCreator extends VcsRepositoryCreator {
-  @NotNull private final Project myProject;
+  @Nonnull
+  private final Project myProject;
 
-  public HgRepositoryCreator(@NotNull Project project) {
+  public HgRepositoryCreator(@Nonnull Project project) {
     myProject = project;
   }
 
   @Override
-  public Repository createRepositoryIfValid(@NotNull VirtualFile root) {
+  public Repository createRepositoryIfValid(@Nonnull VirtualFile root) {
     return HgUtil.isHgRoot(root) ? HgRepositoryImpl.getInstance(root, myProject, myProject) : null;
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public VcsKey getVcsKey() {
     return HgVcs.getKey();

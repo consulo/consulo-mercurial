@@ -19,8 +19,9 @@ import com.intellij.dvcs.repo.Repository;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.zmlx.hg4idea.command.HgRebaseCommand;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 import org.zmlx.hg4idea.repo.HgRepository;
@@ -35,13 +36,13 @@ public class HgAbortRebaseAction extends HgProcessStateAction {
   }
 
   @Override
-  protected void execute(@NotNull final Project project,
-                         @NotNull Collection<HgRepository> repositories,
+  protected void execute(@Nonnull final Project project,
+                         @Nonnull Collection<HgRepository> repositories,
                          @Nullable final HgRepository selectedRepo) {
 
     new Task.Backgroundable(project, "Abort Rebasing...") {
       @Override
-      public void run(@NotNull ProgressIndicator indicator) {
+      public void run(@Nonnull ProgressIndicator indicator) {
         if (selectedRepo != null) {
           HgRebaseCommand rebaseCommand = new HgRebaseCommand(project, selectedRepo);
           HgCommandResult result = rebaseCommand.abortRebase();

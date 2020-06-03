@@ -27,19 +27,18 @@ import com.intellij.vcs.log.Hash;
 import com.intellij.vcs.log.VcsFullCommitDetails;
 import com.intellij.vcs.log.VcsLog;
 import com.intellij.vcs.log.VcsLogDataKeys;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.HgNameWithHashInfo;
 import org.zmlx.hg4idea.HgVcsMessages;
 import org.zmlx.hg4idea.command.mq.HgQGotoCommand;
 import org.zmlx.hg4idea.command.mq.HgQPopCommand;
 import org.zmlx.hg4idea.repo.HgRepository;
 
-import java.util.Set;
 import java.util.List;
 
 public class HgQGotoFromLogAction extends HgMqAppliedPatchAction {
 
-  protected void actionPerformed(@NotNull final HgRepository repository, @NotNull final VcsFullCommitDetails commit) {
+  protected void actionPerformed(@Nonnull final HgRepository repository, @Nonnull final VcsFullCommitDetails commit) {
     final Project project = repository.getProject();
     List<Hash> parents = commit.getParents();
     final Hash parentHash = parents.isEmpty() ? null : parents.get(0);
@@ -55,7 +54,7 @@ public class HgQGotoFromLogAction extends HgMqAppliedPatchAction {
                                                      : HgVcsMessages.message("hg4idea.mq.progress.pop")) {
 
       @Override
-      public void run(@NotNull ProgressIndicator indicator) {
+      public void run(@Nonnull ProgressIndicator indicator) {
         if (parentPatchName != null) {
           new HgQGotoCommand(repository).executeInCurrentThread(parentPatchName.getName());
         }
@@ -72,12 +71,12 @@ public class HgQGotoFromLogAction extends HgMqAppliedPatchAction {
   }
 
   @Override
-  protected void actionPerformed(@NotNull HgRepository repository, @NotNull Hash commit) {
+  protected void actionPerformed(@Nonnull HgRepository repository, @Nonnull Hash commit) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void actionPerformed(@NotNull AnActionEvent e) {
+  public void actionPerformed(@Nonnull AnActionEvent e) {
     final Project project = e.getRequiredData(CommonDataKeys.PROJECT);
     VcsLog log = e.getRequiredData(VcsLogDataKeys.VCS_LOG);
 

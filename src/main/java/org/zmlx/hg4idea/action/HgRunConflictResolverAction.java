@@ -16,8 +16,8 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.containers.ContainerUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.HgVcsMessages;
 import org.zmlx.hg4idea.provider.update.HgConflictResolver;
 import org.zmlx.hg4idea.repo.HgRepository;
@@ -29,14 +29,14 @@ import java.util.Collection;
 public class HgRunConflictResolverAction extends HgAbstractGlobalSingleRepoAction {
 
   @Override
-  public void execute(@NotNull final Project project, @NotNull Collection<HgRepository> repositories, @Nullable HgRepository selectedRepo) {
+  public void execute(@Nonnull final Project project, @Nonnull Collection<HgRepository> repositories, @Nullable HgRepository selectedRepo) {
     final HgRepository repository = repositories.size() > 1 ? letUserSelectRepository(project, repositories, selectedRepo) :
                                     ContainerUtil.getFirstItem(repositories);
     if (repository != null) {
       new Task.Backgroundable(project, HgVcsMessages.message("action.hg4idea.run.conflict.resolver.description")) {
 
         @Override
-        public void run(@NotNull ProgressIndicator indicator) {
+        public void run(@Nonnull ProgressIndicator indicator) {
           new HgConflictResolver(project).resolve(repository.getRoot());
           HgErrorUtil.markDirtyAndHandleErrors(project, repository.getRoot());
         }
@@ -45,8 +45,8 @@ public class HgRunConflictResolverAction extends HgAbstractGlobalSingleRepoActio
   }
 
   @Nullable
-  private static HgRepository letUserSelectRepository(@NotNull Project project, @NotNull Collection<HgRepository> repositories,
-                                                      @Nullable HgRepository selectedRepo) {
+  private static HgRepository letUserSelectRepository(@Nonnull Project project, @Nonnull Collection<HgRepository> repositories,
+													  @Nullable HgRepository selectedRepo) {
     HgRunConflictResolverDialog dialog = new HgRunConflictResolverDialog(project, repositories, selectedRepo);
     return dialog.showAndGet() ? dialog.getRepository() : null;
   }

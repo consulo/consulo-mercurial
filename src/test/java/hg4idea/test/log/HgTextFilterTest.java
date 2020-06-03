@@ -25,7 +25,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+
 import org.zmlx.hg4idea.command.HgWorkingCopyRevisionsCommand;
 import org.zmlx.hg4idea.log.HgLogProvider;
 import com.intellij.openapi.vcs.VcsException;
@@ -89,16 +90,16 @@ public class HgTextFilterTest extends HgPlatformTest {
                        getFilteredCommits(provider, new VcsLogTextFilterImpl("BUG.*", true, false)));
   }
 
-  @NotNull
-  private List<String> getFilteredCommits(@NotNull HgLogProvider provider, @NotNull VcsLogTextFilterImpl filter) throws VcsException {
+  @Nonnull
+  private List<String> getFilteredCommits(@Nonnull HgLogProvider provider, @Nonnull VcsLogTextFilterImpl filter) throws VcsException {
     VcsLogFilterCollectionImpl filterCollection = new VcsLogFilterCollectionImpl(null, null, null, null,
                                                                                  filter, null, null);
     List<TimedVcsCommit> commits = provider.getCommitsMatchingFilter(myProject.getBaseDir(), filterCollection, -1);
     return ContainerUtil.map(commits, commit -> commit.getId().asString());
   }
 
-  @NotNull
-  private String commit(@NotNull String message) throws IOException {
+  @Nonnull
+  private String commit(@Nonnull String message) throws IOException {
     String file = "file.txt";
     overwrite(file, "content" + Math.random());
     myProject.getBaseDir().refresh(false, true);

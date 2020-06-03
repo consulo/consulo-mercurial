@@ -12,29 +12,32 @@
 // limitations under the License.
 package org.zmlx.hg4idea.provider;
 
+import javax.annotation.Nonnull;
+
 import com.intellij.openapi.vcs.changes.CurrentBinaryContentRevision;
 import com.intellij.openapi.vcs.history.VcsRevisionNumber;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.jetbrains.annotations.NotNull;
 import org.zmlx.hg4idea.HgFile;
 
 final public class HgCurrentBinaryContentRevision extends CurrentBinaryContentRevision {
-  @NotNull private VcsRevisionNumber myRevisionNumber;
-  @NotNull private VirtualFile myRepositoryRoot;
+  @Nonnull
+  private VcsRevisionNumber myRevisionNumber;
+  @Nonnull
+  private VirtualFile myRepositoryRoot;
 
-  HgCurrentBinaryContentRevision(@NotNull HgFile hgFile, @NotNull VcsRevisionNumber revisionNumber) {
+  HgCurrentBinaryContentRevision(@Nonnull HgFile hgFile, @Nonnull VcsRevisionNumber revisionNumber) {
     super(hgFile.toFilePath());
     myRepositoryRoot = hgFile.getRepo();
     myRevisionNumber = revisionNumber;
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public VcsRevisionNumber getRevisionNumber() {
     return myRevisionNumber;
   }
 
-  @NotNull
+  @Nonnull
   public VirtualFile getRepositoryRoot() {
     return myRepositoryRoot;
   }

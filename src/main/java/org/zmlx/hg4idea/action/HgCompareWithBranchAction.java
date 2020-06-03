@@ -28,8 +28,8 @@ import com.intellij.util.containers.ContainerUtil;
 import com.intellij.vcs.log.Hash;
 import com.intellij.vcs.log.impl.HashImpl;
 import com.intellij.vcsUtil.VcsUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.HgContentRevision;
 import org.zmlx.hg4idea.HgFile;
 import org.zmlx.hg4idea.HgNameWithHashInfo;
@@ -45,7 +45,7 @@ import static com.intellij.openapi.vcs.history.VcsDiffUtil.createChangesWithCurr
 
 public class HgCompareWithBranchAction extends DvcsCompareWithBranchAction<HgRepository> {
   @Override
-  protected boolean noBranchesToCompare(@NotNull HgRepository repository) {
+  protected boolean noBranchesToCompare(@Nonnull HgRepository repository) {
     final Map<String, LinkedHashSet<Hash>> branches = repository.getBranches();
     if (branches.size() > 1) return false;
     final Hash currentRevisionHash = getCurrentHash(repository);
@@ -55,15 +55,15 @@ public class HgCompareWithBranchAction extends DvcsCompareWithBranchAction<HgRep
     return currentRevisionHash.equals(getHeavyBranchMainHash(repository, repository.getCurrentBranch()));
   }
 
-  @NotNull
-  private static Hash getCurrentHash(@NotNull HgRepository repository) {
+  @Nonnull
+  private static Hash getCurrentHash(@Nonnull HgRepository repository) {
     final String currentRevision = repository.getCurrentRevision();
     assert currentRevision != null : "Compare With Branch couldn't be performed for newly created repository";
     return HashImpl.build(repository.getCurrentRevision());
   }
 
-  @NotNull
-  private static List<HgNameWithHashInfo> getOtherBookmarks(@NotNull HgRepository repository, @NotNull final Hash currentRevisionHash) {
+  @Nonnull
+  private static List<HgNameWithHashInfo> getOtherBookmarks(@Nonnull HgRepository repository, @Nonnull final Hash currentRevisionHash) {
     return ContainerUtil.filter(repository.getBookmarks(),
                                 new Condition<HgNameWithHashInfo>() {
                                   @Override
@@ -74,7 +74,7 @@ public class HgCompareWithBranchAction extends DvcsCompareWithBranchAction<HgRep
   }
 
   @Nullable
-  private static Hash findBookmarkHashByName(@NotNull HgRepository repository, @NotNull final String bookmarkName) {
+  private static Hash findBookmarkHashByName(@Nonnull HgRepository repository, @Nonnull final String bookmarkName) {
     HgNameWithHashInfo bookmarkInfo = ContainerUtil.find(repository.getBookmarks(),
                                                          new Condition<HgNameWithHashInfo>() {
                                                            @Override
@@ -86,21 +86,21 @@ public class HgCompareWithBranchAction extends DvcsCompareWithBranchAction<HgRep
   }
 
   @Nullable
-  private static Hash getHeavyBranchMainHash(@NotNull HgRepository repository, @NotNull String branchName) {
+  private static Hash getHeavyBranchMainHash(@Nonnull HgRepository repository, @Nonnull String branchName) {
     // null for new branch or not heavy ref
     final LinkedHashSet<Hash> branchHashes = repository.getBranches().get(branchName);
     return branchHashes != null ? ObjectUtils.assertNotNull(Iterables.getLast(branchHashes)) : null;
   }
 
   @Nullable
-  private static Hash detectActiveHashByName(@NotNull HgRepository repository, @NotNull String branchToCompare) {
+  private static Hash detectActiveHashByName(@Nonnull HgRepository repository, @Nonnull String branchToCompare) {
     Hash refHashToCompare = getHeavyBranchMainHash(repository, branchToCompare);
     return refHashToCompare != null ? refHashToCompare : findBookmarkHashByName(repository, branchToCompare);
   }
 
-  @NotNull
+  @Nonnull
   @Override
-  protected List<String> getBranchNamesExceptCurrent(@NotNull HgRepository repository) {
+  protected List<String> getBranchNamesExceptCurrent(@Nonnull HgRepository repository) {
     final List<String> namesToCompare = new ArrayList<>(repository.getBranches().keySet());
     final String currentBranchName = repository.getCurrentBranchName();
     assert currentBranchName != null;
@@ -112,17 +112,17 @@ public class HgCompareWithBranchAction extends DvcsCompareWithBranchAction<HgRep
     return namesToCompare;
   }
 
-  @NotNull
+  @Nonnull
   @Override
-  protected HgRepositoryManager getRepositoryManager(@NotNull Project project) {
+  protected HgRepositoryManager getRepositoryManager(@Nonnull Project project) {
     return HgUtil.getRepositoryManager(project);
   }
 
   @Override
-  @NotNull
-  protected Collection<Change> getDiffChanges(@NotNull Project project,
-                                              @NotNull VirtualFile file,
-                                              @NotNull String branchToCompare) throws VcsException {
+  @Nonnull
+  protected Collection<Change> getDiffChanges(@Nonnull Project project,
+                                              @Nonnull VirtualFile file,
+                                              @Nonnull String branchToCompare) throws VcsException {
     HgRepository repository = getRepositoryManager(project).getRepositoryForFile(file);
     if (repository == null) {
       throw new VcsException("Couldn't find repository for " + file.getName());
@@ -145,9 +145,9 @@ public class HgCompareWithBranchAction extends DvcsCompareWithBranchAction<HgRep
       .create(project, hgFile, compareWithRevisionNumber)) : changes;
   }
 
-  private static boolean existInBranch(@NotNull HgRepository repository,
-                                       @NotNull FilePath path,
-                                       @NotNull HgRevisionNumber compareWithRevisionNumber) {
+  private static boolean existInBranch(@Nonnull HgRepository repository,
+                                       @Nonnull FilePath path,
+                                       @Nonnull HgRevisionNumber compareWithRevisionNumber) {
     HgStatusCommand statusCommand = new HgStatusCommand.Builder(true).ignored(false).unknown(false).copySource(!path.isDirectory())
       .baseRevision(compareWithRevisionNumber).targetRevision(null).build(repository.getProject());
     statusCommand.cleanFilesOption(true);

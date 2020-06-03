@@ -15,8 +15,8 @@ package org.zmlx.hg4idea.command;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.HgRevisionNumber;
 import org.zmlx.hg4idea.execution.HgCommandExecutor;
 import org.zmlx.hg4idea.execution.HgCommandResult;
@@ -35,7 +35,7 @@ public class HgRevertCommand {
 
   //all files should be already chunked
   @Nullable
-  public HgCommandResult execute(@NotNull VirtualFile repo, @NotNull Collection<String> files, @Nullable HgRevisionNumber vcsRevisionNumber, boolean backupFile) {
+  public HgCommandResult execute(@Nonnull VirtualFile repo, @Nonnull Collection<String> files, @Nullable HgRevisionNumber vcsRevisionNumber, boolean backupFile) {
     final List<String> options = new LinkedList<>();
     if (vcsRevisionNumber != null && !HgRevisionNumber.NULL_REVISION_NUMBER.equals(vcsRevisionNumber)) {
       options.add("--rev");

@@ -15,10 +15,11 @@
  */
 package org.zmlx.hg4idea.provider.commit;
 
+import javax.annotation.Nonnull;
+
 import com.intellij.openapi.vcs.changes.CommitExecutor;
 import com.intellij.openapi.vcs.changes.CommitSession;
 import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Kirill Likhodedov
@@ -35,7 +36,7 @@ public class HgCommitAndPushExecutor implements CommitExecutor {
     return "Commit and &Push...";
   }
 
-  @NotNull
+  @Nonnull
   public CommitSession createCommitSession() {
     myCheckinEnvironment.setNextCommitIsPushed();
     return CommitSession.VCS_COMMIT;

@@ -21,8 +21,8 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.update.UpdatedFiles;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.command.HgMergeCommand;
 import org.zmlx.hg4idea.command.HgUpdateCommand;
 import org.zmlx.hg4idea.repo.HgRepository;
@@ -31,18 +31,21 @@ import java.util.List;
 
 public class HgCommonBranchActions extends BranchActionGroup {
 
-  @NotNull protected final Project myProject;
-  @NotNull protected String myBranchName;
-  @NotNull List<HgRepository> myRepositories;
+  @Nonnull
+  protected final Project myProject;
+  @Nonnull
+  protected String myBranchName;
+  @Nonnull
+  List<HgRepository> myRepositories;
 
-  HgCommonBranchActions(@NotNull Project project, @NotNull List<HgRepository> repositories, @NotNull String branchName) {
+  HgCommonBranchActions(@Nonnull Project project, @Nonnull List<HgRepository> repositories, @Nonnull String branchName) {
     myProject = project;
     myBranchName = branchName;
     myRepositories = repositories;
     getTemplatePresentation().setText(myBranchName, false); // no mnemonics
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public AnAction[] getChildren(@Nullable AnActionEvent e) {
     return new AnAction[]{
@@ -53,9 +56,9 @@ public class HgCommonBranchActions extends BranchActionGroup {
 
   private static class MergeAction extends HgBranchAbstractAction {
 
-    public MergeAction(@NotNull Project project,
-                       @NotNull List<HgRepository> repositories,
-                       @NotNull String branchName) {
+    public MergeAction(@Nonnull Project project,
+                       @Nonnull List<HgRepository> repositories,
+                       @Nonnull String branchName) {
       super(project, "Merge", repositories, branchName);
     }
 
@@ -71,9 +74,9 @@ public class HgCommonBranchActions extends BranchActionGroup {
 
   private static class UpdateAction extends HgBranchAbstractAction {
 
-    public UpdateAction(@NotNull Project project,
-                        @NotNull List<HgRepository> repositories,
-                        @NotNull String branchName) {
+    public UpdateAction(@Nonnull Project project,
+                        @Nonnull List<HgRepository> repositories,
+                        @Nonnull String branchName) {
       super(project, "Update", repositories, branchName);
     }
 

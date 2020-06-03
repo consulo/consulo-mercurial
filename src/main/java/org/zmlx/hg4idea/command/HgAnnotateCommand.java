@@ -15,8 +15,8 @@ package org.zmlx.hg4idea.command;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.text.DateFormatUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+
 import org.zmlx.hg4idea.HgFile;
 import org.zmlx.hg4idea.HgRevisionNumber;
 import org.zmlx.hg4idea.HgVcs;
@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.annotation.Nullable;
 
 public class HgAnnotateCommand {
 
@@ -53,7 +55,7 @@ public class HgAnnotateCommand {
     myProject = project;
   }
 
-  public List<HgAnnotationLine> execute(@NotNull HgFile hgFile, @Nullable HgRevisionNumber revision) {
+  public List<HgAnnotationLine> execute(@Nonnull HgFile hgFile, @Nullable HgRevisionNumber revision) {
     final List<String> arguments = new ArrayList<>();
     arguments.add("-cvnudl");
     HgVcs vcs = HgVcs.getInstance(myProject);

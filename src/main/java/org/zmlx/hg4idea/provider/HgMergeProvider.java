@@ -27,7 +27,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.ArrayUtil;
 import com.intellij.vcsUtil.VcsRunnable;
 import com.intellij.vcsUtil.VcsUtil;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.HgContentRevision;
 import org.zmlx.hg4idea.HgFile;
 import org.zmlx.hg4idea.HgRevisionNumber;
@@ -54,9 +54,9 @@ public class HgMergeProvider implements MergeProvider {
     myProject = project;
   }
 
-  @NotNull
+  @Nonnull
   @Override
-  public MergeData loadRevisions(@NotNull final VirtualFile file) throws VcsException {
+  public MergeData loadRevisions(@Nonnull final VirtualFile file) throws VcsException {
     final MergeData mergeData = new MergeData();
     final VcsRunnable runnable = new VcsRunnable() {
       @Override
@@ -143,7 +143,7 @@ public class HgMergeProvider implements MergeProvider {
   }
 
   @Override
-  public void conflictResolvedForFile(@NotNull VirtualFile file) {
+  public void conflictResolvedForFile(@Nonnull VirtualFile file) {
     try {
       new HgResolveCommand(myProject).markResolved(HgUtil.getHgRootOrThrow(myProject, file), file);
     } catch (VcsException e) {
@@ -152,7 +152,7 @@ public class HgMergeProvider implements MergeProvider {
   }
 
   @Override
-  public boolean isBinary(@NotNull VirtualFile file) {
+  public boolean isBinary(@Nonnull VirtualFile file) {
     return file.getFileType().isBinary();
   }
 

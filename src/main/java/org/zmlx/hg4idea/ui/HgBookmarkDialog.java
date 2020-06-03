@@ -7,14 +7,14 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
+import javax.annotation.Nonnull;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.util.HgBranchReferenceValidator;
 import org.zmlx.hg4idea.util.HgReferenceValidator;
@@ -27,11 +27,14 @@ import com.intellij.util.ui.GridBag;
 import com.intellij.util.ui.UIUtil;
 
 public class HgBookmarkDialog extends DialogWrapper {
-  @NotNull private HgRepository myRepository;
-  @NotNull private JBTextField myBookmarkName;
-  @NotNull private JBCheckBox myActiveCheckbox;
+  @Nonnull
+  private HgRepository myRepository;
+  @Nonnull
+  private JBTextField myBookmarkName;
+  @Nonnull
+  private JBCheckBox myActiveCheckbox;
 
-  public HgBookmarkDialog(@NotNull HgRepository repository) {
+  public HgBookmarkDialog(@Nonnull HgRepository repository) {
     super(repository.getProject(), false);
     myRepository = repository;
     setTitle("Create Bookmark");
@@ -46,19 +49,19 @@ public class HgBookmarkDialog extends DialogWrapper {
   }
 
   @Override
-  @NotNull
+  @Nonnull
   public JComponent getPreferredFocusedComponent() {
     return myBookmarkName;
   }
 
   @Override
-  @NotNull
+  @Nonnull
   protected String getDimensionServiceKey() {
     return HgBookmarkDialog.class.getName();
   }
 
   @Override
-  @NotNull
+  @Nonnull
   protected JComponent createCenterPanel() {
 
     JPanel contentPanel = new JPanel(new GridBagLayout());

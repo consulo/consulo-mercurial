@@ -19,7 +19,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.VcsException;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.messages.MessageBus;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.action.HgCommandResultNotifier;
 import org.zmlx.hg4idea.command.HgCommitTypeCommand;
@@ -38,12 +38,12 @@ public class HgQNewCommand extends HgCommitTypeCommand {
 
   private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yy_MM_dd_HH-mm-ss");
 
-  public HgQNewCommand(@NotNull Project project, @NotNull HgRepository repository, String message, boolean amend) {
+  public HgQNewCommand(@Nonnull Project project, @Nonnull HgRepository repository, String message, boolean amend) {
     super(project, repository, message, amend);
   }
 
   @Override
-  protected void executeChunked(@NotNull List<List<String>> chunkedCommits) throws HgCommandException, VcsException {
+  protected void executeChunked(@Nonnull List<List<String>> chunkedCommits) throws HgCommandException, VcsException {
     if (chunkedCommits.isEmpty()) {
       executeQNewInCurrentThread(ContainerUtil.emptyList());
     }
@@ -63,7 +63,7 @@ public class HgQNewCommand extends HgCommitTypeCommand {
     messageBus.syncPublisher(HgVcs.REMOTE_TOPIC).update(myProject, null);
   }
 
-  private void executeQRefreshInCurrentThread(@NotNull List<String> chunkFiles) throws VcsException {
+  private void executeQRefreshInCurrentThread(@Nonnull List<String> chunkFiles) throws VcsException {
     List<String> args = ContainerUtil.newArrayList();
     args.add("-l");
     args.add(saveCommitMessage().getAbsolutePath());
@@ -76,7 +76,7 @@ public class HgQNewCommand extends HgCommitTypeCommand {
     }
   }
 
-  private void executeQNewInCurrentThread(@NotNull List<String> chunkFiles) throws VcsException {
+  private void executeQNewInCurrentThread(@Nonnull List<String> chunkFiles) throws VcsException {
     List<String> args = ContainerUtil.newArrayList();
     args.add("-l");
     args.add(saveCommitMessage().getAbsolutePath());

@@ -18,8 +18,9 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.zmlx.hg4idea.action.HgCommandResultNotifier;
 import org.zmlx.hg4idea.util.HgErrorUtil;
 import com.intellij.openapi.application.ModalityState;
@@ -34,12 +35,12 @@ public class HgRemoteCommandExecutor extends HgCommandExecutor
 	private final ModalityState myState;
 	final boolean myIgnoreAuthorizationRequest;
 
-	public HgRemoteCommandExecutor(@NotNull Project project, @Nullable String destination)
+	public HgRemoteCommandExecutor(@Nonnull Project project, @Nullable String destination)
 	{
 		this(project, destination, null, false);
 	}
 
-	public HgRemoteCommandExecutor(@NotNull Project project, @Nullable String destination, @Nullable ModalityState state, boolean ignoreAuthorizationRequest)
+	public HgRemoteCommandExecutor(@Nonnull Project project, @Nullable String destination, @Nullable ModalityState state, boolean ignoreAuthorizationRequest)
 	{
 		super(project, destination);
 		myState = state;
@@ -47,7 +48,7 @@ public class HgRemoteCommandExecutor extends HgCommandExecutor
 	}
 
 	@Nullable
-	public HgCommandResult executeInCurrentThread(@Nullable final VirtualFile repo, @NotNull final String operation, @Nullable final List<String> arguments)
+	public HgCommandResult executeInCurrentThread(@Nullable final VirtualFile repo, @Nonnull final String operation, @Nullable final List<String> arguments)
 	{
 
 
@@ -66,7 +67,7 @@ public class HgRemoteCommandExecutor extends HgCommandExecutor
 	}
 
 	@Nullable
-	private HgCommandResult executeInCurrentThread(@Nullable final VirtualFile repo, @NotNull final String operation, @Nullable final List<String> arguments, boolean forceAuthorization)
+	private HgCommandResult executeInCurrentThread(@Nullable final VirtualFile repo, @Nonnull final String operation, @Nullable final List<String> arguments, boolean forceAuthorization)
 	{
 
 		PassReceiver passReceiver = new PassReceiver(myProject, forceAuthorization, myIgnoreAuthorizationRequest, myState);
@@ -109,7 +110,7 @@ public class HgRemoteCommandExecutor extends HgCommandExecutor
 	}
 
 	@Override
-	protected void logCommand(@NotNull String operation, @Nullable List<String> arguments)
+	protected void logCommand(@Nonnull String operation, @Nullable List<String> arguments)
 	{
 		//do not log arguments for remote command because of internal password port info etc
 		super.logCommand(operation, null);

@@ -24,7 +24,7 @@ import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vcs.update.*;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.ui.HgUpdateDialog;
 
 import javax.swing.*;
@@ -35,7 +35,8 @@ import java.util.List;
 public class HgUpdateEnvironment implements UpdateEnvironment {
 
   private final Project project;
-  @NotNull private final HgUpdateConfigurationSettings updateConfiguration;
+  @Nonnull
+  private final HgUpdateConfigurationSettings updateConfiguration;
 
   public HgUpdateEnvironment(Project project) {
     this.project = project;
@@ -45,10 +46,10 @@ public class HgUpdateEnvironment implements UpdateEnvironment {
   public void fillGroups(UpdatedFiles updatedFiles) {
   }
 
-  @NotNull
-  public UpdateSession updateDirectories(@NotNull FilePath[] contentRoots,
+  @Nonnull
+  public UpdateSession updateDirectories(@Nonnull FilePath[] contentRoots,
     UpdatedFiles updatedFiles, ProgressIndicator indicator,
-    @NotNull Ref<SequentialUpdatesContext> context) {
+    @Nonnull Ref<SequentialUpdatesContext> context) {
     
     List<VcsException> exceptions = new LinkedList<>();
 
@@ -89,7 +90,7 @@ public class HgUpdateEnvironment implements UpdateEnvironment {
     private final HgUpdateConfigurationSettings updateConfiguration;
     protected HgUpdateDialog updateDialog;
 
-    public UpdateConfigurable(@NotNull HgUpdateConfigurationSettings updateConfiguration) {
+    public UpdateConfigurable(@Nonnull HgUpdateConfigurationSettings updateConfiguration) {
       this.updateConfiguration = updateConfiguration;
     }
 

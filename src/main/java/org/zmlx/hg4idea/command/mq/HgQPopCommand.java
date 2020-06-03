@@ -17,7 +17,7 @@ package org.zmlx.hg4idea.command.mq;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.VcsNotifier;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.action.HgCommandResultNotifier;
 import org.zmlx.hg4idea.execution.HgCommandExecutor;
 import org.zmlx.hg4idea.execution.HgCommandResult;
@@ -27,9 +27,10 @@ import org.zmlx.hg4idea.util.HgErrorUtil;
 import java.util.Collections;
 
 public class HgQPopCommand {
-  @NotNull private final HgRepository myRepository;
+  @Nonnull
+  private final HgRepository myRepository;
 
-  public HgQPopCommand(@NotNull HgRepository repository) {
+  public HgQPopCommand(@Nonnull HgRepository repository) {
     myRepository = repository;
   }
 

@@ -23,7 +23,7 @@ import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.vcs.AnnotationProviderEx;
 import com.intellij.vcsUtil.VcsUtil;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.HgFile;
 import org.zmlx.hg4idea.HgFileRevision;
 import org.zmlx.hg4idea.HgRevisionNumber;
@@ -36,19 +36,20 @@ import java.util.List;
 
 public class HgAnnotationProvider implements AnnotationProviderEx {
 
-  @NotNull private final Project myProject;
+  @Nonnull
+  private final Project myProject;
 
-  public HgAnnotationProvider(@NotNull Project project) {
+  public HgAnnotationProvider(@Nonnull Project project) {
     myProject = project;
   }
 
-  @NotNull
-  public FileAnnotation annotate(@NotNull VirtualFile file) throws VcsException {
+  @Nonnull
+  public FileAnnotation annotate(@Nonnull VirtualFile file) throws VcsException {
     return annotate(file, null);
   }
 
-  @NotNull
-  public FileAnnotation annotate(@NotNull VirtualFile file, VcsFileRevision revision) throws VcsException {
+  @Nonnull
+  public FileAnnotation annotate(@Nonnull VirtualFile file, VcsFileRevision revision) throws VcsException {
     final VirtualFile vcsRoot = VcsUtil.getVcsRootFor(myProject, VcsUtil.getFilePath(file.getPath()));
     if (vcsRoot == null) {
       throw new VcsException("vcs root is null for " + file);
@@ -67,9 +68,9 @@ public class HgAnnotationProvider implements AnnotationProviderEx {
                             revisionNumber != null ? revisionNumber : new HgWorkingCopyRevisionsCommand(myProject).tip(vcsRoot));
   }
 
-  @NotNull
+  @Nonnull
   @Override
-  public FileAnnotation annotate(@NotNull FilePath path, @NotNull VcsRevisionNumber revision) throws VcsException {
+  public FileAnnotation annotate(@Nonnull FilePath path, @Nonnull VcsRevisionNumber revision) throws VcsException {
     final VirtualFile vcsRoot = VcsUtil.getVcsRootFor(myProject, path);
     if (vcsRoot == null) {
       throw new VcsException("vcs root is null for " + path);

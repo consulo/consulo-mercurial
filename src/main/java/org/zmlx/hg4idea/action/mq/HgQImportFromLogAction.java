@@ -15,21 +15,22 @@
  */
 package org.zmlx.hg4idea.action.mq;
 
+import javax.annotation.Nonnull;
+
 import com.intellij.vcs.log.Hash;
-import org.jetbrains.annotations.NotNull;
 import org.zmlx.hg4idea.action.HgLogSingleCommitAction;
 import org.zmlx.hg4idea.command.mq.HgQImportCommand;
 import org.zmlx.hg4idea.repo.HgRepository;
 
 public class HgQImportFromLogAction extends HgLogSingleCommitAction {
   @Override
-  protected void actionPerformed(@NotNull HgRepository repository, @NotNull Hash commit) {
+  protected void actionPerformed(@Nonnull HgRepository repository, @Nonnull Hash commit) {
     String revisionHash = commit.asString();
     new HgQImportCommand(repository).execute(revisionHash);
   }
 
   @Override
-  protected boolean isEnabled(@NotNull HgRepository repository, @NotNull Hash commit) {
+  protected boolean isEnabled(@Nonnull HgRepository repository, @Nonnull Hash commit) {
     return super.isEnabled(repository, commit) && !HgMqAppliedPatchAction.isAppliedPatch(repository, commit);
   }
 }

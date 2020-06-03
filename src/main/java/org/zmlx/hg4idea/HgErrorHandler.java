@@ -12,9 +12,12 @@
 // limitations under the License.
 package org.zmlx.hg4idea;
 
+import javax.annotation.Nonnull;
+
 import com.intellij.openapi.vcs.VcsException;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nullable;
+
 import org.zmlx.hg4idea.execution.HgCommandResult;
 import org.zmlx.hg4idea.util.HgErrorUtil;
 
@@ -30,7 +33,7 @@ public abstract class HgErrorHandler {
     return result;
   }
 
-  private static boolean fatalErrorOccurred(@NotNull HgCommandResult result) {
+  private static boolean fatalErrorOccurred(@Nonnull HgCommandResult result) {
     return result.getExitValue() == 255 || result.getRawError().contains("** unknown exception encountered");
   }
 }

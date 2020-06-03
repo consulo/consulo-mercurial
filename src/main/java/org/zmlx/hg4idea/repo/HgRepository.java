@@ -19,46 +19,49 @@ package org.zmlx.hg4idea.repo;
 import com.intellij.dvcs.repo.Repository;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.vcs.log.Hash;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+
 import org.zmlx.hg4idea.HgNameWithHashInfo;
 import org.zmlx.hg4idea.provider.HgLocalIgnoredHolder;
 
 import java.util.*;
 
+import javax.annotation.Nullable;
+
 
 public interface HgRepository extends Repository {
-  @NotNull String DEFAULT_BRANCH = "default";
+  @Nonnull
+  String DEFAULT_BRANCH = "default";
 
-  @NotNull
+  @Nonnull
   VirtualFile getHgDir();
 
   /**
    * Returns the current branch of this Hg repository.
    */
 
-  @NotNull
+  @Nonnull
   String getCurrentBranch();
 
   /**
    * @return map with heavy branch names and appropriate set of head hashes, order of heads is important - the last head in file is the main
    */
-  @NotNull
+  @Nonnull
   Map<String, LinkedHashSet<Hash>> getBranches();
 
   /**
    * @return names of opened heavy branches
    */
-  @NotNull
+  @Nonnull
   Set<String> getOpenedBranches();
 
-  @NotNull
+  @Nonnull
   Collection<HgNameWithHashInfo> getBookmarks();
 
-  @NotNull
+  @Nonnull
   Collection<HgNameWithHashInfo> getTags();
 
-  @NotNull
+  @Nonnull
   Collection<HgNameWithHashInfo> getLocalTags();
 
   @Nullable
@@ -67,21 +70,21 @@ public interface HgRepository extends Repository {
   @Nullable
   String getTipRevision();
 
-  @NotNull
+  @Nonnull
   HgConfig getRepositoryConfig();
 
   boolean hasSubrepos();
 
-  @NotNull
+  @Nonnull
   Collection<HgNameWithHashInfo> getSubrepos();
 
-  @NotNull
+  @Nonnull
   List<HgNameWithHashInfo> getMQAppliedPatches();
 
-  @NotNull
+  @Nonnull
   List<String> getAllPatchNames();
 
-  @NotNull
+  @Nonnull
   List<String> getUnappliedPatchNames();
 
   void updateConfig();

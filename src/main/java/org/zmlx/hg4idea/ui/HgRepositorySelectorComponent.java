@@ -13,10 +13,11 @@
 package org.zmlx.hg4idea.ui;
 
 import com.intellij.ui.IdeBorderFactory;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+
 import org.zmlx.hg4idea.repo.HgRepository;
 
+import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.util.Collection;
@@ -40,15 +41,15 @@ public class HgRepositorySelectorComponent {
     }
   }
 
-  public void addActionListener(@NotNull ActionListener actionListener) {
+  public void addActionListener(@Nonnull ActionListener actionListener) {
     repositorySelector.addActionListener(actionListener);
   }
 
-  public void setTitle(@NotNull String title) {
+  public void setTitle(@Nonnull String title) {
     mainPanel.setBorder(IdeBorderFactory.createTitledBorder(title, true));
   }
 
-  @NotNull
+  @Nonnull
   public HgRepository getRepository() {
     return (HgRepository)repositorySelector.getSelectedItem();
   }

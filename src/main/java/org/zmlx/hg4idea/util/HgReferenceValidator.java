@@ -19,8 +19,8 @@ import static org.zmlx.hg4idea.util.HgUtil.TIP_REFERENCE;
 
 import java.util.regex.Pattern;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import com.intellij.openapi.ui.InputValidatorEx;
 import com.intellij.openapi.util.text.StringUtil;
 
@@ -85,8 +85,8 @@ public class HgReferenceValidator implements InputValidatorEx {
     return myErrorText;
   }
 
-  @NotNull
-  public String cleanUpBranchName(@NotNull String branchName) {
+  @Nonnull
+  public String cleanUpBranchName(@Nonnull String branchName) {
     if (onlyDigits(branchName)) return branchName + "_";
     return branchName.replaceAll(ILLEGAL.pattern(), "_");
   }

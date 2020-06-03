@@ -16,7 +16,7 @@
 package org.zmlx.hg4idea.action.mq;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.ui.HgMqUnAppliedPatchesPanel;
 
@@ -24,7 +24,7 @@ import java.util.List;
 
 public abstract class HgSingleActionFomMqPatches extends HgActionFromMqPatches {
   @Override
-  protected void executeInCurrentThread(@NotNull HgRepository repository, @NotNull List<String> patchNames) {
+  protected void executeInCurrentThread(@Nonnull HgRepository repository, @Nonnull List<String> patchNames) {
     assert patchNames.size() == 1;
     executeInCurrentThread(repository, patchNames.iterator().next());
   }
@@ -35,5 +35,5 @@ public abstract class HgSingleActionFomMqPatches extends HgActionFromMqPatches {
     e.getPresentation().setEnabled(patchInfo != null && patchInfo.getSelectedRowsCount() == 1);
   }
 
-  protected abstract void executeInCurrentThread(@NotNull HgRepository repository, @NotNull String patchName);
+  protected abstract void executeInCurrentThread(@Nonnull HgRepository repository, @Nonnull String patchName);
 }

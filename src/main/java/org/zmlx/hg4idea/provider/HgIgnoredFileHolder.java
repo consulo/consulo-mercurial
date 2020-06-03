@@ -23,7 +23,7 @@ import com.intellij.openapi.vcs.changes.VcsIgnoredFilesHolder;
 import com.intellij.openapi.vcs.changes.VcsModifiableDirtyScope;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.containers.ContainerUtil;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.util.HgUtil;
@@ -96,7 +96,7 @@ public class HgIgnoredFileHolder implements VcsIgnoredFilesHolder, ChangesViewRe
     return myVcsIgnoredHolderMap.values().stream().anyMatch(HgLocalIgnoredHolder::isInUpdateMode);
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public AbstractVcs getVcs() {
     return myVcs;

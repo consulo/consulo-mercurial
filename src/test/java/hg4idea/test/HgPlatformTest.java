@@ -22,8 +22,8 @@ import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.ChangeListManagerImpl;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.vcs.test.VcsPlatformTest;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.util.HgUtil;
@@ -86,7 +86,7 @@ public abstract class HgPlatformTest extends VcsPlatformTest {
     }
   }
 
-  private static void setUpHgrc(@NotNull VirtualFile repositoryRoot) throws IOException {
+  private static void setUpHgrc(@Nonnull VirtualFile repositoryRoot) throws IOException {
     cd(".hg");
     File pluginRoot = new File(PluginPathManager.getPluginHomePath("hg4idea"));
     String pathToHgrc = "testData\\repo\\dot_hg";
@@ -97,7 +97,7 @@ public abstract class HgPlatformTest extends VcsPlatformTest {
     repositoryRoot.refresh(false, true);
   }
 
-  protected static void appendToHgrc(@NotNull VirtualFile repositoryRoot, @NotNull String text) throws IOException {
+  protected static void appendToHgrc(@Nonnull VirtualFile repositoryRoot, @Nonnull String text) throws IOException {
     cd(".hg");
     File hgrc = new File(new File(repositoryRoot.getPath(), ".hg"), "hgrc");
     FileUtil.appendToFile(hgrc, text);
@@ -107,7 +107,7 @@ public abstract class HgPlatformTest extends VcsPlatformTest {
   }
 
 
-  protected static void updateRepoConfig(@NotNull Project project, @Nullable VirtualFile repo) {
+  protected static void updateRepoConfig(@Nonnull Project project, @Nullable VirtualFile repo) {
     HgRepository hgRepository = HgUtil.getRepositoryManager(project).getRepositoryForRoot(repo);
     assertNotNull(hgRepository);
     hgRepository.updateConfig();

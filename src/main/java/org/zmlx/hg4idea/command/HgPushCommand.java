@@ -15,7 +15,7 @@ package org.zmlx.hg4idea.command;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 import org.zmlx.hg4idea.execution.HgRemoteCommandExecutor;
@@ -35,7 +35,7 @@ public class HgPushCommand {
   private String myBookmarkName;
   private boolean myIsNewBranch;
 
-  public HgPushCommand(Project project, @NotNull VirtualFile repo, String destination) {
+  public HgPushCommand(Project project, @Nonnull VirtualFile repo, String destination) {
     myProject = project;
     myRepo = repo;
     myDestination = destination;

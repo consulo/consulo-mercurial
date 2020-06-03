@@ -39,8 +39,8 @@ import com.intellij.util.PlatformIcons;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.vcs.log.Hash;
 import com.intellij.vcs.log.impl.HashImpl;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.action.HgCommandResultNotifier;
 import org.zmlx.hg4idea.command.HgBookmarkCommand;
@@ -61,10 +61,12 @@ import static org.zmlx.hg4idea.util.HgUtil.getSortedNamesWithoutHashes;
 
 public class HgBranchPopupActions {
 
-  @NotNull private final Project myProject;
-  @NotNull private final HgRepository myRepository;
+  @Nonnull
+  private final Project myProject;
+  @Nonnull
+  private final HgRepository myRepository;
 
-  HgBranchPopupActions(@NotNull Project project, @NotNull HgRepository repository) {
+  HgBranchPopupActions(@Nonnull Project project, @Nonnull HgRepository repository) {
     myProject = project;
     myRepository = repository;
   }
@@ -73,7 +75,7 @@ public class HgBranchPopupActions {
     return createActions(null, "");
   }
 
-  ActionGroup createActions(@Nullable LightActionGroup toInsert, @NotNull String repoInfo) {
+  ActionGroup createActions(@Nullable LightActionGroup toInsert, @Nonnull String repoInfo) {
     DefaultActionGroup popupGroup = new DefaultActionGroup(null, false);
     popupGroup.addAction(new HgNewBranchAction(myProject, Collections.singletonList(myRepository), myRepository));
     popupGroup.addAction(new HgNewBookmarkAction(Collections.singletonList(myRepository), myRepository));
@@ -106,9 +108,10 @@ public class HgBranchPopupActions {
   }
 
   public static class HgNewBranchAction extends NewBranchAction<HgRepository> {
-    @NotNull final HgRepository myPreselectedRepo;
+    @Nonnull
+	final HgRepository myPreselectedRepo;
 
-    public HgNewBranchAction(@NotNull Project project, @NotNull List<HgRepository> repositories, @NotNull HgRepository preselectedRepo) {
+    public HgNewBranchAction(@Nonnull Project project, @Nonnull List<HgRepository> repositories, @Nonnull HgRepository preselectedRepo) {
       super(project, repositories);
       myPreselectedRepo = preselectedRepo;
     }
@@ -121,13 +124,13 @@ public class HgBranchPopupActions {
       }
       new Task.Backgroundable(myProject, "Creating " + StringUtil.pluralize("Branch", myRepositories.size()) + "...") {
         @Override
-        public void run(@NotNull ProgressIndicator indicator) {
+        public void run(@Nonnull ProgressIndicator indicator) {
           createNewBranchInCurrentThread(name);
         }
       }.queue();
     }
 
-    public void createNewBranchInCurrentThread(@NotNull final String name) {
+    public void createNewBranchInCurrentThread(@Nonnull final String name) {
       for (final HgRepository repository : myRepositories) {
         try {
           HgCommandResult result = new HgBranchCreateCommand(myProject, repository.getRoot(), name).executeInCurrentThread();
@@ -145,10 +148,12 @@ public class HgBranchPopupActions {
   }
 
   public static class HgCloseBranchAction extends DumbAwareAction {
-    @NotNull private final List<HgRepository> myRepositories;
-    @NotNull final HgRepository myPreselectedRepo;
+    @Nonnull
+	private final List<HgRepository> myRepositories;
+    @Nonnull
+	final HgRepository myPreselectedRepo;
 
-    HgCloseBranchAction(@NotNull List<HgRepository> repositories, @NotNull HgRepository preselectedRepo) {
+    HgCloseBranchAction(@Nonnull List<HgRepository> repositories, @Nonnull HgRepository preselectedRepo) {
       super("Close " + StringUtil.pluralize("branch", repositories.size()),
             "Close current " + StringUtil.pluralize("branch", repositories.size()), AllIcons.Actions.Delete);
       myRepositories = repositories;
@@ -165,7 +170,7 @@ public class HgBranchPopupActions {
                                                                ModalityState.current());
     }
 
-    private void commitAndCloseBranch(@NotNull final Project project) {
+    private void commitAndCloseBranch(@Nonnull final Project project) {
       final LocalChangeList activeChangeList = ChangeListManager.getInstance(project).getDefaultChangeList();
       HgVcs vcs = HgVcs.getInstance(project);
       assert vcs != null;
@@ -189,10 +194,12 @@ public class HgBranchPopupActions {
   }
 
   public static class HgNewBookmarkAction extends DumbAwareAction {
-    @NotNull protected final List<HgRepository> myRepositories;
-    @NotNull final HgRepository myPreselectedRepo;
+    @Nonnull
+	protected final List<HgRepository> myRepositories;
+    @Nonnull
+	final HgRepository myPreselectedRepo;
 
-    HgNewBookmarkAction(@NotNull List<HgRepository> repositories, @NotNull HgRepository preselectedRepo) {
+    HgNewBookmarkAction(@Nonnull List<HgRepository> repositories, @Nonnull HgRepository preselectedRepo) {
       super("New Bookmark", "Create new bookmark", AllIcons.Modules.AddContentEntry);
       myRepositories = repositories;
       myPreselectedRepo = preselectedRepo;
@@ -220,11 +227,14 @@ public class HgBranchPopupActions {
   }
 
   public static class HgShowUnnamedHeadsForCurrentBranchAction extends ActionGroup {
-    @NotNull final HgRepository myRepository;
-    @NotNull final String myCurrentBranchName;
-    @NotNull Collection<Hash> myHeads = new HashSet<>();
+    @Nonnull
+	final HgRepository myRepository;
+    @Nonnull
+	final String myCurrentBranchName;
+    @Nonnull
+	Collection<Hash> myHeads = new HashSet<>();
 
-    public HgShowUnnamedHeadsForCurrentBranchAction(@NotNull HgRepository repository) {
+    public HgShowUnnamedHeadsForCurrentBranchAction(@Nonnull HgRepository repository) {
       super(null, true);
       myRepository = repository;
       myCurrentBranchName = repository.getCurrentBranch();
@@ -232,7 +242,7 @@ public class HgBranchPopupActions {
       myHeads = filterUnnamedHeads();
     }
 
-    @NotNull
+    @Nonnull
     private Collection<Hash> filterUnnamedHeads() {
       Collection<Hash> branchWithHashes = myRepository.getBranches().get(myCurrentBranchName);
       String currentHead = myRepository.getCurrentRevision();
@@ -248,7 +258,7 @@ public class HgBranchPopupActions {
       return branchWithHashes;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public AnAction[] getChildren(@Nullable AnActionEvent e) {
       List<AnAction> branchHeadActions = new ArrayList<>();
@@ -275,11 +285,11 @@ public class HgBranchPopupActions {
    */
   static class BookmarkActions extends HgCommonBranchActions {
 
-    BookmarkActions(@NotNull Project project, @NotNull List<HgRepository> repositories, @NotNull String branchName) {
+    BookmarkActions(@Nonnull Project project, @Nonnull List<HgRepository> repositories, @Nonnull String branchName) {
       super(project, repositories, branchName);
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public AnAction[] getChildren(@Nullable AnActionEvent e) {
       return ArrayUtil.append(super.getChildren(e), new DeleteBookmarkAction(myProject, myRepositories, myBranchName));
@@ -287,7 +297,7 @@ public class HgBranchPopupActions {
 
     private static class DeleteBookmarkAction extends HgBranchAbstractAction {
 
-      DeleteBookmarkAction(@NotNull Project project, @NotNull List<HgRepository> repositories, @NotNull String branchName) {
+      DeleteBookmarkAction(@Nonnull Project project, @Nonnull List<HgRepository> repositories, @Nonnull String branchName) {
         super(project, "Delete", repositories, branchName);
       }
 

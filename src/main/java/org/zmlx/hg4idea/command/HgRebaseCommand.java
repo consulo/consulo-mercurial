@@ -17,8 +17,8 @@ import com.intellij.openapi.application.AccessToken;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.containers.ContainerUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.execution.HgCommandExecutor;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 import org.zmlx.hg4idea.repo.HgRepository;
@@ -27,10 +27,12 @@ import java.util.List;
 
 public class HgRebaseCommand {
 
-  @NotNull private final Project project;
-  @NotNull private final HgRepository repo;
+  @Nonnull
+  private final Project project;
+  @Nonnull
+  private final HgRepository repo;
 
-  public HgRebaseCommand(@NotNull Project project, @NotNull HgRepository repo) {
+  public HgRebaseCommand(@Nonnull Project project, @Nonnull HgRepository repo) {
     this.project = project;
     this.repo = repo;
   }
@@ -51,7 +53,7 @@ public class HgRebaseCommand {
   }
 
   @Nullable
-  private HgCommandResult performRebase(@NotNull String... args) {
+  private HgCommandResult performRebase(@Nonnull String... args) {
     AccessToken token = DvcsUtil.workingTreeChangeStarted(project);
     try {
       final List<String> list = ContainerUtil.newArrayList(args);

@@ -12,9 +12,10 @@
 // limitations under the License.
 package org.zmlx.hg4idea;
 
+import javax.annotation.Nullable;
+
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.jetbrains.annotations.Nullable;
 
 public interface HgUpdater {
 

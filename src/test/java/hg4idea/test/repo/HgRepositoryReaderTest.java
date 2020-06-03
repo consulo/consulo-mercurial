@@ -21,7 +21,7 @@ import com.intellij.openapi.application.PluginPathManager;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vcs.VcsTestUtil;
 import hg4idea.test.HgPlatformTest;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.repo.HgRepositoryReader;
 import org.zmlx.hg4idea.util.HgUtil;
 
@@ -35,12 +35,18 @@ import java.util.HashSet;
  */
 public class HgRepositoryReaderTest extends HgPlatformTest {
 
-  @NotNull private HgRepositoryReader myRepositoryReader;
-  @NotNull private File myHgDir;
-  @NotNull private Collection<String> myBranches;
-  @NotNull private Collection<String> myBookmarks;
-  @NotNull private Collection<String> myTags;
-  @NotNull private Collection<String> myLocalTags;
+  @Nonnull
+  private HgRepositoryReader myRepositoryReader;
+  @Nonnull
+  private File myHgDir;
+  @Nonnull
+  private Collection<String> myBranches;
+  @Nonnull
+  private Collection<String> myBookmarks;
+  @Nonnull
+  private Collection<String> myTags;
+  @Nonnull
+  private Collection<String> myLocalTags;
 
   @Override
   public void setUp() throws Exception {
@@ -107,7 +113,7 @@ public class HgRepositoryReaderTest extends HgPlatformTest {
     VcsTestUtil.assertEqualCollections(localTags, myLocalTags);
   }
 
-  @NotNull
+  @Nonnull
   private Collection<String> readBranches() throws IOException {
     Collection<String> branches = new HashSet<>();
     File branchHeads = new File(new File(myHgDir, "cache"), "branchheads-served");
@@ -125,8 +131,8 @@ public class HgRepositoryReaderTest extends HgPlatformTest {
     assertEquals(myRepositoryReader.readCurrentBookmark(), "B_BookMark");
   }
 
-  @NotNull
-  private static Collection<String> readRefs(@NotNull File refFile) throws IOException {
+  @Nonnull
+  private static Collection<String> readRefs(@Nonnull File refFile) throws IOException {
     Collection<String> refs = new HashSet<>();
     String[] refsWithHashes = FileUtil.loadFile(refFile).split("\n");
     for (String str : refsWithHashes) {

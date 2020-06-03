@@ -14,7 +14,7 @@ package org.zmlx.hg4idea.execution;
 
 import com.intellij.execution.process.ProcessOutput;
 import com.intellij.util.ArrayUtil;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import java.util.List;
 
@@ -24,39 +24,41 @@ public final class HgCommandResult {
 
   public static final HgCommandResult CANCELLED = new HgCommandResult(new ProcessOutput(1));
 
-  @NotNull private final ProcessOutput myProcessOutput;
-  @NotNull private final byte[] myByteArrayOutput;
+  @Nonnull
+  private final ProcessOutput myProcessOutput;
+  @Nonnull
+  private final byte[] myByteArrayOutput;
 
-  public HgCommandResult(@NotNull ProcessOutput processOutput) {
+  public HgCommandResult(@Nonnull ProcessOutput processOutput) {
     this(processOutput, ArrayUtil.EMPTY_BYTE_ARRAY);
   }
 
-  public HgCommandResult(@NotNull ProcessOutput processOutput, @NotNull byte[] byteArrayOutput) {
+  public HgCommandResult(@Nonnull ProcessOutput processOutput, @Nonnull byte[] byteArrayOutput) {
     myProcessOutput = processOutput;
     myByteArrayOutput = byteArrayOutput;
   }
 
-  @NotNull
+  @Nonnull
   public List<String> getOutputLines() {
     return myProcessOutput.getStdoutLines();
   }
 
-  @NotNull
+  @Nonnull
   public List<String> getErrorLines() {
     return myProcessOutput.getStderrLines();
   }
 
-  @NotNull
+  @Nonnull
   public String getRawOutput() {
     return myProcessOutput.getStdout();
   }
 
-  @NotNull
+  @Nonnull
   public String getRawError() {
     return myProcessOutput.getStderr();
   }
 
-  @NotNull
+  @Nonnull
   public byte[] getBytesOutput() {
     return myByteArrayOutput;
   }

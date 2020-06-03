@@ -19,8 +19,8 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.Consumer;
 import com.intellij.vcsUtil.VcsFileUtil;
 import com.intellij.vcsUtil.VcsUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.HgFile;
 import org.zmlx.hg4idea.execution.HgCommandExecutor;
 import org.zmlx.hg4idea.execution.HgCommandResult;
@@ -87,11 +87,11 @@ public class HgResolveCommand {
     return resolveStatus;
   }
 
-  public void markResolved(@NotNull VirtualFile repo, @NotNull VirtualFile path) {
+  public void markResolved(@Nonnull VirtualFile repo, @Nonnull VirtualFile path) {
     markResolved(repo, Collections.singleton(VcsUtil.getFilePath(path)));
   }
 
-  public void markResolved(@NotNull VirtualFile repo, @NotNull Collection<FilePath> paths) {
+  public void markResolved(@Nonnull VirtualFile repo, @Nonnull Collection<FilePath> paths) {
     for (List<String> chunk : VcsFileUtil.chunkPaths(repo, paths)) {
       final List<String> args = new ArrayList<>();
       args.add("--mark");

@@ -24,8 +24,8 @@ import com.intellij.openapi.vcs.VcsNotifier;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.ui.UIUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.HgVcsMessages;
 import org.zmlx.hg4idea.action.HgCommandResultNotifier;
 import org.zmlx.hg4idea.execution.HgCommandResult;
@@ -49,7 +49,7 @@ public class HgUpdateCommand {
   private String revision;
   private boolean clean;
 
-  public HgUpdateCommand(@NotNull Project project, @NotNull VirtualFile repo) {
+  public HgUpdateCommand(@Nonnull Project project, @Nonnull VirtualFile repo) {
     this.project = project;
     this.repo = repo;
   }
@@ -99,7 +99,7 @@ public class HgUpdateCommand {
     return result;
   }
 
-  public static int showDiscardChangesConfirmation(@NotNull final Project project, @NotNull final String confirmationMessage) {
+  public static int showDiscardChangesConfirmation(@Nonnull final Project project, @Nonnull final String confirmationMessage) {
     final AtomicInteger exitCode = new AtomicInteger();
     UIUtil.invokeAndWaitIfNeeded(new Runnable() {
       @Override
@@ -111,7 +111,7 @@ public class HgUpdateCommand {
     return exitCode.get();
   }
 
-  public static void updateTo(@NotNull final String targetRevision, @NotNull List<HgRepository> repos, @Nullable final Runnable callInAwtLater) {
+  public static void updateTo(@Nonnull final String targetRevision, @Nonnull List<HgRepository> repos, @Nullable final Runnable callInAwtLater) {
     FileDocumentManager.getInstance().saveAllDocuments();
     for (HgRepository repo : repos) {
       final VirtualFile repository = repo.getRoot();
@@ -120,16 +120,16 @@ public class HgUpdateCommand {
     }
   }
 
-  public static void updateRepoTo(@NotNull final Project project,
-                                  @NotNull final VirtualFile repository,
-                                  @NotNull final String targetRevision,
+  public static void updateRepoTo(@Nonnull final Project project,
+                                  @Nonnull final VirtualFile repository,
+                                  @Nonnull final String targetRevision,
                                   @Nullable final Runnable callInAwtLater) {
     updateRepoTo(project, repository, targetRevision, false, callInAwtLater);
   }
 
-  public static void updateRepoTo(@NotNull final Project project,
-                                  @NotNull final VirtualFile repository,
-                                  @NotNull final String targetRevision,
+  public static void updateRepoTo(@Nonnull final Project project,
+                                  @Nonnull final VirtualFile repository,
+                                  @Nonnull final String targetRevision,
                                   final boolean clean,
                                   @Nullable final Runnable callInAwtLater) {
     new Task.Backgroundable(project, HgVcsMessages.message("action.hg4idea.updateTo.description", targetRevision)) {
@@ -141,15 +141,15 @@ public class HgUpdateCommand {
       }
 
       @Override
-      public void run(@NotNull ProgressIndicator indicator) {
+      public void run(@Nonnull ProgressIndicator indicator) {
         updateRepoToInCurrentThread(project, repository, targetRevision, clean);
       }
     }.queue();
   }
 
-  public static boolean updateRepoToInCurrentThread(@NotNull final Project project,
-                                                    @NotNull final VirtualFile repository,
-                                                    @NotNull final String targetRevision,
+  public static boolean updateRepoToInCurrentThread(@Nonnull final Project project,
+                                                    @Nonnull final VirtualFile repository,
+                                                    @Nonnull final String targetRevision,
                                                     final boolean clean) {
     final HgUpdateCommand hgUpdateCommand = new HgUpdateCommand(project, repository);
     hgUpdateCommand.setRevision(targetRevision);

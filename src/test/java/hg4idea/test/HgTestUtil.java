@@ -20,7 +20,7 @@ import com.intellij.openapi.vcs.ProjectLevelVcsManager;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.vcsUtil.VcsUtil;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.HgVcs;
 
 import java.io.File;
@@ -46,7 +46,7 @@ public class HgTestUtil {
    * @param file    file which content will be substituted by the given one.
    * @param content new file content
    */
-  public static void printToFile(@NotNull VirtualFile file, String content) throws FileNotFoundException {
+  public static void printToFile(@Nonnull VirtualFile file, String content) throws FileNotFoundException {
     PrintStream centralPrinter = null;
     try {
       centralPrinter = new PrintStream(new FileOutputStream(new File(file.getPath())));

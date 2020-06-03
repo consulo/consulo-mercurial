@@ -16,7 +16,6 @@
 package org.zmlx.hg4idea.repo;
 
 import com.intellij.dvcs.DvcsUtil;
-import com.intellij.openapi.Disposable;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.changes.VcsDirtyScopeManager;
 import com.intellij.openapi.vfs.LocalFileSystem;
@@ -29,8 +28,10 @@ import com.intellij.util.messages.MessageBusConnection;
 import com.intellij.util.ui.update.MergingUpdateQueue;
 import com.intellij.util.ui.update.Update;
 import com.intellij.vcsUtil.VcsUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import consulo.disposer.Disposable;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.HgVcs;
 
 import java.util.List;
@@ -40,19 +41,25 @@ import java.util.List;
  */
 final class HgRepositoryUpdater implements Disposable, BulkFileListener {
   private final Project myProject;
-  @NotNull private final HgRepositoryFiles myRepositoryFiles;
-  @Nullable private final MessageBusConnection myMessageBusConnection;
-  @NotNull private final MergingUpdateQueue myUpdateQueue;
+  @Nonnull
+  private final HgRepositoryFiles myRepositoryFiles;
+  @Nullable
+  private final MessageBusConnection myMessageBusConnection;
+  @Nonnull
+  private final MergingUpdateQueue myUpdateQueue;
   @Nullable private final VirtualFile myBranchHeadsDir;
   private static final int TIME_SPAN = 300;
-  @Nullable private VirtualFile myMqDir;
-  @Nullable private final LocalFileSystem.WatchRequest myWatchRequest;
-  @NotNull private final MergingUpdateQueue myUpdateConfigQueue;
+  @Nullable
+  private VirtualFile myMqDir;
+  @Nullable
+  private final LocalFileSystem.WatchRequest myWatchRequest;
+  @Nonnull
+  private final MergingUpdateQueue myUpdateConfigQueue;
   private final HgRepository myRepository;
   private final VcsDirtyScopeManager myDirtyScopeManager;
 
 
-  HgRepositoryUpdater(@NotNull final HgRepository repository) {
+  HgRepositoryUpdater(@Nonnull final HgRepository repository) {
     myRepository = repository;
     VirtualFile hgDir = myRepository.getHgDir();
     myWatchRequest = LocalFileSystem.getInstance().addRootToWatch(hgDir.getPath(), true);
@@ -88,12 +95,12 @@ final class HgRepositoryUpdater implements Disposable, BulkFileListener {
   }
 
   @Override
-  public void before(@NotNull List<? extends VFileEvent> events) {
+  public void before(@Nonnull List<? extends VFileEvent> events) {
     // everything is handled in #after()
   }
 
   @Override
-  public void after(@NotNull List<? extends VFileEvent> events) {
+  public void after(@Nonnull List<? extends VFileEvent> events) {
     // which files in .hg were changed
     boolean branchHeadsChanged = false;
     boolean branchFileChanged = false;

@@ -15,17 +15,19 @@
  */
 package org.zmlx.hg4idea;
 
+import javax.annotation.Nonnull;
+
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vcs.changes.BinaryContentRevision;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nullable;
 
 public class HgBinaryContentRevision extends HgContentRevision implements BinaryContentRevision {
 
   public HgBinaryContentRevision(Project project,
-                                 @NotNull HgFile hgFile,
-                                 @NotNull HgRevisionNumber revisionNumber) {
+                                 @Nonnull HgFile hgFile,
+                                 @Nonnull HgRevisionNumber revisionNumber) {
     super(project, hgFile, revisionNumber);
   }
 

@@ -28,8 +28,8 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.util.textCompletion.TextFieldWithCompletion;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.util.HgUtil;
 
@@ -44,7 +44,7 @@ public class HgPushTargetPanel extends PushTargetPanel<HgTarget> {
   private final TextFieldWithCompletion myDestTargetPanel;
   private final VcsEditableTextComponent myTargetRenderedComponent;
 
-  public HgPushTargetPanel(@NotNull HgRepository repository, @Nullable HgTarget defaultTarget) {
+  public HgPushTargetPanel(@Nonnull HgRepository repository, @Nullable HgTarget defaultTarget) {
     setLayout(new BorderLayout());
     setOpaque(false);
     myRepository = repository;
@@ -57,7 +57,7 @@ public class HgPushTargetPanel extends PushTargetPanel<HgTarget> {
   }
 
   @Override
-  public void render(@NotNull ColoredTreeCellRenderer renderer, boolean isSelected, boolean isActive, @Nullable String forceRenderedText) {
+  public void render(@Nonnull ColoredTreeCellRenderer renderer, boolean isSelected, boolean isActive, @Nullable String forceRenderedText) {
     if (forceRenderedText != null) {
       myDestTargetPanel.setText(forceRenderedText);
       renderer.append(forceRenderedText);
@@ -78,7 +78,7 @@ public class HgPushTargetPanel extends PushTargetPanel<HgTarget> {
     return createValidPushTarget();
   }
 
-  @NotNull
+  @Nonnull
   private HgTarget createValidPushTarget() {
     return new HgTarget(myDestTargetPanel.getText(), myBranchName);
   }
@@ -102,12 +102,12 @@ public class HgPushTargetPanel extends PushTargetPanel<HgTarget> {
   }
 
   @Override
-  public void setFireOnChangeAction(@NotNull Runnable action) {
+  public void setFireOnChangeAction(@Nonnull Runnable action) {
     // no extra changing components => ignore
   }
 
   @Override
-  public void addTargetEditorListener(@NotNull final PushTargetEditorListener listener) {
+  public void addTargetEditorListener(@Nonnull final PushTargetEditorListener listener) {
     myDestTargetPanel.addDocumentListener(new DocumentAdapter() {
       @Override
       public void documentChanged(DocumentEvent e) {

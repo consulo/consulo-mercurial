@@ -15,16 +15,18 @@
  */
 package org.zmlx.hg4idea.provider.commit;
 
+import javax.annotation.Nonnull;
+
 import com.intellij.openapi.vcs.changes.CommitExecutor;
 import com.intellij.openapi.vcs.changes.CommitSession;
 import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NotNull;
 
 public class HgMQNewExecutor implements CommitExecutor {
   //todo:should be moved to create patch dialog as an EP -> create patch with...  MQ
-  @NotNull private final HgCheckinEnvironment myCheckinEnvironment;
+  @Nonnull
+  private final HgCheckinEnvironment myCheckinEnvironment;
 
-  public HgMQNewExecutor(@NotNull HgCheckinEnvironment checkinEnvironment) {
+  public HgMQNewExecutor(@Nonnull HgCheckinEnvironment checkinEnvironment) {
     myCheckinEnvironment = checkinEnvironment;
   }
 
@@ -34,7 +36,7 @@ public class HgMQNewExecutor implements CommitExecutor {
     return "Create M&Q Patch";
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public CommitSession createCommitSession() {
     myCheckinEnvironment.setMqNew();

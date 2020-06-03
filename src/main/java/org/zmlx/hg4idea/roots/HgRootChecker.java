@@ -17,7 +17,7 @@ package org.zmlx.hg4idea.roots;
 
 import com.intellij.openapi.vcs.VcsKey;
 import com.intellij.openapi.vcs.VcsRootChecker;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.util.HgUtil;
 
@@ -29,7 +29,7 @@ import java.io.File;
 public class HgRootChecker extends VcsRootChecker {
 
   @Override
-  public boolean isRoot(@NotNull String path) {
+  public boolean isRoot(@Nonnull String path) {
     return new File(path, HgUtil.DOT_HG).exists();
   }
 

@@ -26,7 +26,6 @@ import com.intellij.ui.GuiUtils;
 import com.intellij.util.ui.UIUtil;
 import com.intellij.vcsUtil.VcsUtil;
 import hg4idea.test.HgPlatformTest;
-import org.jetbrains.annotations.Nullable;
 import org.junit.After;
 import org.junit.Before;
 import org.zmlx.hg4idea.HgFile;
@@ -34,6 +33,8 @@ import org.zmlx.hg4idea.HgVcs;
 
 import java.io.*;
 import java.lang.reflect.Method;
+
+import javax.annotation.Nullable;
 
 
 /**

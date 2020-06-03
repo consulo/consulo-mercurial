@@ -8,7 +8,7 @@ import com.intellij.openapi.vcs.VcsNotifier;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.ObjectUtils;
 import com.intellij.util.containers.ContainerUtil;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.HgVcsMessages;
 import org.zmlx.hg4idea.action.HgCommandResultNotifier;
 import org.zmlx.hg4idea.execution.HgCommandExecutor;
@@ -25,7 +25,7 @@ import static org.zmlx.hg4idea.util.HgUtil.getRepositoryManager;
 
 public class HgBookmarkCommand {
 
-  public static void createBookmarkAsynchronously(@NotNull List<HgRepository> repositories, @NotNull String name, boolean isActive) {
+  public static void createBookmarkAsynchronously(@Nonnull List<HgRepository> repositories, @Nonnull String name, boolean isActive) {
     final Project project = ObjectUtils.assertNotNull(ContainerUtil.getFirstItem(repositories)).getProject();
     if (StringUtil.isEmptyOrSpaces(name)) {
       VcsNotifier.getInstance(project).notifyError("Hg Error", "Bookmark name is empty");
@@ -33,7 +33,7 @@ public class HgBookmarkCommand {
     }
     new Task.Backgroundable(project, HgVcsMessages.message("hg4idea.progress.bookmark", name)) {
       @Override
-      public void run(@NotNull ProgressIndicator indicator) {
+      public void run(@Nonnull ProgressIndicator indicator) {
         for (HgRepository repository : repositories) {
           executeBookmarkCommandSynchronously(project, repository.getRoot(), name, isActive ? emptyList() : singletonList("--inactive"));
         }
@@ -41,14 +41,14 @@ public class HgBookmarkCommand {
     }.queue();
   }
 
-  public static void deleteBookmarkSynchronously(@NotNull Project project, @NotNull VirtualFile repo, @NotNull String name) {
+  public static void deleteBookmarkSynchronously(@Nonnull Project project, @Nonnull VirtualFile repo, @Nonnull String name) {
     executeBookmarkCommandSynchronously(project, repo, name, singletonList("-d"));
   }
 
-  private static void executeBookmarkCommandSynchronously(@NotNull Project project,
-                                                          @NotNull VirtualFile repositoryRoot,
-                                                          @NotNull String name,
-                                                          @NotNull List<String> args) {
+  private static void executeBookmarkCommandSynchronously(@Nonnull Project project,
+                                                          @Nonnull VirtualFile repositoryRoot,
+                                                          @Nonnull String name,
+                                                          @Nonnull List<String> args) {
     ArrayList<String> arguments = ContainerUtil.newArrayList(args);
     arguments.add(name);
     HgCommandResult result = new HgCommandExecutor(project).executeInCurrentThread(repositoryRoot, "bookmark", arguments);

@@ -18,11 +18,13 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vcs.VcsNotifier;
 import com.intellij.xml.util.XmlStringUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+
 import org.zmlx.hg4idea.execution.HgCommandResult;
 
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 public final class HgCommandResultNotifier {
 
@@ -33,13 +35,13 @@ public final class HgCommandResultNotifier {
     myProject = project;
   }
 
-  public void notifyError(@Nullable HgCommandResult result, @NotNull String failureTitle, @NotNull String failureDescription) {
+  public void notifyError(@Nullable HgCommandResult result, @Nonnull String failureTitle, @Nonnull String failureDescription) {
     notifyError(result, failureTitle, failureDescription, null);
   }
 
   public void notifyError(@Nullable HgCommandResult result,
-                          @NotNull String failureTitle,
-                          @NotNull String failureDescription,
+                          @Nonnull String failureTitle,
+                          @Nonnull String failureDescription,
                           @Nullable NotificationListener listener) {
     List<String> err;
     String errorMessage;

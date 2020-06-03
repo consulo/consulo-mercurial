@@ -15,8 +15,8 @@ package org.zmlx.hg4idea.provider;
 import java.util.Collections;
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.HgVcs;
 import com.intellij.dvcs.actions.DvcsQuickListContentProvider;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -29,14 +29,14 @@ public class HgQuickListProvider extends DvcsQuickListContentProvider {
 
   private static final Logger LOG = Logger.getInstance(HgQuickListProvider.class.getName());
 
-  @NotNull
+  @Nonnull
   @Override
   protected String getVcsName() {
     return HgVcs.VCS_NAME;
   }
 
   @Override
-  protected void addVcsSpecificActions(@NotNull ActionManager manager, @NotNull List<AnAction> actions) {
+  protected void addVcsSpecificActions(@Nonnull ActionManager manager, @Nonnull List<AnAction> actions) {
     add("hg4idea.branches", manager, actions);
     add("hg4idea.pull", manager, actions);
     add("Vcs.Push", manager, actions);

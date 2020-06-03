@@ -17,8 +17,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.FilePath;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.HgFile;
 import org.zmlx.hg4idea.HgFileRevision;
 import org.zmlx.hg4idea.HgVcs;
@@ -40,8 +40,10 @@ public class HgLogCommand {
 
   private static final Logger LOG = Logger.getInstance(HgLogCommand.class.getName());
 
-  @NotNull private final Project myProject;
-  @NotNull private HgVersion myVersion;
+  @Nonnull
+  private final Project myProject;
+  @Nonnull
+  private HgVersion myVersion;
   private boolean myIncludeRemoved;
   private boolean myFollowCopies;
   private boolean myLogFile = true;
@@ -59,7 +61,7 @@ public class HgLogCommand {
     myLogFile = logFile;
   }
 
-  public HgLogCommand(@NotNull Project project) {
+  public HgLogCommand(@Nonnull Project project) {
     myProject = project;
     HgVcs vcs = HgVcs.getInstance(myProject);
     if (vcs == null) {
@@ -77,7 +79,7 @@ public class HgLogCommand {
     return execute(hgFile, limit, includeFiles, null);
   }
 
-  @NotNull
+  @Nonnull
   public HgVersion getVersion() {
     return myVersion;
   }
@@ -101,8 +103,8 @@ public class HgLogCommand {
   }
 
   @Nullable
-  public HgCommandResult execute(@NotNull VirtualFile repo, @NotNull String template, int limit, @Nullable HgFile hgFile,
-                                 @Nullable List<String> argsForCmd) {
+  public HgCommandResult execute(@Nonnull VirtualFile repo, @Nonnull String template, int limit, @Nullable HgFile hgFile,
+								 @Nullable List<String> argsForCmd) {
     List<String> arguments = new LinkedList<>();
     if (myIncludeRemoved) {
       // There is a bug in mercurial that causes --follow --removed <file> to cause

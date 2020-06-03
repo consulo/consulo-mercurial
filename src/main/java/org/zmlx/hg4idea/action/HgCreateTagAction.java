@@ -13,8 +13,8 @@
 package org.zmlx.hg4idea.action;
 
 import com.intellij.openapi.project.Project;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.command.HgTagCreateCommand;
 import org.zmlx.hg4idea.execution.HgCommandException;
 import org.zmlx.hg4idea.execution.HgCommandResult;
@@ -27,8 +27,8 @@ import java.util.Collection;
 
 public class HgCreateTagAction extends HgAbstractGlobalSingleRepoAction {
 
-  public void execute(@NotNull final Project project,
-                      @NotNull Collection<HgRepository> repositories,
+  public void execute(@Nonnull final Project project,
+                      @Nonnull Collection<HgRepository> repositories,
                       @Nullable HgRepository selectedRepo,
                       @Nullable final String reference) {
     final HgTagDialog dialog = new HgTagDialog(project, repositories, selectedRepo);
@@ -50,8 +50,8 @@ public class HgCreateTagAction extends HgAbstractGlobalSingleRepoAction {
     }
   }
 
-  protected void execute(@NotNull final Project project,
-                         @NotNull Collection<HgRepository> repositories,
+  protected void execute(@Nonnull final Project project,
+                         @Nonnull Collection<HgRepository> repositories,
                          @Nullable HgRepository selectedRepo) {
     execute(project, repositories, selectedRepo, null);
   }

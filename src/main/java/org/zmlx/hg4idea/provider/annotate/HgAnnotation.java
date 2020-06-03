@@ -23,8 +23,8 @@ import com.intellij.openapi.vcs.history.VcsFileRevision;
 import com.intellij.openapi.vcs.history.VcsRevisionNumber;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.HgFile;
 import org.zmlx.hg4idea.HgFileRevision;
 import org.zmlx.hg4idea.HgVcs;
@@ -46,14 +46,18 @@ public class HgAnnotation extends FileAnnotation {
   private final HgLineAnnotationAspect userAnnotationAspect = new HgLineAnnotationAspect(FIELD.USER);
   private final HgLineAnnotationAspect revisionAnnotationAspect = new HgLineAnnotationAspect(FIELD.REVISION);
 
-  @NotNull private final Project myProject;
-  @NotNull private final List<HgAnnotationLine> myLines;
-  @NotNull private final List<HgFileRevision> myFileRevisions;
-  @NotNull private final HgFile myFile;
+  @Nonnull
+  private final Project myProject;
+  @Nonnull
+  private final List<HgAnnotationLine> myLines;
+  @Nonnull
+  private final List<HgFileRevision> myFileRevisions;
+  @Nonnull
+  private final HgFile myFile;
   private final VcsRevisionNumber myCurrentRevision;
 
-  public HgAnnotation(@NotNull Project project, @NotNull HgFile hgFile, @NotNull List<HgAnnotationLine> lines,
-                      @NotNull List<HgFileRevision> vcsFileRevisions, VcsRevisionNumber revision) {
+  public HgAnnotation(@Nonnull Project project, @Nonnull HgFile hgFile, @Nonnull List<HgAnnotationLine> lines,
+					  @Nonnull List<HgFileRevision> vcsFileRevisions, VcsRevisionNumber revision) {
     super(project);
     myProject = project;
     myLines = lines;

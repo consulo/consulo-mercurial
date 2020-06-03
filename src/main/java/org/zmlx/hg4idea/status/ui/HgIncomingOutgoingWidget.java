@@ -17,8 +17,8 @@ package org.zmlx.hg4idea.status.ui;
 
 import java.awt.event.MouseEvent;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.HgProjectSettings;
 import org.zmlx.hg4idea.HgUpdater;
 import org.zmlx.hg4idea.HgVcs;
@@ -29,7 +29,7 @@ import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.FileEditorManagerEvent;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Disposer;
+import consulo.disposer.Disposer;
 import com.intellij.openapi.vcs.CalledInAny;
 import com.intellij.openapi.vcs.CalledInAwt;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -44,19 +44,23 @@ import consulo.ui.image.Image;
 public class HgIncomingOutgoingWidget extends EditorBasedWidget
   implements StatusBarWidget.IconPresentation, StatusBarWidget.Multiframe, HgUpdater, HgHideableWidget {
 
-  @NotNull private final HgVcs myVcs;
-  @NotNull final Project myProject;
-  @NotNull private final HgProjectSettings myProjectSettings;
-  @NotNull private final HgChangesetStatus myChangesStatus;
+  @Nonnull
+  private final HgVcs myVcs;
+  @Nonnull
+  final Project myProject;
+  @Nonnull
+  private final HgProjectSettings myProjectSettings;
+  @Nonnull
+  private final HgChangesetStatus myChangesStatus;
   private final boolean myIsIncoming;
   private boolean isAlreadyShown;
 
   private volatile String myTooltip = "";
   private Image myCurrentIcon = AllIcons.Ide.IncomingChangesOff;
 
-  public HgIncomingOutgoingWidget(@NotNull HgVcs vcs,
-                                  @NotNull Project project,
-                                  @NotNull HgProjectSettings projectSettings,
+  public HgIncomingOutgoingWidget(@Nonnull HgVcs vcs,
+                                  @Nonnull Project project,
+                                  @Nonnull HgProjectSettings projectSettings,
                                   boolean isIncoming) {
     super(project);
     this.myProject = project;
@@ -73,7 +77,7 @@ public class HgIncomingOutgoingWidget extends EditorBasedWidget
     return new HgIncomingOutgoingWidget(myVcs, myProject, myProjectSettings, myIsIncoming);
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public String ID() {
     String name = HgIncomingOutgoingWidget.class.getName();
@@ -86,17 +90,17 @@ public class HgIncomingOutgoingWidget extends EditorBasedWidget
   }
 
   @Override
-  public void selectionChanged(@NotNull FileEditorManagerEvent event) {
+  public void selectionChanged(@Nonnull FileEditorManagerEvent event) {
     update();
   }
 
   @Override
-  public void fileOpened(@NotNull FileEditorManager source, @NotNull VirtualFile file) {
+  public void fileOpened(@Nonnull FileEditorManager source, @Nonnull VirtualFile file) {
     update();
   }
 
   @Override
-  public void fileClosed(@NotNull FileEditorManager source, @NotNull VirtualFile file) {
+  public void fileClosed(@Nonnull FileEditorManager source, @Nonnull VirtualFile file) {
     update();
   }
 
@@ -201,7 +205,7 @@ public class HgIncomingOutgoingWidget extends EditorBasedWidget
     myTooltip = "";
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public Image getIcon() {
     return myCurrentIcon;

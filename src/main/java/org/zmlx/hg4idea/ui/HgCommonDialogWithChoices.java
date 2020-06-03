@@ -19,8 +19,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.util.text.StringUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.util.HgUtil;
 
@@ -49,7 +49,7 @@ public class HgCommonDialogWithChoices extends DialogWrapper {
   protected HgRepositorySelectorComponent hgRepositorySelectorComponent;
   protected JPanel myBranchesBorderPanel;
 
-  public HgCommonDialogWithChoices(@NotNull Project project, @NotNull Collection<HgRepository> repositories, @Nullable HgRepository selectedRepo) {
+  public HgCommonDialogWithChoices(@Nonnull Project project, @Nonnull Collection<HgRepository> repositories, @Nullable HgRepository selectedRepo) {
     super(project, false);
     hgRepositorySelectorComponent.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
