@@ -30,7 +30,7 @@ import java.util.List;
 import static com.intellij.dvcs.test.Executor.*;
 import static hg4idea.test.HgExecutor.hg;
 
-public class HgGetDiffForDirTest extends HgPlatformTest {
+public abstract class HgGetDiffForDirTest extends HgPlatformTest {
 
   private static final String SHORT_TEMPLATE_REVISION = "{rev}:{node|short}";
 

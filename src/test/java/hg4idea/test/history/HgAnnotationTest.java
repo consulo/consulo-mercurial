@@ -27,7 +27,7 @@ import java.io.File;
 import static com.intellij.dvcs.test.Executor.*;
 import static hg4idea.test.HgExecutor.hg;
 
-public class HgAnnotationTest extends HgPlatformTest {
+public abstract class HgAnnotationTest extends HgPlatformTest {
   HgAnnotationProvider myHgAnnotationProvider;
 
   static final String aName = "a.txt";

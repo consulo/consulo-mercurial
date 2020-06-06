@@ -35,7 +35,7 @@ import static java.util.Calendar.YEAR;
 /**
  * @author Nadya Zabrodina
  */
-public class HgBrowseChangesTest extends HgPlatformTest {
+public abstract class HgBrowseChangesTest extends HgPlatformTest {
 
   private HgVcs myVcs;
   private ChangeBrowserSettings mySettings;

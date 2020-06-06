@@ -34,7 +34,7 @@ import static hg4idea.test.HgExecutor.hg;
 /**
  * @author Nadya Zabrodina
  */
-public class HgCommitTest extends HgPlatformTest {
+public abstract class HgCommitTest extends HgPlatformTest {
 
   @Override
   public void setUp() throws Exception {

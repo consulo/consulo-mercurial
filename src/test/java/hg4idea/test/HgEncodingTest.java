@@ -15,12 +15,8 @@
  */
 package hg4idea.test;
 
-import static com.intellij.dvcs.test.Executor.cd;
-import static com.intellij.dvcs.test.Executor.echo;
-
-import java.nio.charset.Charset;
-import java.util.List;
-
+import com.intellij.openapi.vcs.VcsException;
+import com.intellij.openapi.vfs.VirtualFile;
 import org.zmlx.hg4idea.HgFile;
 import org.zmlx.hg4idea.HgFileRevision;
 import org.zmlx.hg4idea.command.HgCommitCommand;
@@ -29,13 +25,17 @@ import org.zmlx.hg4idea.execution.HgCommandException;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.repo.HgRepositoryImpl;
 import org.zmlx.hg4idea.util.HgEncodingUtil;
-import com.intellij.openapi.vcs.VcsException;
-import com.intellij.openapi.vfs.VirtualFile;
+
+import java.nio.charset.Charset;
+import java.util.List;
+
+import static com.intellij.dvcs.test.Executor.cd;
+import static com.intellij.dvcs.test.Executor.echo;
 
 /**
  * @author Nadya Zabrodina
  */
-public class HgEncodingTest extends HgPlatformTest {
+public abstract class HgEncodingTest extends HgPlatformTest {
 
   //test for  default EncodingProject settings
   public void testCommitUtfMessage() throws HgCommandException, VcsException {

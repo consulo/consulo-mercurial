@@ -35,7 +35,7 @@ import com.intellij.testFramework.EdtTestUtil;
 import hg4idea.test.HgPlatformTest;
 import hg4idea.test.HgTestUtil;
 
-public class HgMergeProviderTest extends HgPlatformTest {
+public abstract class HgMergeProviderTest extends HgPlatformTest {
   protected MergeProvider myMergeProvider;
 
   @Override

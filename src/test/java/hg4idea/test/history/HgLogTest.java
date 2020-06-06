@@ -18,7 +18,7 @@ import hg4idea.test.HgPlatformTest;
 /**
  * @author Nadya Zabrodina
  */
-public class HgLogTest extends HgPlatformTest {
+public abstract class HgLogTest extends HgPlatformTest {
 
   public void testParseCopiedWithoutBraces() throws HgCommandException {
     parseCopied("f.txt");

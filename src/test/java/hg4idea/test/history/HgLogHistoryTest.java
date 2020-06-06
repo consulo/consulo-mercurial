@@ -21,16 +21,16 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.vcs.log.Hash;
 import com.intellij.vcs.log.impl.HashImpl;
 import hg4idea.test.HgPlatformTest;
-import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.log.HgHistoryUtil;
 
+import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collection;
 
 import static com.intellij.dvcs.test.Executor.*;
 import static hg4idea.test.HgExecutor.hg;
 
-public class HgLogHistoryTest extends HgPlatformTest {
+public abstract class HgLogHistoryTest extends HgPlatformTest {
 
   public void testContainedInBranchesInLogInfos() throws VcsException {
     createBookmarksAndBranches(myRepository);

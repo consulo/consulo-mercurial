@@ -40,7 +40,7 @@ import com.intellij.vcs.log.util.VcsUserUtil;
 import hg4idea.test.HgPlatformTest;
 import junit.framework.TestCase;
 
-public class HgUserFilterTest extends HgPlatformTest {
+public abstract class HgUserFilterTest extends HgPlatformTest {
   private VcsLogUserFilterTest myVcsLogUserFilterTest;
 
   @Override

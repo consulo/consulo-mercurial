@@ -15,28 +15,27 @@
  */
 package hg4idea.test.log;
 
-import static com.intellij.dvcs.test.Executor.cd;
-import static com.intellij.dvcs.test.Executor.overwrite;
-import static hg4idea.test.HgExecutor.hg;
-import static hg4idea.test.log.HgUserFilterTest.findLogProvider;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import javax.annotation.Nonnull;
-
-import org.zmlx.hg4idea.command.HgWorkingCopyRevisionsCommand;
-import org.zmlx.hg4idea.log.HgLogProvider;
 import com.intellij.openapi.vcs.VcsException;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.vcs.log.TimedVcsCommit;
 import com.intellij.vcs.log.impl.VcsLogFilterCollectionImpl;
 import com.intellij.vcs.log.ui.filter.VcsLogTextFilterImpl;
 import hg4idea.test.HgPlatformTest;
+import org.zmlx.hg4idea.command.HgWorkingCopyRevisionsCommand;
+import org.zmlx.hg4idea.log.HgLogProvider;
 
-public class HgTextFilterTest extends HgPlatformTest {
+import javax.annotation.Nonnull;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static com.intellij.dvcs.test.Executor.cd;
+import static com.intellij.dvcs.test.Executor.overwrite;
+import static hg4idea.test.HgExecutor.hg;
+import static hg4idea.test.log.HgUserFilterTest.findLogProvider;
+
+public abstract class HgTextFilterTest extends HgPlatformTest {
   @Override
   public void setUp() throws Exception {
     super.setUp();

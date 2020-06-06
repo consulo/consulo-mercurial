@@ -18,7 +18,6 @@ package hg4idea.test.validator;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.ui.UIUtil;
 import hg4idea.test.HgPlatformTest;
-import javax.annotation.Nonnull;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,6 +27,7 @@ import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.repo.HgRepositoryImpl;
 import org.zmlx.hg4idea.util.HgBranchReferenceValidator;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 
 import static com.intellij.dvcs.test.Executor.cd;
@@ -35,7 +35,7 @@ import static com.intellij.dvcs.test.Executor.echo;
 import static hg4idea.test.HgExecutor.hg;
 
 @RunWith(Parameterized.class)
-public class HgReferenceValidatorTest extends HgPlatformTest {
+public abstract class HgReferenceValidatorTest extends HgPlatformTest {
 
   private HgBranchReferenceValidator myValidator;
   private static final String BRANCH_NAME = "ABranch";

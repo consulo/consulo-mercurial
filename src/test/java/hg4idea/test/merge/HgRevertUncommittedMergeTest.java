@@ -29,7 +29,7 @@ import static com.intellij.dvcs.test.Executor.touch;
 import static hg4idea.test.HgExecutor.hg;
 import static hg4idea.test.HgExecutor.hgMergeWith;
 
-public class HgRevertUncommittedMergeTest extends HgPlatformTest {
+public abstract class HgRevertUncommittedMergeTest extends HgPlatformTest {
 
   public void testRevertAfterMerge() throws VcsException {
     cd(myRepository);

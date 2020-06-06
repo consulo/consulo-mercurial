@@ -29,7 +29,7 @@ import static com.intellij.dvcs.test.Executor.cd;
 /**
  * @author Nadya Zabrodina
  */
-public class HgConfigTest extends HgPlatformTest {
+public abstract class HgConfigTest extends HgPlatformTest {
 
   @Override
   public void setUp() throws Exception {

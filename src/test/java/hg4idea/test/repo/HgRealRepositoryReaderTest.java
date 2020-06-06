@@ -15,25 +15,23 @@
  */
 package hg4idea.test.repo;
 
-import static com.intellij.dvcs.test.Executor.cd;
-import static com.intellij.dvcs.test.Executor.echo;
-import static com.intellij.dvcs.test.Executor.touch;
-import static hg4idea.test.HgExecutor.hg;
-import static hg4idea.test.HgExecutor.hgMergeWith;
-
-import java.io.File;
-import java.util.Arrays;
-
-import javax.annotation.Nonnull;
+import com.intellij.dvcs.repo.Repository;
+import com.intellij.openapi.vcs.VcsTestUtil;
+import hg4idea.test.HgPlatformTest;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.repo.HgRepositoryImpl;
 import org.zmlx.hg4idea.repo.HgRepositoryReader;
 import org.zmlx.hg4idea.util.HgUtil;
-import com.intellij.dvcs.repo.Repository;
-import com.intellij.openapi.vcs.VcsTestUtil;
-import hg4idea.test.HgPlatformTest;
 
-public class HgRealRepositoryReaderTest extends HgPlatformTest {
+import javax.annotation.Nonnull;
+import java.io.File;
+import java.util.Arrays;
+
+import static com.intellij.dvcs.test.Executor.*;
+import static hg4idea.test.HgExecutor.hg;
+import static hg4idea.test.HgExecutor.hgMergeWith;
+
+public abstract class HgRealRepositoryReaderTest extends HgPlatformTest {
 
   @Nonnull
   private HgRepositoryReader myRepositoryReader;

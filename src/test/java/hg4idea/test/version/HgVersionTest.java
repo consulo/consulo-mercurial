@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * @author Nadya Zabrodina
  */
-public class HgVersionTest extends HgPlatformTest {
+public abstract class HgVersionTest extends HgPlatformTest {
 
   //todo: should be changed to Junit Parameterized tests
   private static final TestHgVersion[] commonTests = {

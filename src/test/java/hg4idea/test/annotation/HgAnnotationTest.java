@@ -20,7 +20,7 @@ import java.util.List;
 import static com.intellij.dvcs.test.Executor.*;
 import static hg4idea.test.HgExecutor.hg;
 
-public class HgAnnotationTest extends HgPlatformTest {
+public abstract class HgAnnotationTest extends HgPlatformTest {
 
   private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
   private static final String firstCreatedFile = "file.txt";

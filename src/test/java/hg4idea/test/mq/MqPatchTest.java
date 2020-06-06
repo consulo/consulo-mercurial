@@ -23,8 +23,6 @@ import com.intellij.vcs.log.Hash;
 import com.intellij.vcs.log.TimedVcsCommit;
 import hg4idea.test.HgPlatformTest;
 import hg4idea.test.HgTestUtil;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.zmlx.hg4idea.HgNameWithHashInfo;
 import org.zmlx.hg4idea.command.mq.HgQImportCommand;
 import org.zmlx.hg4idea.command.mq.HgQNewCommand;
@@ -34,6 +32,8 @@ import org.zmlx.hg4idea.mq.MqPatchDetails;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.util.HgUtil;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Date;
@@ -42,7 +42,7 @@ import java.util.List;
 import static com.intellij.dvcs.test.Executor.*;
 import static hg4idea.test.HgExecutor.hg;
 
-public class MqPatchTest extends HgPlatformTest {
+public abstract class MqPatchTest extends HgPlatformTest {
 
   private static final String SUBJECT = "mqCommand executed!";
   private static final String MESSAGE = SUBJECT + "\nDont worry!";

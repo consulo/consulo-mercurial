@@ -15,16 +15,14 @@
  */
 package hg4idea.test.repo;
 
-import static org.junit.Assert.assertTrue;
-
 import com.intellij.openapi.application.PluginPathManager;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vcs.VcsTestUtil;
 import hg4idea.test.HgPlatformTest;
-import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.repo.HgRepositoryReader;
 import org.zmlx.hg4idea.util.HgUtil;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
@@ -33,7 +31,7 @@ import java.util.HashSet;
 /**
  * @author Nadya Zabrodina
  */
-public class HgRepositoryReaderTest extends HgPlatformTest {
+public abstract class HgRepositoryReaderTest extends HgPlatformTest {
 
   @Nonnull
   private HgRepositoryReader myRepositoryReader;

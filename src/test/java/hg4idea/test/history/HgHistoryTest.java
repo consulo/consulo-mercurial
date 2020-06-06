@@ -33,7 +33,7 @@ import java.util.List;
 import static com.intellij.dvcs.test.Executor.*;
 import static hg4idea.test.HgExecutor.hg;
 
-public class HgHistoryTest extends HgPlatformTest {
+public abstract class HgHistoryTest extends HgPlatformTest {
   static final String[] names = {"f1.txt", "f2.txt", "f3.txt"};
   static final String subDirName = "sub";
 
