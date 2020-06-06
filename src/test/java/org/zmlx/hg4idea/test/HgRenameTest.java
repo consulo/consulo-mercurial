@@ -12,13 +12,13 @@
 // limitations under the License.
 package org.zmlx.hg4idea.test;
 
-import java.io.File;
-
-import org.junit.Test;
 import com.intellij.openapi.vcs.VcsTestUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import org.junit.Test;
 
-public class HgRenameTest extends HgSingleUserTest {
+import java.io.File;
+
+public abstract class HgRenameTest extends HgSingleUserTest {
 
   @Test
   public void testRenameUnmodifiedFile() throws Exception {

@@ -17,19 +17,20 @@ package org.zmlx.hg4idea.ui;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.ui.TableUtil;
+import com.intellij.util.ArrayUtil;
 
-import javax.activation.ActivationDataFlavor;
-import javax.activation.DataHandler;
 import javax.swing.*;
 import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DragSource;
+import java.io.IOException;
 
 public class TableRowsTransferHandler extends TransferHandler {
   private static final Logger LOG = Logger.getInstance(TableRowsTransferHandler.class);
-  private final DataFlavor myDataFlavor = new ActivationDataFlavor(RowsDragInfo.class, DataFlavor.stringFlavor.getMimeType());
+  private final DataFlavor myDataFlavor = new DataFlavor(RowsDragInfo.class, DataFlavor.stringFlavor.getMimeType());
   private final JTable myTable;
 
   public TableRowsTransferHandler(JTable table) {
@@ -39,7 +40,22 @@ public class TableRowsTransferHandler extends TransferHandler {
   @Override
   protected Transferable createTransferable(JComponent c) {
     assert (c == myTable);
-    return new DataHandler(new RowsDragInfo(myTable.getSelectedRows()), myDataFlavor.getMimeType());
+    return new Transferable() {
+      @Override
+      public DataFlavor[] getTransferDataFlavors() {
+        return new DataFlavor[] {myDataFlavor};
+      }
+
+      @Override
+      public boolean isDataFlavorSupported(DataFlavor dataFlavor) {
+        return ArrayUtil.contains(dataFlavor, getTransferDataFlavors());
+      }
+
+      @Override
+      public Object getTransferData(DataFlavor dataFlavor) throws UnsupportedFlavorException, IOException {
+        return new RowsDragInfo(myTable.getSelectedRows());
+      }
+    };
   }
 
   @Override

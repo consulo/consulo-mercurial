@@ -17,18 +17,18 @@ package org.zmlx.hg4idea.push;
 
 import com.intellij.execution.process.ProcessOutput;
 import com.intellij.util.containers.ContainerUtil;
-import javax.annotation.Nonnull;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
 
 @RunWith(Parameterized.class)
-public class HgPushParseTest {
+public abstract class HgPushParseTest {
 
   @Nonnull
   private final String myOutput;

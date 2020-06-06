@@ -22,7 +22,7 @@ import com.intellij.openapi.vcs.VcsConfiguration;
 import com.intellij.openapi.vcs.VcsTestUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 
-public class HgDeleteTest extends HgSingleUserTest {
+public abstract class HgDeleteTest extends HgSingleUserTest {
 
   @Test
   public void testDeleteUnmodifiedFile() throws Exception {

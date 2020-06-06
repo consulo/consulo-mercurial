@@ -41,7 +41,7 @@ import com.intellij.openapi.util.io.FileUtil;
 /**
  * @author Kirill Likhodedov
  */
-public class HgAnnotateCommandTest extends HgSingleUserTest {
+public abstract class HgAnnotateCommandTest extends HgSingleUserTest {
 
   private File myPluginRoot;
   private File myAnnotateDataDir;

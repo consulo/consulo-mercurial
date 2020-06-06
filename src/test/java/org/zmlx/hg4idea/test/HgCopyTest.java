@@ -18,7 +18,7 @@ import org.junit.Test;
 import com.intellij.openapi.vcs.VcsTestUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 
-public class HgCopyTest extends HgSingleUserTest {
+public abstract class HgCopyTest extends HgSingleUserTest {
 
   @Test
   public void testCopyUnmodifiedFile() throws Exception {

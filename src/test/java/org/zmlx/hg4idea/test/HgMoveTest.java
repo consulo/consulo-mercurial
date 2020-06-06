@@ -17,7 +17,7 @@ import java.io.File;
 import org.junit.Test;
 import com.intellij.openapi.vfs.VirtualFile;
 
-public class HgMoveTest extends HgSingleUserTest {
+public abstract class HgMoveTest extends HgSingleUserTest {
 
   @Test
   public void testMoveNewFile() throws Exception {

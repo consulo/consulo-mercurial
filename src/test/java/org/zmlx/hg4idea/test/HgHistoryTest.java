@@ -1,24 +1,24 @@
 package org.zmlx.hg4idea.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.util.Collection;
-import java.util.List;
-
-import org.junit.Test;
-import org.zmlx.hg4idea.HgVcs;
 import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.history.VcsFileRevision;
 import com.intellij.openapi.vcs.history.VcsHistorySession;
 import com.intellij.vcsUtil.VcsUtil;
+import org.junit.Test;
+import org.zmlx.hg4idea.HgVcs;
+
+import java.io.File;
+import java.util.Collection;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * HgHistoryTest tests retrieving file history and specific revisions.
  */
-public class HgHistoryTest extends HgSingleUserTest {
+public abstract class HgHistoryTest extends HgSingleUserTest {
 
   /**
    * 1. Make two versions of a file (create, add, commit, modify, commit).

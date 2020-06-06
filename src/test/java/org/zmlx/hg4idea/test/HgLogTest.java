@@ -12,15 +12,15 @@
 // limitations under the License.
 package org.zmlx.hg4idea.test;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.List;
-
 import org.junit.Test;
 import org.zmlx.hg4idea.HgFileRevision;
 import org.zmlx.hg4idea.command.HgLogCommand;
 
-public class HgLogTest extends HgSingleUserTest {
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+
+public abstract class HgLogTest extends HgSingleUserTest {
   
   @Test
   public void testCommitMessagesWithMultipleLines() throws Exception {

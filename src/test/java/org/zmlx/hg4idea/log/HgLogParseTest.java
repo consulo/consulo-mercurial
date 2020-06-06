@@ -15,16 +15,16 @@
  */
 package org.zmlx.hg4idea.log;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import com.intellij.openapi.util.Couple;
+import org.junit.Test;
+import org.zmlx.hg4idea.util.HgUtil;
 
 import java.util.Map;
 
-import org.junit.Test;
-import org.zmlx.hg4idea.util.HgUtil;
-import com.intellij.openapi.util.Couple;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-public class HgLogParseTest {
+public abstract class HgLogParseTest {
 
   @Test
   public void testParseFileCopiesWithWhitespaces() {

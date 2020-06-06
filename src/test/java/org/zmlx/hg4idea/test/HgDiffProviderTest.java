@@ -25,7 +25,7 @@ import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.ContentRevision;
 import com.intellij.openapi.vfs.VirtualFile;
 
-public class HgDiffProviderTest extends HgSingleUserTest {
+public abstract class HgDiffProviderTest extends HgSingleUserTest {
   
   @Test
   public void shouldFindCurrentRevisionForRenamedFile() throws Exception{

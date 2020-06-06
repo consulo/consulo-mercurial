@@ -15,16 +15,16 @@
  */
 package org.zmlx.hg4idea.test;
 
-import static org.junit.Assert.assertNotNull;
-
+import com.intellij.openapi.vfs.VirtualFile;
 import org.junit.Test;
 import org.zmlx.hg4idea.command.HgPushCommand;
-import com.intellij.openapi.vfs.VirtualFile;
+
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Kirill Likhodedov
  */
-public class HgPushTest extends HgCollaborativeTest {
+public abstract class HgPushTest extends HgCollaborativeTest {
 
   /**
    * Tests 'push' using only native commands.

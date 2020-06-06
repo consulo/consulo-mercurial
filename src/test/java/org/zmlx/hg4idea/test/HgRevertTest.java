@@ -1,19 +1,19 @@
 package org.zmlx.hg4idea.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.io.File;
-import java.nio.charset.Charset;
-import java.util.Collections;
-
 import org.junit.Test;
 import org.zmlx.hg4idea.HgRevisionNumber;
 import org.zmlx.hg4idea.command.HgCatCommand;
 import org.zmlx.hg4idea.command.HgRevertCommand;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 
-public class HgRevertTest extends HgSingleUserTest {
+import java.io.File;
+import java.nio.charset.Charset;
+import java.util.Collections;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+public abstract class HgRevertTest extends HgSingleUserTest {
   @Test
   public void testRevertToCurrentRevision() throws Exception {
     fillFile(myProjectDir, new String[]{"file.txt"}, "initial contents");
