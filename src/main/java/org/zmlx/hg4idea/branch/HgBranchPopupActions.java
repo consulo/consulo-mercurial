@@ -35,12 +35,9 @@ import com.intellij.openapi.vcs.VcsBundle;
 import com.intellij.openapi.vcs.changes.*;
 import com.intellij.openapi.vcs.changes.ui.CommitChangeListDialog;
 import com.intellij.util.ArrayUtil;
-import com.intellij.util.PlatformIcons;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.vcs.log.Hash;
 import com.intellij.vcs.log.impl.HashImpl;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.action.HgCommandResultNotifier;
 import org.zmlx.hg4idea.command.HgBookmarkCommand;
@@ -54,6 +51,8 @@ import org.zmlx.hg4idea.ui.HgBookmarkDialog;
 import org.zmlx.hg4idea.util.HgErrorUtil;
 import org.zmlx.hg4idea.util.HgUtil;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 
 import static org.zmlx.hg4idea.util.HgUtil.getNewBranchNameFromUser;
@@ -91,7 +90,7 @@ public class HgBranchPopupActions {
     for (String bookmark : bookmarkNames) {
       AnAction bookmarkAction = new BookmarkActions(myProject, Collections.singletonList(myRepository), bookmark);
       if (bookmark.equals(currentBookmark)) {
-        bookmarkAction.getTemplatePresentation().setIcon(PlatformIcons.CHECK_ICON);
+        bookmarkAction.getTemplatePresentation().setIcon(AllIcons.Actions.Checked);
       }
       popupGroup.add(bookmarkAction);
     }
