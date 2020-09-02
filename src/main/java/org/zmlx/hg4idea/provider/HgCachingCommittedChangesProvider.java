@@ -12,6 +12,7 @@
 // limitations under the License.
 package org.zmlx.hg4idea.provider;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.ide.CopyPasteManager;
@@ -31,17 +32,16 @@ import com.intellij.openapi.vcs.versionBrowser.ChangesBrowserSettingsEditor;
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.AsynchConsumer;
-import com.intellij.util.PlatformIcons;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.vcsUtil.VcsUtil;
 import org.jetbrains.annotations.Nls;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.zmlx.hg4idea.*;
 import org.zmlx.hg4idea.command.HgLogCommand;
 import org.zmlx.hg4idea.ui.HgVersionFilterComponent;
 import org.zmlx.hg4idea.util.HgUtil;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.awt.datatransfer.StringSelection;
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -271,7 +271,7 @@ public class HgCachingCommittedChangesProvider implements CachingCommittedChange
   }
 
   public VcsCommittedViewAuxiliary createActions(DecoratorManager decoratorManager, RepositoryLocation repositoryLocation) {
-    AnAction copyHashAction = new AnAction("Copy &Hash", "Copy hash to clipboard", PlatformIcons.COPY_ICON) {
+    AnAction copyHashAction = new AnAction("Copy &Hash", "Copy hash to clipboard", AllIcons.Actions.Copy) {
       @Override
       public void actionPerformed(AnActionEvent e) {
         ChangeList[] changeLists = e.getData(VcsDataKeys.CHANGE_LISTS);
