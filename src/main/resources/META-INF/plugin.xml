@@ -65,11 +65,11 @@
 			<reference ref="Annotate"/>
 			<separator/>
 
-			<action id="hg4idea.pull" class="org.zmlx.hg4idea.action.HgPullAction" icon="AllIcons.Actions.CheckOut"/>
+			<action id="hg4idea.pull" class="org.zmlx.hg4idea.action.HgPullAction" icon="consulo.platform.base.PlatformIconGroup@actions.checkout"/>
 			<reference ref="Vcs.Push"/>
 			<separator/>
 			<action id="hg4idea.run.conflict.resolver" class="org.zmlx.hg4idea.action.HgRunConflictResolverAction"/>
-			<action id="hg4idea.merge.files" class="org.zmlx.hg4idea.action.HgMerge" icon="AllIcons.Vcs.MergeSourcesTree"/>
+			<action id="hg4idea.merge.files" class="org.zmlx.hg4idea.action.HgMerge" icon="consulo.platform.base.PlatformIconGroup@vcs.mergesourcestree"/>
 			<separator/>
 
 			<action id="hg4idea.branches" class="org.zmlx.hg4idea.branch.HgBranchesAction" text="_Branches..."/>
@@ -83,7 +83,7 @@
 
 			<separator/>
 			<action class="org.zmlx.hg4idea.action.mq.HgShowUnAppliedPatchesAction" id="hg4idea.mq.ShowUnAppliedPatches"
-					text="Show Mq Unapplied Patches..." icon="AllIcons.Debugger.Watches"/>
+					text="Show Mq Unapplied Patches..." icon="consulo.platform.base.PlatformIconGroup@debugger.watches"/>
 			<reference id="ChangesView.Browse"/>
 			<separator/>
 
@@ -99,34 +99,34 @@
 		<action class="org.zmlx.hg4idea.action.HgMergeWithRevisionFromLog" id="hg4idea.MergeWithRevision" text="Merge With"
 				description="Merge with selected revision"/>
 		<group id="Hg.Mq" class="com.intellij.ide.actions.NonTrivialActionGroup" text="MQ" popup="true"
-			   icon="AllIcons.Modules.Edit">
+			   icon="consulo.platform.base.PlatformIconGroup@modules.edit">
 			<action class="org.zmlx.hg4idea.action.mq.HgQImportFromLogAction" id="hg4idea.QImport" text="Import"
-					description="Import all revisions starting from selected commit" icon="AllIcons.Duplicates.SendToTheRight"/>
+					description="Import all revisions starting from selected commit" icon="consulo.platform.base.PlatformIconGroup@duplicates.sendtotheright"/>
 			<action class="org.zmlx.hg4idea.action.mq.HgQGotoFromLogAction" id="hg4idea.QGoto" text="Goto patch"
-					description="Pop all revisions starting from selected commit" icon="AllIcons.Diff.ApplyNotConflicts"/>
+					description="Pop all revisions starting from selected commit" icon="consulo.platform.base.PlatformIconGroup@diff.applynotconflicts"/>
 			<action class="org.zmlx.hg4idea.action.mq.HgQRenameFromLogAction" id="hg4idea.QRename" text="Rename Patch"
 					description="Rename mq patch"/>
 			<action class="org.zmlx.hg4idea.action.mq.HgQFinishFromLogAction" id="hg4idea.QFinish" text="Finish Patches"
-					description="Apply mq patches into repository history" icon="AllIcons.Duplicates.SendToTheLeft"/>
+					description="Apply mq patches into repository history" icon="consulo.platform.base.PlatformIconGroup@duplicates.sendtotheleft"/>
 		</group>
 
 		<group id="Hg.MQ.Unapplied">
 			<action class="com.intellij.openapi.actionSystem.EmptyAction" id="hg4idea.QRefresh" text="Reload from file"
-					description="Reload patch information from mq patch series file" icon="AllIcons.Actions.Refresh" use-shortcut-of="Refresh"/>
+					description="Reload patch information from mq patch series file" icon="consulo.platform.base.PlatformIconGroup@actions.refresh" use-shortcut-of="Refresh"/>
 			<action class="org.zmlx.hg4idea.action.mq.HgQGotoActionFromMqPatches" id="hg4idea.QGotoFromPatches" text="Goto"
-					description="Push all patches above selected one" icon="AllIcons.Diff.ApplyNotConflicts">
+					description="Push all patches above selected one" icon="consulo.platform.base.PlatformIconGroup@diff.applynotconflicts">
 				<keyboard-shortcut first-keystroke="alt shift G" keymap="$default"/>
 			</action>
 			<action class="org.zmlx.hg4idea.action.mq.HgQPushActionFromPatches" id="hg4idea.QPushAction" text="Move and Push"
-					description="Apply only selected patch" icon="AllIcons.Actions.MoveToAnotherChangelist">
+					description="Apply only selected patch" icon="consulo.platform.base.PlatformIconGroup@actions.movetoanotherchangelist">
 				<keyboard-shortcut first-keystroke="alt shift P" keymap="$default"/>
 			</action>
 			<action class="org.zmlx.hg4idea.action.mq.HgQFoldActionFromPatches" id="hg4idea.QFold" text="Fold"
-					description="Fold selected patch to the top one" icon="AllIcons.Modules.Merge">
+					description="Fold selected patch to the top one" icon="consulo.platform.base.PlatformIconGroup@vcs.merge">
 				<keyboard-shortcut first-keystroke="alt shift D" keymap="$default"/>
 			</action>
 			<action class="com.intellij.openapi.actionSystem.EmptyAction" id="hg4idea.QDelete" text="Delete"
-					description="Delete selected patches" icon="AllIcons.Vcs.Remove" use-shortcut-of="$Delete"/>
+					description="Delete selected patches" icon="consulo.platform.base.PlatformIconGroup@vcs.remove" use-shortcut-of="$Delete"/>
 		</group>
 
 

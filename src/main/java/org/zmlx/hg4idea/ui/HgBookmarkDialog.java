@@ -1,23 +1,5 @@
 package org.zmlx.hg4idea.ui;
 
-import static com.intellij.util.ui.UIUtil.DEFAULT_HGAP;
-import static com.intellij.util.ui.UIUtil.DEFAULT_VGAP;
-
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-
-import javax.annotation.Nonnull;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.event.DocumentEvent;
-
-import javax.annotation.Nullable;
-import org.zmlx.hg4idea.repo.HgRepository;
-import org.zmlx.hg4idea.util.HgBranchReferenceValidator;
-import org.zmlx.hg4idea.util.HgReferenceValidator;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.components.JBCheckBox;
@@ -25,6 +7,18 @@ import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.GridBag;
 import com.intellij.util.ui.UIUtil;
+import org.zmlx.hg4idea.repo.HgRepository;
+import org.zmlx.hg4idea.util.HgBranchReferenceValidator;
+import org.zmlx.hg4idea.util.HgReferenceValidator;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import java.awt.*;
+
+import static com.intellij.util.ui.UIUtil.DEFAULT_HGAP;
+import static com.intellij.util.ui.UIUtil.DEFAULT_VGAP;
 
 public class HgBookmarkDialog extends DialogWrapper {
   @Nonnull
@@ -70,7 +64,7 @@ public class HgBookmarkDialog extends DialogWrapper {
       .setDefaultAnchor(GridBagConstraints.LINE_START)
       .setDefaultFill(GridBagConstraints.HORIZONTAL);
 
-    JLabel icon = new JLabel(UIUtil.getQuestionIcon(), SwingConstants.LEFT);
+    JLabel icon = new JBLabel(UIUtil.getQuestionIcon(), SwingConstants.LEFT);
     myBookmarkName = new JBTextField(13);
     myBookmarkName.getDocument().addDocumentListener(new DocumentAdapter() {
       @Override
