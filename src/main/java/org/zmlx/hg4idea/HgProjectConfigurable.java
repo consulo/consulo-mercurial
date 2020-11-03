@@ -12,14 +12,14 @@
 // limitations under the License.
 package org.zmlx.hg4idea;
 
-import javax.annotation.Nonnull;
-import javax.swing.JComponent;
-
-import org.jetbrains.annotations.Nls;
-import org.zmlx.hg4idea.ui.HgConfigurationProjectPanel;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.project.Project;
+import org.jetbrains.annotations.Nls;
+import org.zmlx.hg4idea.ui.HgConfigurationProjectPanel;
+
+import javax.annotation.Nonnull;
+import javax.swing.*;
 
 public class HgProjectConfigurable implements SearchableConfigurable {
 
@@ -53,12 +53,7 @@ public class HgProjectConfigurable implements SearchableConfigurable {
 
   public void apply() throws ConfigurationException {
     myPanel.saveSettings();
-    if (myPanel.getProjectSettings().isCheckIncomingOutgoing()) {
-      myProject.getMessageBus().syncPublisher(HgVcs.INCOMING_OUTGOING_CHECK_TOPIC).show();
-    }
-    else {
-      myProject.getMessageBus().syncPublisher(HgVcs.INCOMING_OUTGOING_CHECK_TOPIC).hide();
-    }
+    myProject.getMessageBus().syncPublisher(HgVcs.INCOMING_OUTGOING_CHECK_TOPIC).updateVisibility();
   }
 
   public void reset() {

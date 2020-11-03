@@ -12,45 +12,12 @@
 // limitations under the License.
 package org.zmlx.hg4idea;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.function.Function;
-
-import javax.annotation.Nonnull;
-import javax.swing.event.HyperlinkEvent;
-
-import javax.annotation.Nullable;
-import org.zmlx.hg4idea.provider.HgCachingCommittedChangesProvider;
-import org.zmlx.hg4idea.provider.HgChangeProvider;
-import org.zmlx.hg4idea.provider.HgCheckoutProvider;
-import org.zmlx.hg4idea.provider.HgDiffProvider;
-import org.zmlx.hg4idea.provider.HgHistoryProvider;
-import org.zmlx.hg4idea.provider.HgMergeProvider;
-import org.zmlx.hg4idea.provider.HgRollbackEnvironment;
-import org.zmlx.hg4idea.provider.annotate.HgAnnotationProvider;
-import org.zmlx.hg4idea.provider.commit.HgCheckinEnvironment;
-import org.zmlx.hg4idea.provider.commit.HgCloseBranchExecutor;
-import org.zmlx.hg4idea.provider.commit.HgCommitAndPushExecutor;
-import org.zmlx.hg4idea.provider.commit.HgMQNewExecutor;
-import org.zmlx.hg4idea.provider.update.HgUpdateEnvironment;
-import org.zmlx.hg4idea.roots.HgIntegrationEnabler;
-import org.zmlx.hg4idea.status.HgRemoteStatusUpdater;
-import org.zmlx.hg4idea.status.ui.HgHideableWidget;
-import org.zmlx.hg4idea.status.ui.HgIncomingOutgoingWidget;
-import org.zmlx.hg4idea.status.ui.HgStatusWidget;
-import org.zmlx.hg4idea.util.HgUtil;
-import org.zmlx.hg4idea.util.HgVersion;
 import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationListener;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ApplicationNamesInfo;
-import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.diff.impl.patch.formove.FilePathComparator;
@@ -58,15 +25,7 @@ import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.AbstractVcs;
-import com.intellij.openapi.vcs.CalledInAwt;
-import com.intellij.openapi.vcs.CheckoutProvider;
-import com.intellij.openapi.vcs.CommittedChangesProvider;
-import com.intellij.openapi.vcs.ProjectLevelVcsManager;
-import com.intellij.openapi.vcs.VcsKey;
-import com.intellij.openapi.vcs.VcsNotifier;
-import com.intellij.openapi.vcs.VcsRoot;
-import com.intellij.openapi.vcs.VcsType;
+import com.intellij.openapi.vcs.*;
 import com.intellij.openapi.vcs.annotate.AnnotationProvider;
 import com.intellij.openapi.vcs.changes.ChangeProvider;
 import com.intellij.openapi.vcs.changes.CommitExecutor;
@@ -83,13 +42,32 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.messages.MessageBusConnection;
 import com.intellij.util.messages.Topic;
 import consulo.disposer.Disposer;
+import org.zmlx.hg4idea.provider.*;
+import org.zmlx.hg4idea.provider.annotate.HgAnnotationProvider;
+import org.zmlx.hg4idea.provider.commit.HgCheckinEnvironment;
+import org.zmlx.hg4idea.provider.commit.HgCloseBranchExecutor;
+import org.zmlx.hg4idea.provider.commit.HgCommitAndPushExecutor;
+import org.zmlx.hg4idea.provider.commit.HgMQNewExecutor;
+import org.zmlx.hg4idea.provider.update.HgUpdateEnvironment;
+import org.zmlx.hg4idea.roots.HgIntegrationEnabler;
+import org.zmlx.hg4idea.status.HgRemoteStatusUpdater;
+import org.zmlx.hg4idea.status.ui.HgWidgetUpdater;
+import org.zmlx.hg4idea.util.HgUtil;
+import org.zmlx.hg4idea.util.HgVersion;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.event.HyperlinkEvent;
+import java.io.File;
+import java.util.*;
+import java.util.function.Function;
 
 public class HgVcs extends AbstractVcs<CommittedChangeList>
 {
 
 	public static final Topic<HgUpdater> REMOTE_TOPIC = new Topic<>("hg4idea.remote", HgUpdater.class);
 	public static final Topic<HgUpdater> STATUS_TOPIC = new Topic<>("hg4idea.status", HgUpdater.class);
-	public static final Topic<HgHideableWidget> INCOMING_OUTGOING_CHECK_TOPIC = new Topic<>("hg4idea.incomingcheck", HgHideableWidget.class);
+	public static final Topic<HgWidgetUpdater> INCOMING_OUTGOING_CHECK_TOPIC = new Topic<>("hg4idea.incomingcheck", HgWidgetUpdater.class);
 	private static final Logger LOG = Logger.getInstance(HgVcs.class);
 
 	public static final String VCS_NAME = "hg4idea";
@@ -126,9 +104,7 @@ public class HgVcs extends AbstractVcs<CommittedChangeList>
 	private final HgCloseBranchExecutor myCloseBranchExecutor;
 
 	private HgRemoteStatusUpdater myHgRemoteStatusUpdater;
-	private HgStatusWidget myStatusWidget;
-	private HgIncomingOutgoingWidget myIncomingWidget;
-	private HgIncomingOutgoingWidget myOutgoingWidget;
+
 	@Nonnull
 	private HgVersion myVersion = HgVersion.NULL;  // version of Hg which this plugin uses.
 
@@ -293,6 +269,12 @@ public class HgVcs extends AbstractVcs<CommittedChangeList>
 		return HgUtil.getNearestHgRoot(dir) != null;
 	}
 
+	@Nullable
+	public HgRemoteStatusUpdater getRemoteStatusUpdater()
+	{
+		return myHgRemoteStatusUpdater;
+	}
+
 	/**
 	 * @return the prompthooks.py extension used for capturing prompts from Mercurial and requesting IDEA's user about authentication.
 	 */
@@ -317,25 +299,8 @@ public class HgVcs extends AbstractVcs<CommittedChangeList>
 		// validate hg executable on start and update hg version
 		checkExecutableAndVersion();
 
-		// status bar
-		myStatusWidget = new HgStatusWidget(this, getProject(), projectSettings);
-		myStatusWidget.activate();
-
-		myIncomingWidget = new HgIncomingOutgoingWidget(this, getProject(), projectSettings, true);
-		myOutgoingWidget = new HgIncomingOutgoingWidget(this, getProject(), projectSettings, false);
-
-		ApplicationManager.getApplication().invokeAndWait(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				myIncomingWidget.activate();
-				myOutgoingWidget.activate();
-			}
-		}, ModalityState.NON_MODAL);
-
 		// updaters and listeners
-		myHgRemoteStatusUpdater = new HgRemoteStatusUpdater(this, myIncomingWidget.getChangesetStatus(), myOutgoingWidget.getChangesetStatus(), projectSettings);
+		myHgRemoteStatusUpdater = new HgRemoteStatusUpdater(this, projectSettings);
 		myHgRemoteStatusUpdater.activate();
 
 		messageBusConnection = myProject.getMessageBus().connect();
@@ -371,21 +336,6 @@ public class HgVcs extends AbstractVcs<CommittedChangeList>
 		{
 			myHgRemoteStatusUpdater.deactivate();
 			myHgRemoteStatusUpdater = null;
-		}
-		if(myStatusWidget != null)
-		{
-			myStatusWidget.deactivate();
-			myStatusWidget = null;
-		}
-		if(myIncomingWidget != null)
-		{
-			myIncomingWidget.deactivate();
-			myIncomingWidget = null;
-		}
-		if(myOutgoingWidget != null)
-		{
-			myOutgoingWidget.deactivate();
-			myOutgoingWidget = null;
 		}
 		if(messageBusConnection != null)
 		{

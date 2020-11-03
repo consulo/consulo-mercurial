@@ -1,96 +1,156 @@
-/*
- * Copyright 2000-2013 JetBrains s.r.o.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package org.zmlx.hg4idea.status.ui;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import org.zmlx.hg4idea.HgProjectSettings;
-import org.zmlx.hg4idea.HgUpdater;
-import org.zmlx.hg4idea.HgVcs;
-import org.zmlx.hg4idea.branch.HgBranchPopup;
-import org.zmlx.hg4idea.repo.HgRepository;
-import org.zmlx.hg4idea.util.HgUtil;
 import com.intellij.dvcs.DvcsUtil;
+import com.intellij.dvcs.repo.VcsRepositoryMappingListener;
 import com.intellij.dvcs.ui.DvcsStatusWidget;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.ListPopup;
-import com.intellij.openapi.vcs.CalledInAwt;
-import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.StatusBarWidget;
-import com.intellij.util.ObjectUtils;
+import com.intellij.openapi.wm.StatusBarWidgetFactory;
+import com.intellij.openapi.wm.impl.status.widget.StatusBarWidgetsManager;
+import consulo.disposer.Disposer;
+import jakarta.inject.Inject;
+import org.jetbrains.annotations.Nls;
+import org.zmlx.hg4idea.HgProjectSettings;
+import org.zmlx.hg4idea.HgVcs;
+import org.zmlx.hg4idea.HgVcsMessages;
+import org.zmlx.hg4idea.branch.HgBranchPopup;
+import org.zmlx.hg4idea.repo.HgRepository;
+import org.zmlx.hg4idea.repo.HgRepositoryManager;
+import org.zmlx.hg4idea.util.HgUtil;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Objects;
 
 /**
  * Widget to display basic hg status in the status bar.
  */
-public class HgStatusWidget extends DvcsStatusWidget<HgRepository> {
+public class HgStatusWidget extends DvcsStatusWidget<HgRepository>
+{
+	private static final String ID = "hg";
 
-  @Nonnull
-  private final HgVcs myVcs;
-  @Nonnull
-  private final HgProjectSettings myProjectSettings;
+	@Nonnull
+	private final HgVcs myVcs;
+	@Nonnull
+	private final HgProjectSettings myProjectSettings;
 
-  public HgStatusWidget(@Nonnull HgVcs vcs, @Nonnull Project project, @Nonnull HgProjectSettings projectSettings) {
-    super(project, "Hg");
-    myVcs = vcs;
-    myProjectSettings = projectSettings;
-  }
+	public HgStatusWidget(@Nonnull HgVcs vcs, @Nonnull Project project, @Nonnull HgProjectSettings projectSettings)
+	{
+		super(project, vcs.getShortName());
+		myVcs = vcs;
+		myProjectSettings = projectSettings;
 
-  @Override
-  public StatusBarWidget copy() {
-    return new HgStatusWidget(myVcs, ObjectUtils.assertNotNull(getProject()), myProjectSettings);
-  }
+		project.getMessageBus().connect(this).subscribe(HgVcs.STATUS_TOPIC, (p, root) -> updateLater());
+	}
 
-  @Nullable
-  @Override
-  @CalledInAwt
-  protected HgRepository guessCurrentRepository(@Nonnull Project project) {
-    return DvcsUtil.guessCurrentRepositoryQuick(project, HgUtil.getRepositoryManager(project),
-                                                HgProjectSettings.getInstance(project).getRecentRootPath());
-  }
+	@Override
+	public
+	@Nonnull
+	String ID()
+	{
+		return ID;
+	}
 
-  @Nonnull
-  @Override
-  protected String getFullBranchName(@Nonnull HgRepository repository) {
-    return HgUtil.getDisplayableBranchOrBookmarkText(repository);
-  }
+	@Override
+	public StatusBarWidget copy()
+	{
+		return new HgStatusWidget(myVcs, myProject, myProjectSettings);
+	}
 
-  @Override
-  protected boolean isMultiRoot(@Nonnull Project project) {
-    return HgUtil.getRepositoryManager(project).moreThanOneRoot();
-  }
+	@Nullable
+	@Override
+	protected HgRepository guessCurrentRepository(@Nonnull Project project)
+	{
+		return DvcsUtil.guessCurrentRepositoryQuick(project, HgUtil.getRepositoryManager(project),
+				HgProjectSettings.getInstance(project).getRecentRootPath());
+	}
 
-  @Nonnull
-  @Override
-  protected ListPopup getPopup(@Nonnull Project project, @Nonnull HgRepository repository) {
-    return HgBranchPopup.getInstance(project, repository).asListPopup();
-  }
+	@Nonnull
+	@Override
+	protected String getFullBranchName(@Nonnull HgRepository repository)
+	{
+		return HgUtil.getDisplayableBranchOrBookmarkText(repository);
+	}
 
-  @Override
-  protected void subscribeToRepoChangeEvents(@Nonnull Project project) {
-    project.getMessageBus().connect().subscribe(HgVcs.STATUS_TOPIC, new HgUpdater() {
-      @Override
-      public void update(Project project, @Nullable VirtualFile root) {
-        updateLater();
-      }
-    });
-  }
+	@Override
+	protected boolean isMultiRoot(@Nonnull Project project)
+	{
+		return HgUtil.getRepositoryManager(project).moreThanOneRoot();
+	}
 
-  @Override
-  protected void rememberRecentRoot(@Nonnull String path) {
-    myProjectSettings.setRecentRootPath(path);
-  }
+	@Nonnull
+	@Override
+	protected ListPopup getPopup(@Nonnull Project project, @Nonnull HgRepository repository)
+	{
+		return HgBranchPopup.getInstance(project, repository).asListPopup();
+	}
+
+	@Override
+	protected void rememberRecentRoot(@Nonnull String path)
+	{
+		myProjectSettings.setRecentRootPath(path);
+	}
+
+	public static class Listener implements VcsRepositoryMappingListener
+	{
+		private final Project myProject;
+
+		@Inject
+		public Listener(@Nonnull Project project)
+		{
+			myProject = project;
+		}
+
+		@Override
+		public void mappingChanged()
+		{
+			StatusBarWidgetsManager.getInstance(myProject).updateWidget(Factory.class);
+		}
+	}
+
+	public static class Factory implements StatusBarWidgetFactory
+	{
+		@Override
+		@Nonnull
+		public String getId()
+		{
+			return ID;
+		}
+
+		@Override
+		@Nls
+		@Nonnull
+		public String getDisplayName()
+		{
+			return HgVcsMessages.message("hg4idea.status.bar.widget.name");
+		}
+
+		@Override
+		public boolean isAvailable(@Nonnull Project project)
+		{
+			return !HgRepositoryManager.getInstance(project).getRepositories().isEmpty();
+		}
+
+		@Override
+		@Nonnull
+		public StatusBarWidget createWidget(@Nonnull Project project)
+		{
+			return new HgStatusWidget(Objects.requireNonNull(HgVcs.getInstance(project)), project, HgProjectSettings.getInstance(project));
+		}
+
+		@Override
+		public void disposeWidget(@Nonnull StatusBarWidget widget)
+		{
+			Disposer.dispose(widget);
+		}
+
+		@Override
+		public boolean canBeEnabledOn(@Nonnull StatusBar statusBar)
+		{
+			return true;
+		}
+	}
 }

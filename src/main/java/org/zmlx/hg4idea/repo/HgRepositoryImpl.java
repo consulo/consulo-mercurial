@@ -16,28 +16,10 @@
 
 package org.zmlx.hg4idea.repo;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import org.zmlx.hg4idea.HgNameWithHashInfo;
-import org.zmlx.hg4idea.HgVcs;
-import org.zmlx.hg4idea.command.HgBranchesCommand;
-import org.zmlx.hg4idea.execution.HgCommandResult;
-import org.zmlx.hg4idea.provider.HgLocalIgnoredHolder;
-import org.zmlx.hg4idea.util.HgUtil;
-import com.intellij.dvcs.repo.AsyncFilesManagerListener;
 import com.intellij.dvcs.repo.RepositoryImpl;
-import consulo.disposer.Disposable;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Condition;
-import consulo.disposer.Disposer;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vcs.AbstractVcs;
 import com.intellij.openapi.vcs.changes.ChangesViewI;
@@ -46,6 +28,19 @@ import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.vcs.log.Hash;
+import consulo.disposer.Disposable;
+import consulo.disposer.Disposer;
+import org.zmlx.hg4idea.HgNameWithHashInfo;
+import org.zmlx.hg4idea.HgVcs;
+import org.zmlx.hg4idea.command.HgBranchesCommand;
+import org.zmlx.hg4idea.execution.HgCommandResult;
+import org.zmlx.hg4idea.provider.AsyncFilesManagerListener;
+import org.zmlx.hg4idea.provider.HgLocalIgnoredHolder;
+import org.zmlx.hg4idea.util.HgUtil;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.*;
 
 public class HgRepositoryImpl extends RepositoryImpl implements HgRepository {
 
@@ -283,7 +278,8 @@ public class HgRepositoryImpl extends RepositoryImpl implements HgRepository {
     return myLocalIgnoredHolder;
   }
 
-  private static class MyIgnoredHolderAsyncListener implements AsyncFilesManagerListener {
+  private static class MyIgnoredHolderAsyncListener implements AsyncFilesManagerListener
+  {
     @Nonnull
 	private final ChangesViewI myChangesViewI;
 

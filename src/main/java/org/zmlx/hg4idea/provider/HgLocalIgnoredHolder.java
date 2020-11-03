@@ -15,19 +15,6 @@
  */
 package org.zmlx.hg4idea.provider;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-
-import javax.annotation.Nonnull;
-
-import org.zmlx.hg4idea.command.HgStatusCommand;
-import org.zmlx.hg4idea.repo.HgRepository;
-import com.intellij.dvcs.repo.AsyncFilesManagerListener;
-import consulo.disposer.Disposable;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.vcs.FilePath;
 import com.intellij.openapi.vcs.VcsException;
@@ -38,6 +25,17 @@ import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.ui.update.MergingUpdateQueue;
 import com.intellij.util.ui.update.Update;
 import com.intellij.vcsUtil.VcsUtil;
+import consulo.disposer.Disposable;
+import org.zmlx.hg4idea.command.HgStatusCommand;
+import org.zmlx.hg4idea.repo.HgRepository;
+
+import javax.annotation.Nonnull;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class HgLocalIgnoredHolder implements Disposable {
   private static final Logger LOG = Logger.getInstance(HgLocalIgnoredHolder.class);
