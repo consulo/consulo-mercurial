@@ -4,6 +4,7 @@ package org.zmlx.hg4idea.status.ui;
 import com.intellij.dvcs.repo.VcsRepositoryManager;
 import com.intellij.dvcs.repo.VcsRepositoryMappingListener;
 import com.intellij.icons.AllIcons;
+import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.FileEditorManagerEvent;
@@ -17,6 +18,7 @@ import com.intellij.openapi.wm.impl.status.EditorBasedWidget;
 import com.intellij.openapi.wm.impl.status.widget.StatusBarWidgetsManager;
 import com.intellij.util.Consumer;
 import com.intellij.util.messages.MessageBusConnection;
+import consulo.ui.UIAccess;
 import consulo.ui.image.Image;
 import consulo.ui.image.ImageEffects;
 import org.jetbrains.annotations.Nls;
@@ -181,9 +183,11 @@ final class HgIncomingOutgoingWidget extends EditorBasedWidget implements Status
 		@Override
 		public void updateVisibility()
 		{
+			UIAccess uiAccess = Application.get().getLastUIAccess();
+
 			StatusBarWidgetsManager widgetsManager = StatusBarWidgetsManager.getInstance(myProject);
-			widgetsManager.updateWidget(HgIncomingOutgoingWidget.IncomingFactory.class);
-			widgetsManager.updateWidget(HgIncomingOutgoingWidget.OutgoingFactory.class);
+			widgetsManager.updateWidget(HgIncomingOutgoingWidget.IncomingFactory.class, uiAccess);
+			widgetsManager.updateWidget(HgIncomingOutgoingWidget.OutgoingFactory.class, uiAccess);
 		}
 	}
 
@@ -219,9 +223,8 @@ final class HgIncomingOutgoingWidget extends EditorBasedWidget implements Status
 		}
 
 		@Override
-		public
 		@Nonnull
-		StatusBarWidget createWidget(@Nonnull Project project)
+		public StatusBarWidget createWidget(@Nonnull Project project)
 		{
 			HgVcs hgVcs = Objects.requireNonNull(HgVcs.getInstance(project));
 			return new HgIncomingOutgoingWidget(hgVcs, myIsIncoming);

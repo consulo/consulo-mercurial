@@ -4,6 +4,7 @@ package org.zmlx.hg4idea.status.ui;
 import com.intellij.dvcs.DvcsUtil;
 import com.intellij.dvcs.repo.VcsRepositoryMappingListener;
 import com.intellij.dvcs.ui.DvcsStatusWidget;
+import com.intellij.openapi.application.Application;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.ListPopup;
 import com.intellij.openapi.wm.StatusBar;
@@ -11,6 +12,7 @@ import com.intellij.openapi.wm.StatusBarWidget;
 import com.intellij.openapi.wm.StatusBarWidgetFactory;
 import com.intellij.openapi.wm.impl.status.widget.StatusBarWidgetsManager;
 import consulo.disposer.Disposer;
+import consulo.ui.UIAccess;
 import jakarta.inject.Inject;
 import org.jetbrains.annotations.Nls;
 import org.zmlx.hg4idea.HgProjectSettings;
@@ -107,7 +109,8 @@ public class HgStatusWidget extends DvcsStatusWidget<HgRepository>
 		@Override
 		public void mappingChanged()
 		{
-			StatusBarWidgetsManager.getInstance(myProject).updateWidget(Factory.class);
+			UIAccess uiAccess = Application.get().getLastUIAccess();
+			StatusBarWidgetsManager.getInstance(myProject).updateWidget(Factory.class, uiAccess);
 		}
 	}
 
