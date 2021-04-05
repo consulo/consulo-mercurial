@@ -21,6 +21,7 @@ import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.vcsUtil.VcsUtil;
+import consulo.localize.LocalizeValue;
 import consulo.ui.style.StandardColors;
 import consulo.ui.util.ColorValueUtil;
 import org.zmlx.hg4idea.*;
@@ -41,8 +42,8 @@ public class HgChangeProvider implements ChangeProvider {
   private final Project myProject;
   private final VcsKey myVcsKey;
 
-  public static final FileStatus COPIED = FileStatusFactory.getInstance().createFileStatus("COPIED", "Copied", FileStatus.ADDED.getColor());
-  public static final FileStatus RENAMED = FileStatusFactory.getInstance().createFileStatus("RENAMED", "Renamed", ColorValueUtil.darker(StandardColors.CYAN));
+  public static final FileStatus COPIED = FileStatusFactory.getInstance().createFileStatus("COPIED", LocalizeValue.localizeTODO("Copied"), FileStatus.ADDED.getColor());
+  public static final FileStatus RENAMED = FileStatusFactory.getInstance().createFileStatus("RENAMED", LocalizeValue.localizeTODO("Renamed"), ColorValueUtil.darker(StandardColors.CYAN));
 
   private static final EnumMap<HgFileStatusEnum, HgChangeProcessor> PROCESSORS =
     new EnumMap<>(HgFileStatusEnum.class);
