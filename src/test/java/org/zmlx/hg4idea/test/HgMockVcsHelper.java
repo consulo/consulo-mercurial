@@ -15,30 +15,9 @@
  */
 package org.zmlx.hg4idea.test;
 
-import gnu.trove.THashSet;
-
-import java.awt.Component;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Nonnull;
-
-import org.jetbrains.annotations.Nls;
-
-import javax.annotation.Nullable;
-
 import com.intellij.ide.errorTreeView.HotfixData;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.AbstractVcs;
-import com.intellij.openapi.vcs.AbstractVcsHelper;
-import com.intellij.openapi.vcs.CommittedChangesProvider;
-import com.intellij.openapi.vcs.FilePath;
-import com.intellij.openapi.vcs.RepositoryLocation;
-import com.intellij.openapi.vcs.TransactionRunnable;
-import com.intellij.openapi.vcs.VcsException;
-import com.intellij.openapi.vcs.VcsKey;
-import com.intellij.openapi.vcs.VcsShowConfirmationOption;
+import com.intellij.openapi.vcs.*;
 import com.intellij.openapi.vcs.annotate.AnnotationProvider;
 import com.intellij.openapi.vcs.annotate.FileAnnotation;
 import com.intellij.openapi.vcs.changes.Change;
@@ -51,6 +30,15 @@ import com.intellij.openapi.vcs.merge.MergeProvider;
 import com.intellij.openapi.vcs.versionBrowser.ChangeBrowserSettings;
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList;
 import com.intellij.openapi.vfs.VirtualFile;
+import org.jetbrains.annotations.Nls;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.awt.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Substitutes AbstractVcsHelperImpl for tests, where dialogs need to be tested.
@@ -60,7 +48,7 @@ import com.intellij.openapi.vfs.VirtualFile;
  */
 public class HgMockVcsHelper extends AbstractVcsHelper {
 
-  private Collection<VcsHelperListener> myListeners = new THashSet<>();
+  private Collection<VcsHelperListener> myListeners = new HashSet<>();
 
   public HgMockVcsHelper(@Nonnull Project project) {
     super(project);

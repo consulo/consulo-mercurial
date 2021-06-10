@@ -19,12 +19,12 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.AbstractVcs;
 import com.intellij.openapi.vfs.VirtualFile;
-import gnu.trove.THashSet;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.zmlx.hg4idea.util.HgUtil;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -43,7 +43,7 @@ public class HgRootsHandler implements AbstractVcs.RootsConvertor {
   @Nonnull
   @Override
   public List<VirtualFile> convertRoots(@Nonnull List<VirtualFile> original) {
-    final Set<VirtualFile> result = new THashSet<>(original.size());
+    final Set<VirtualFile> result = new HashSet<>(original.size());
     for (VirtualFile vf : original) {
       final VirtualFile root = convertRoot(vf);
       if (root != null) {
