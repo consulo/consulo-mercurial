@@ -199,7 +199,7 @@ public class HgBranchPopupActions {
 	final HgRepository myPreselectedRepo;
 
     HgNewBookmarkAction(@Nonnull List<HgRepository> repositories, @Nonnull HgRepository preselectedRepo) {
-      super("New Bookmark", "Create new bookmark", AllIcons.Modules.AddContentEntry);
+      super("New Bookmark", "Create new bookmark", AllIcons.General.Add);
       myRepositories = repositories;
       myPreselectedRepo = preselectedRepo;
     }
