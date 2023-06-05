@@ -17,9 +17,9 @@ package org.zmlx.hg4idea.ui;
 
 import consulo.application.Application;
 import consulo.ide.ServiceManager;
-import consulo.ide.impl.idea.dvcs.DvcsRememberedInputs;
 import consulo.ide.impl.idea.dvcs.ui.CloneDvcsDialog;
 import consulo.project.Project;
+import consulo.versionControlSystem.distributed.DvcsRememberedInputs;
 import jakarta.annotation.Nonnull;
 import org.zmlx.hg4idea.HgRememberedInputs;
 import org.zmlx.hg4idea.HgVcs;

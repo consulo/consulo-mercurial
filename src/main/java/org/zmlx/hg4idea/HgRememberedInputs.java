@@ -19,11 +19,11 @@ import consulo.annotation.component.ComponentScope;
 import consulo.annotation.component.ServiceAPI;
 import consulo.annotation.component.ServiceImpl;
 import consulo.component.persist.PersistentStateComponent;
-import consulo.ide.ServiceManager;
-import consulo.ide.impl.idea.dvcs.DvcsRememberedInputs;
 import consulo.component.persist.State;
 import consulo.component.persist.Storage;
 import consulo.component.persist.StoragePathMacros;
+import consulo.ide.ServiceManager;
+import consulo.versionControlSystem.distributed.DvcsRememberedInputs;
 import jakarta.inject.Singleton;
 
 /**
