@@ -20,7 +20,6 @@ import consulo.ide.impl.idea.dvcs.actions.DvcsCompareWithBranchAction;
 import consulo.project.Project;
 import consulo.util.collection.ContainerUtil;
 import consulo.util.lang.ObjectUtil;
-import consulo.util.lang.function.Condition;
 import consulo.versionControlSystem.FilePath;
 import consulo.versionControlSystem.VcsException;
 import consulo.versionControlSystem.change.Change;
@@ -28,6 +27,8 @@ import consulo.versionControlSystem.log.Hash;
 import consulo.versionControlSystem.log.base.HashImpl;
 import consulo.versionControlSystem.util.VcsUtil;
 import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.HgContentRevision;
 import org.zmlx.hg4idea.HgFile;
 import org.zmlx.hg4idea.HgNameWithHashInfo;
@@ -37,8 +38,6 @@ import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.repo.HgRepositoryManager;
 import org.zmlx.hg4idea.util.HgUtil;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import java.util.*;
 
 import static consulo.ide.impl.idea.openapi.vcs.history.VcsDiffUtil.createChangesWithCurrentContentForFile;
@@ -64,24 +63,12 @@ public class HgCompareWithBranchAction extends DvcsCompareWithBranchAction<HgRep
 
   @Nonnull
   private static List<HgNameWithHashInfo> getOtherBookmarks(@Nonnull HgRepository repository, @Nonnull final Hash currentRevisionHash) {
-    return ContainerUtil.filter(repository.getBookmarks(),
-                                new Condition<HgNameWithHashInfo>() {
-                                  @Override
-                                  public boolean value(HgNameWithHashInfo info) {
-                                    return !info.getHash().equals(currentRevisionHash);
-                                  }
-                                });
+    return ContainerUtil.filter(repository.getBookmarks(), info -> !info.getHash().equals(currentRevisionHash));
   }
 
   @Nullable
   private static Hash findBookmarkHashByName(@Nonnull HgRepository repository, @Nonnull final String bookmarkName) {
-    HgNameWithHashInfo bookmarkInfo = ContainerUtil.find(repository.getBookmarks(),
-                                                         new Condition<HgNameWithHashInfo>() {
-                                                           @Override
-                                                           public boolean value(HgNameWithHashInfo info) {
-                                                             return info.getName().equals(bookmarkName);
-                                                           }
-                                                         });
+    HgNameWithHashInfo bookmarkInfo = ContainerUtil.find(repository.getBookmarks(), info -> info.getName().equals(bookmarkName));
     return bookmarkInfo != null ? bookmarkInfo.getHash() : null;
   }
 
