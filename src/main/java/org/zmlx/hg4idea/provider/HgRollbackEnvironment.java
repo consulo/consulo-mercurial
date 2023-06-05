@@ -12,19 +12,19 @@
 // limitations under the License.
 package org.zmlx.hg4idea.provider;
 
-import com.intellij.dvcs.DvcsUtil;
-import com.intellij.openapi.application.AccessToken;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.vcs.FilePath;
-import com.intellij.openapi.vcs.VcsException;
-import com.intellij.openapi.vcs.changes.Change;
-import com.intellij.openapi.vcs.changes.ContentRevision;
-import com.intellij.openapi.vcs.rollback.RollbackEnvironment;
-import com.intellij.openapi.vcs.rollback.RollbackProgressListener;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.vcsUtil.VcsFileUtil;
-import javax.annotation.Nonnull;
+import consulo.application.AccessToken;
+import consulo.project.Project;
+import consulo.ui.ex.awt.Messages;
+import consulo.versionControlSystem.FilePath;
+import consulo.versionControlSystem.VcsException;
+import consulo.versionControlSystem.change.Change;
+import consulo.versionControlSystem.change.ContentRevision;
+import consulo.versionControlSystem.distributed.DvcsUtil;
+import consulo.versionControlSystem.rollback.RollbackEnvironment;
+import consulo.versionControlSystem.rollback.RollbackProgressListener;
+import consulo.versionControlSystem.util.VcsFileUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
 import org.zmlx.hg4idea.HgRevisionNumber;
 import org.zmlx.hg4idea.HgVcsMessages;
 import org.zmlx.hg4idea.command.HgResolveCommand;

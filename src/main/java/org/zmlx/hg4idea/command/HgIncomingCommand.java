@@ -12,7 +12,7 @@
 // limitations under the License.
 package org.zmlx.hg4idea.command;
 
-import com.intellij.openapi.project.Project;
+import consulo.project.Project;
 
 public class HgIncomingCommand extends HgRemoteChangesetsCommand {
 

@@ -15,14 +15,17 @@
  */
 package org.zmlx.hg4idea.branch;
 
-import com.intellij.openapi.project.DumbAwareAction;
-import com.intellij.openapi.project.Project;
-import javax.annotation.Nonnull;
+import consulo.project.Project;
+import consulo.ui.ex.action.DumbAwareAction;
+
+import jakarta.annotation.Nonnull;
+
 import org.zmlx.hg4idea.repo.HgRepository;
 
 import java.util.List;
 
-public abstract class HgBranchAbstractAction extends DumbAwareAction {
+public abstract class HgBranchAbstractAction extends DumbAwareAction
+{
   @Nonnull
   protected final Project myProject;
   @Nonnull
@@ -31,8 +34,8 @@ public abstract class HgBranchAbstractAction extends DumbAwareAction {
   protected final String myBranchName;
 
   public HgBranchAbstractAction(@Nonnull Project project, @Nonnull String title,
-								@Nonnull List<HgRepository> repositories,
-								@Nonnull String branchName) {
+                                @Nonnull List<HgRepository> repositories,
+                                @Nonnull String branchName) {
     super(title);
     myProject = project;
     myRepositories = repositories;

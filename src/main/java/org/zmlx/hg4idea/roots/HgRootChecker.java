@@ -15,9 +15,10 @@
  */
 package org.zmlx.hg4idea.roots;
 
-import com.intellij.openapi.vcs.VcsKey;
-import com.intellij.openapi.vcs.VcsRootChecker;
-import javax.annotation.Nonnull;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.versionControlSystem.VcsKey;
+import consulo.versionControlSystem.VcsRootChecker;
+import jakarta.annotation.Nonnull;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.util.HgUtil;
 
@@ -26,6 +27,7 @@ import java.io.File;
 /**
  * @author Nadya Zabrodina
  */
+@ExtensionImpl
 public class HgRootChecker extends VcsRootChecker {
 
   @Override

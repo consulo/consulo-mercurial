@@ -15,11 +15,12 @@
  */
 package org.zmlx.hg4idea.push;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
-import com.intellij.dvcs.push.PushSource;
+import consulo.versionControlSystem.distributed.push.PushSource;
 
-public class HgPushSource implements PushSource {
+public class HgPushSource implements PushSource
+{
   @Nonnull
   private String myBranch;
 

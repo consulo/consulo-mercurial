@@ -15,25 +15,24 @@
  */
 package org.zmlx.hg4idea.log;
 
-
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.util.Couple;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.util.ArrayUtil;
-import com.intellij.util.Function;
-import com.intellij.util.SmartList;
-import com.intellij.util.containers.ContainerUtil;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import consulo.logging.Logger;
+import consulo.util.collection.ArrayUtil;
+import consulo.util.collection.ContainerUtil;
+import consulo.util.collection.SmartList;
+import consulo.util.lang.Couple;
+import consulo.util.lang.StringUtil;
 import org.zmlx.hg4idea.HgRevisionNumber;
 import org.zmlx.hg4idea.util.HgChangesetUtil;
 import org.zmlx.hg4idea.util.HgUtil;
 import org.zmlx.hg4idea.util.HgVersion;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Parse one log command line and create appropriate type of commit info or revision info.
@@ -90,7 +89,7 @@ public abstract class HgBaseLogParser<CommitT> implements Function<String, Commi
   }
 
   @Override
-  public CommitT fun(String s) {
+  public CommitT apply(String s) {
     return convert(s);
   }
 

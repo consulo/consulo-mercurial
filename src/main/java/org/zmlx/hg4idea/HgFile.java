@@ -12,19 +12,19 @@
 // limitations under the License.
 package org.zmlx.hg4idea;
 
+import com.google.common.base.MoreObjects;
+import consulo.ide.impl.idea.openapi.vfs.VfsUtilCore;
+import consulo.project.Project;
+import consulo.util.io.FileUtil;
+import consulo.versionControlSystem.FilePath;
+import consulo.versionControlSystem.util.VcsUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import org.zmlx.hg4idea.util.HgUtil;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.io.File;
 import java.util.Objects;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import org.zmlx.hg4idea.util.HgUtil;
-import com.google.common.base.MoreObjects;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.openapi.vcs.FilePath;
-import com.intellij.openapi.vfs.VfsUtilCore;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.vcsUtil.VcsUtil;
 
 public class HgFile {
 

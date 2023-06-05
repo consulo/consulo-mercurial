@@ -15,9 +15,9 @@
  */
 package org.zmlx.hg4idea.ui;
 
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.ui.TableUtil;
-import com.intellij.util.ArrayUtil;
+import consulo.logging.Logger;
+import consulo.ui.ex.awt.util.TableUtil;
+import consulo.util.collection.ArrayUtil;
 
 import javax.swing.*;
 import javax.swing.table.TableModel;

@@ -12,11 +12,11 @@
 // limitations under the License.
 package org.zmlx.hg4idea.command;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.VirtualFile;
-import javax.annotation.Nonnull;
-import org.zmlx.hg4idea.HgVcs;
+import consulo.project.Project;
+import consulo.util.lang.StringUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
+import org.zmlx.hg4idea.HgRemoteUpdater;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 import org.zmlx.hg4idea.execution.HgRemoteCommandExecutor;
 
@@ -86,7 +86,7 @@ public class HgPushCommand {
     final HgRemoteCommandExecutor executor = new HgRemoteCommandExecutor(myProject, myDestination);
     executor.setShowOutput(true);
     HgCommandResult result = executor.executeInCurrentThread(myRepo, "push", arguments);
-    myProject.getMessageBus().syncPublisher(HgVcs.REMOTE_TOPIC).update(myProject, null);
+    myProject.getMessageBus().syncPublisher(HgRemoteUpdater.class).update(myProject, null);
     return result;
   }
 

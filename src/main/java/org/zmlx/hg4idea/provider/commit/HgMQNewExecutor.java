@@ -15,10 +15,10 @@
  */
 package org.zmlx.hg4idea.provider.commit;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
-import com.intellij.openapi.vcs.changes.CommitExecutor;
-import com.intellij.openapi.vcs.changes.CommitSession;
+import consulo.versionControlSystem.change.CommitExecutor;
+import consulo.versionControlSystem.change.CommitSession;
 import org.jetbrains.annotations.Nls;
 
 public class HgMQNewExecutor implements CommitExecutor {

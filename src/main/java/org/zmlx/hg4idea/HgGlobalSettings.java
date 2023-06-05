@@ -12,32 +12,43 @@
 // limitations under the License.
 package org.zmlx.hg4idea;
 
-import com.intellij.openapi.components.*;
-import com.intellij.openapi.util.SystemInfo;
-import com.intellij.openapi.util.text.StringUtil;
+import consulo.annotation.component.ComponentScope;
+import consulo.annotation.component.ServiceAPI;
+import consulo.annotation.component.ServiceImpl;
+import consulo.application.util.SystemInfo;
+import consulo.component.persist.*;
+import consulo.util.lang.StringUtil;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NonNls;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
 @State(
   name = "HgGlobalSettings",
-  storages = @Storage( file = StoragePathMacros.APP_CONFIG + "/hg.xml", roamingType = RoamingType.PER_PLATFORM)
+  storages = @Storage(file = StoragePathMacros.APP_CONFIG + "/hg.xml", roamingType = RoamingType.PER_OS)
 )
+@ServiceAPI(ComponentScope.APPLICATION)
+@ServiceImpl
+@Singleton
 public class HgGlobalSettings implements PersistentStateComponent<HgGlobalSettings.State> {
-  @NonNls private static final String[] DEFAULT_WINDOWS_PATHS = {"C:\\Program Files\\Mercurial",
+  @NonNls
+  private static final String[] DEFAULT_WINDOWS_PATHS = {"C:\\Program Files\\Mercurial",
     "C:\\Program Files (x86)\\Mercurial",
     "C:\\cygwin\\bin"};
-  @NonNls private static final String[] DEFAULT_UNIX_PATHS = {"/usr/local/bin",
+  @NonNls
+  private static final String[] DEFAULT_UNIX_PATHS = {"/usr/local/bin",
     "/usr/bin",
     "/opt/local/bin",
     "/opt/bin",
     "/usr/local/mercurial"};
-  @NonNls private static final String DEFAULT_WINDOWS_HG = "hg.exe";
-  @NonNls private static final String DEFAULT_UNIX_HG = "hg";
+  @NonNls
+  private static final String DEFAULT_WINDOWS_HG = "hg.exe";
+  @NonNls
+  private static final String DEFAULT_UNIX_HG = "hg";
 
   private static final int FIVE_MINUTES = 300;
 

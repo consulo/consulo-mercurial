@@ -12,7 +12,7 @@
 // limitations under the License.
 package org.zmlx.hg4idea.status;
 
-import com.intellij.openapi.application.ApplicationManager;
+import consulo.application.ApplicationManager;
 
 
 public class HgChangesetStatus {

@@ -15,40 +15,33 @@
  */
 package org.zmlx.hg4idea.action;
 
-import java.util.Collection;
-import java.util.List;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
+import consulo.ide.impl.idea.openapi.vcs.CalledInAwt;
+import consulo.language.editor.CommonDataKeys;
+import consulo.project.Project;
+import consulo.ui.ex.action.AnActionEvent;
+import consulo.util.collection.ContainerUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.repo.HgRepositoryManager;
 import org.zmlx.hg4idea.util.HgUtil;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.CalledInAwt;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.Function;
-import com.intellij.util.containers.ContainerUtil;
+
+import java.util.Collection;
+import java.util.List;
 
 public class HgActionUtil {
 
   @Nonnull
   public static List<HgRepository> collectRepositoriesFromFiles(@Nonnull final HgRepositoryManager repositoryManager,
                                                                 @Nonnull Collection<VirtualFile> files) {
-    return ContainerUtil.mapNotNull(files, new Function<VirtualFile, HgRepository>() {
-      @Override
-      public HgRepository fun(VirtualFile file) {
-        return repositoryManager.getRepositoryForFile(file);
-      }
-    });
+    return ContainerUtil.mapNotNull(files, file -> repositoryManager.getRepositoryForFile(file));
   }
 
   @Nullable
   @CalledInAwt
   public static HgRepository getSelectedRepositoryFromEvent(AnActionEvent e) {
-    final Project project = e.getProject();
+    final Project project = e.getData(Project.KEY);
     if (project == null) {
       return null;
     }

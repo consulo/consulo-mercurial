@@ -15,10 +15,10 @@
  */
 package org.zmlx.hg4idea.provider.commit;
 
-import com.intellij.openapi.vcs.changes.CommitExecutorBase;
-import com.intellij.openapi.vcs.changes.CommitSession;
+import consulo.ide.impl.idea.openapi.vcs.changes.CommitExecutorBase;
+import consulo.versionControlSystem.change.CommitSession;
 import org.jetbrains.annotations.Nls;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import org.zmlx.hg4idea.repo.HgRepository;
 
 import java.util.Collection;

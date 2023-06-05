@@ -15,14 +15,15 @@
  */
 package org.zmlx.hg4idea.branch;
 
-import com.intellij.dvcs.ui.BranchActionGroup;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.fileEditor.FileDocumentManager;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.update.UpdatedFiles;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import consulo.document.FileDocumentManager;
+import consulo.ide.impl.idea.dvcs.ui.BranchActionGroup;
+import consulo.project.Project;
+import consulo.ui.ex.action.AnAction;
+import consulo.ui.ex.action.AnActionEvent;
+import consulo.versionControlSystem.update.UpdatedFiles;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+
 import org.zmlx.hg4idea.command.HgMergeCommand;
 import org.zmlx.hg4idea.command.HgUpdateCommand;
 import org.zmlx.hg4idea.repo.HgRepository;

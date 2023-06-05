@@ -12,14 +12,16 @@
 // limitations under the License.
 package org.zmlx.hg4idea.ui;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.util.text.StringUtil;
-import javax.annotation.Nonnull;
+import consulo.project.Project;
+import consulo.ui.ex.awt.DialogWrapper;
+import consulo.util.lang.StringUtil;
+
+import jakarta.annotation.Nonnull;
 
 import javax.swing.*;
 
-public class HgGlobalStatusDialog extends DialogWrapper {
+public class HgGlobalStatusDialog extends DialogWrapper
+{
   private JPanel contentPanel;
   private JTextArea outputTextArea;
 

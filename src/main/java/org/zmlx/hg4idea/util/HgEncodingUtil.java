@@ -1,8 +1,9 @@
 package org.zmlx.hg4idea.util;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.encoding.EncodingProjectManager;
-import javax.annotation.Nonnull;
+import consulo.project.Project;
+import consulo.virtualFileSystem.encoding.EncodingProjectManager;
+
+import jakarta.annotation.Nonnull;
 
 import java.nio.charset.Charset;
 

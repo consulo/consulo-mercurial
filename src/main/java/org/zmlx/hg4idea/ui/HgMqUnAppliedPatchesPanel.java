@@ -16,33 +16,32 @@
 package org.zmlx.hg4idea.ui;
 
 import com.google.common.primitives.Ints;
-import com.intellij.openapi.actionSystem.*;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.ProgressManager;
-import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.project.DumbAwareAction;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vcs.CalledInAny;
-import com.intellij.openapi.vcs.CalledInAwt;
-import com.intellij.openapi.vfs.VfsUtil;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.ui.PopupHandler;
-import com.intellij.ui.ScrollPaneFactory;
-import com.intellij.ui.TableSpeedSearch;
-import com.intellij.ui.table.JBTable;
-import com.intellij.util.Function;
-import com.intellij.util.containers.ContainerUtil;
+import consulo.application.ApplicationManager;
+import consulo.application.progress.ProgressIndicator;
+import consulo.application.progress.ProgressManager;
+import consulo.application.progress.Task;
+import consulo.dataContext.DataProvider;
+import consulo.ide.impl.idea.openapi.vcs.CalledInAny;
+import consulo.ide.impl.idea.openapi.vcs.CalledInAwt;
+import consulo.ide.impl.idea.openapi.vfs.VfsUtil;
+import consulo.language.editor.CommonDataKeys;
+import consulo.logging.Logger;
+import consulo.project.Project;
+import consulo.ui.ex.action.*;
+import consulo.ui.ex.awt.Messages;
+import consulo.ui.ex.awt.PopupHandler;
+import consulo.ui.ex.awt.ScrollPaneFactory;
+import consulo.ui.ex.awt.speedSearch.TableSpeedSearch;
+import consulo.ui.ex.awt.table.JBTable;
+import consulo.util.collection.ContainerUtil;
 import consulo.util.dataholder.Key;
+import consulo.util.io.FileUtil;
+import consulo.util.lang.StringUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.jetbrains.annotations.NonNls;
-import javax.annotation.Nonnull;
-
-import org.zmlx.hg4idea.HgUpdater;
-import org.zmlx.hg4idea.HgVcs;
+import org.zmlx.hg4idea.HgStatusUpdater;
 import org.zmlx.hg4idea.command.mq.HgQDeleteCommand;
 import org.zmlx.hg4idea.command.mq.HgQRenameCommand;
 import org.zmlx.hg4idea.mq.HgMqAdditionalPatchReader;
@@ -50,7 +49,6 @@ import org.zmlx.hg4idea.mq.MqPatchDetails;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.util.HgUtil;
 
-import javax.annotation.Nullable;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.table.AbstractTableModel;
@@ -60,10 +58,12 @@ import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
-public class HgMqUnAppliedPatchesPanel extends JPanel implements DataProvider, HgUpdater {
+public class HgMqUnAppliedPatchesPanel extends JPanel implements DataProvider, HgStatusUpdater {
 
   public static final Key<HgMqUnAppliedPatchesPanel> MQ_PATCHES = Key.create("Mq.Patches");
   private static final String POPUP_ACTION_GROUP = "Mq.Patches.ContextMenu";
@@ -111,7 +111,7 @@ public class HgMqUnAppliedPatchesPanel extends JPanel implements DataProvider, H
 
     JScrollPane scrollPane = ScrollPaneFactory.createScrollPane(myPatchTable);
     add(scrollPane, BorderLayout.CENTER);
-    myProject.getMessageBus().connect(myProject).subscribe(HgVcs.STATUS_TOPIC, this);
+    myProject.getMessageBus().connect(myProject).subscribe(HgStatusUpdater.class, this);
   }
 
   private JComponent createToolbar() {
@@ -168,7 +168,7 @@ public class HgMqUnAppliedPatchesPanel extends JPanel implements DataProvider, H
   private String getContentFromModel() {
     StringBuilder content = new StringBuilder();
     String separator = "\n";
-    StringUtil.join(HgUtil.getNamesWithoutHashes(myRepository.getMQAppliedPatches()), separator, content);
+    StringUtil.join(HgUtil.getNamesWithoutHashes(myRepository.getMQAppliedPatches()), Function.identity(), separator, content);
     content.append(separator);
     //append unapplied patches
     for (int i = 0; i < myPatchTable.getRowCount(); i++) {
@@ -215,12 +215,7 @@ public class HgMqUnAppliedPatchesPanel extends JPanel implements DataProvider, H
   @Nonnull
   @CalledInAny
   private List<String> getPatchNames(int[] rows) {
-    return ContainerUtil.map(Ints.asList(rows), new Function<Integer, String>() {
-      @Override
-      public String fun(Integer integer) {
-        return getPatchName(integer);
-      }
-    });
+    return ContainerUtil.map(Ints.asList(rows), integer -> getPatchName(integer));
   }
 
   @Nonnull
@@ -302,11 +297,11 @@ public class HgMqUnAppliedPatchesPanel extends JPanel implements DataProvider, H
   private class MyPatchModel extends AbstractTableModel implements MultiReorderedModel {
 
     @Nonnull
-	private final MqPatchDetails.MqPatchEnum[] myColumnNames = MqPatchDetails.MqPatchEnum.values();
+    private final MqPatchDetails.MqPatchEnum[] myColumnNames = MqPatchDetails.MqPatchEnum.values();
     @Nonnull
-	private final Map<String, MqPatchDetails> myPatchesWithDetails = ContainerUtil.newHashMap();
+    private final Map<String, MqPatchDetails> myPatchesWithDetails = new HashMap<>();
     @Nonnull
-	private final List<String> myPatches;
+    private final List<String> myPatches;
 
     public MyPatchModel(@Nonnull List<String> names) {
       myPatches = ContainerUtil.newArrayList(names);

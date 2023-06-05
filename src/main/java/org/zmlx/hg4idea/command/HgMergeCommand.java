@@ -12,19 +12,19 @@
 // limitations under the License.
 package org.zmlx.hg4idea.command;
 
-import com.intellij.dvcs.DvcsUtil;
-import com.intellij.openapi.application.AccessToken;
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vcs.VcsException;
-import com.intellij.openapi.vcs.VcsNotifier;
-import com.intellij.openapi.vcs.update.UpdatedFiles;
-import com.intellij.openapi.vfs.VirtualFile;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import consulo.application.AccessToken;
+import consulo.application.progress.ProgressIndicator;
+import consulo.application.progress.Task;
+import consulo.logging.Logger;
+import consulo.project.Project;
+import consulo.util.lang.StringUtil;
+import consulo.versionControlSystem.VcsException;
+import consulo.versionControlSystem.VcsNotifier;
+import consulo.versionControlSystem.distributed.DvcsUtil;
+import consulo.versionControlSystem.update.UpdatedFiles;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 import org.zmlx.hg4idea.execution.HgPromptCommandExecutor;
 import org.zmlx.hg4idea.provider.update.HgConflictResolver;
@@ -98,8 +98,8 @@ public class HgMergeCommand {
   }
 
   public static void mergeWith(@Nonnull final HgRepository repository,
-							   @Nonnull final String branchName,
-							   @Nonnull final UpdatedFiles updatedFiles, @Nullable final Runnable onSuccessHandler) {
+                               @Nonnull final String branchName,
+                               @Nonnull final UpdatedFiles updatedFiles, @Nullable final Runnable onSuccessHandler) {
     final Project project = repository.getProject();
     final VirtualFile repositoryRoot = repository.getRoot();
     final HgMergeCommand hgMergeCommand = new HgMergeCommand(project, repository);
@@ -112,8 +112,9 @@ public class HgMergeCommand {
           HgCommandResult result = hgMergeCommand.mergeSynchronously();
           if (HgErrorUtil.isAncestorMergeError(result)) {
             //skip and notify
-            VcsNotifier.getInstance(project).notifyMinorWarning("Merging is skipped for " + repositoryRoot.getPresentableName(),
-                                                                "Merging with a working directory ancestor has no effect");
+            VcsNotifier.getInstance(project)
+                       .notifyMinorWarning("Merging is skipped for " + repositoryRoot.getPresentableName(),
+                                           "Merging with a working directory ancestor has no effect");
             return;
           }
           new HgConflictResolver(project, updatedFiles).resolve(repositoryRoot);

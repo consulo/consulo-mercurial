@@ -15,9 +15,9 @@
  */
 package org.zmlx.hg4idea.action.mq;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
-import com.intellij.vcs.log.Hash;
+import consulo.versionControlSystem.log.Hash;
 import org.zmlx.hg4idea.command.mq.HgQFinishCommand;
 import org.zmlx.hg4idea.repo.HgRepository;
 

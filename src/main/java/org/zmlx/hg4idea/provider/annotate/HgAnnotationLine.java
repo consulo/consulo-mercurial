@@ -12,7 +12,7 @@
 // limitations under the License.
 package org.zmlx.hg4idea.provider.annotate;
 
-import com.intellij.openapi.vcs.history.VcsRevisionNumber;
+import consulo.versionControlSystem.history.VcsRevisionNumber;
 
 import java.util.EnumMap;
 

@@ -15,16 +15,17 @@
  */
 package org.zmlx.hg4idea.ui;
 
-import com.intellij.openapi.fileChooser.FileChooser;
-import com.intellij.openapi.fileChooser.FileChooserDescriptor;
-import com.intellij.openapi.options.ConfigurationException;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.ui.TextFieldWithBrowseButton;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.vcsUtil.VcsUtil;
-import javax.annotation.Nullable;
+import consulo.configurable.ConfigurationException;
+import consulo.fileChooser.FileChooserDescriptor;
+import consulo.fileChooser.IdeaFileChooser;
+import consulo.project.Project;
+import consulo.ui.ex.awt.DialogWrapper;
+import consulo.ui.ex.awt.TextFieldWithBrowseButton;
+import consulo.versionControlSystem.util.VcsUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.HgVcsMessages;
+import org.zmlx.hg4idea.action.HgInit;
 import org.zmlx.hg4idea.util.HgUtil;
 
 import javax.swing.*;
@@ -35,13 +36,13 @@ import java.awt.event.ActionListener;
 
 /**
  * The HgInitDialog appears when user wants to create new Mercurial repository, in response to the
- * {@link org.zmlx.hg4idea.action.HgInit} action.
+ * {@link HgInit} action.
  * It provides two options - create repository for the whole project or select a directory for the repository.
  * Also if the project directory already is a mercurial root, then no options are provided.
- * Instead a file chooser appears to select directory for the repository.  
+ * Instead a file chooser appears to select directory for the repository.
  *
- * @see org.zmlx.hg4idea.action.HgInit
  * @author Kirill Likhodedov
+ * @see HgInit
  */
 public class HgInitDialog extends DialogWrapper {
   private JPanel contentPane;
@@ -49,7 +50,8 @@ public class HgInitDialog extends DialogWrapper {
   private JRadioButton mySelectWhereToCreateRadioButton;
   private TextFieldWithBrowseButton myTextFieldBrowser;
 
-  @Nullable private final Project myProject;
+  @Nullable
+  private final Project myProject;
   private final boolean myShowDialog; // basing on this field, show options or invoke file chooser at once
   private final FileChooserDescriptor myFileDescriptor;
   private VirtualFile mySelectedDir;
@@ -58,7 +60,7 @@ public class HgInitDialog extends DialogWrapper {
     super(project);
     myProject = project;
     // a file chooser instead of dialog will be shown immediately if there is no current project or if current project is already an hg root
-    myShowDialog = (myProject != null && (! myProject.isDefault()) && !HgUtil.isHgRoot(myProject.getBaseDir()));
+    myShowDialog = (myProject != null && (!myProject.isDefault()) && !HgUtil.isHgRoot(myProject.getBaseDir()));
 
     myFileDescriptor = new FileChooserDescriptor(false, true, false, false, false, false) {
       public void validateSelectedFiles(VirtualFile[] files) throws Exception {
@@ -69,7 +71,7 @@ public class HgInitDialog extends DialogWrapper {
       }
     };
     myFileDescriptor.setHideIgnored(false);
-    
+
     init();
   }
 
@@ -77,7 +79,7 @@ public class HgInitDialog extends DialogWrapper {
   protected void init() {
     super.init();
     setTitle(HgVcsMessages.message("hg4idea.init.dialog.title"));
-    if (myProject != null && (! myProject.isDefault())) {
+    if (myProject != null && (!myProject.isDefault())) {
       mySelectedDir = myProject.getBaseDir();
     }
 
@@ -113,7 +115,7 @@ public class HgInitDialog extends DialogWrapper {
       super.show();
     }
     else {
-      mySelectedDir = FileChooser.chooseFile(myFileDescriptor, myProject, null);
+      mySelectedDir = IdeaFileChooser.chooseFile(myFileDescriptor, myProject, null);
     }
   }
 
@@ -139,13 +141,14 @@ public class HgInitDialog extends DialogWrapper {
 
   /**
    * Based on the selected option and entered path to the target directory,
-   * enable/disable the 'OK' button, show error text and update mySelectedDir. 
+   * enable/disable the 'OK' button, show error text and update mySelectedDir.
    */
   private void updateEverything() {
     if (myShowDialog && myCreateRepositoryForTheRadioButton.isSelected()) {
       enableOKAction();
       mySelectedDir = myProject.getBaseDir();
-    } else {
+    }
+    else {
       final VirtualFile vf = VcsUtil.getVirtualFile(myTextFieldBrowser.getText());
       if (vf == null) {
         disableOKAction();
@@ -156,7 +159,8 @@ public class HgInitDialog extends DialogWrapper {
       if (vf.exists() && vf.isValid() && vf.isDirectory()) {
         enableOKAction();
         mySelectedDir = vf;
-      } else {
+      }
+      else {
         disableOKAction();
         mySelectedDir = null;
       }

@@ -15,13 +15,15 @@
  */
 package org.zmlx.hg4idea.push;
 
-import com.intellij.dvcs.push.VcsPushOptionsPanel;
-import com.intellij.ui.components.JBCheckBox;
-import javax.annotation.Nullable;
+import consulo.ui.ex.awt.JBCheckBox;
+import consulo.versionControlSystem.distributed.push.VcsPushOptionsPanel;
+
+import jakarta.annotation.Nullable;
 
 import java.awt.*;
 
-public class HgPushOptionsPanel extends VcsPushOptionsPanel {
+public class HgPushOptionsPanel extends VcsPushOptionsPanel
+{
 
   private final JBCheckBox myPushBookmarkCheckBox;
 

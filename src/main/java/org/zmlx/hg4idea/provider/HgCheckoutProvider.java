@@ -15,16 +15,16 @@
  */
 package org.zmlx.hg4idea.provider;
 
-import com.intellij.dvcs.DvcsUtil;
-import com.intellij.openapi.fileEditor.FileDocumentManager;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.CheckoutProvider;
-import com.intellij.openapi.vfs.LocalFileSystem;
-import com.intellij.openapi.vfs.VirtualFile;
-import javax.annotation.Nonnull;
-
+import consulo.annotation.component.ExtensionImpl;
+import consulo.application.progress.ProgressIndicator;
+import consulo.application.progress.Task;
+import consulo.document.FileDocumentManager;
+import consulo.project.Project;
+import consulo.versionControlSystem.checkout.CheckoutProvider;
+import consulo.versionControlSystem.distributed.DvcsUtil;
+import consulo.virtualFileSystem.LocalFileSystem;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.HgVcsMessages;
 import org.zmlx.hg4idea.action.HgCommandResultNotifier;
@@ -33,11 +33,12 @@ import org.zmlx.hg4idea.execution.HgCommandResult;
 import org.zmlx.hg4idea.ui.HgCloneDialog;
 import org.zmlx.hg4idea.util.HgErrorUtil;
 
+import jakarta.annotation.Nonnull;
+
 import java.io.File;
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.annotation.Nullable;
-
+@ExtensionImpl
 public class HgCheckoutProvider implements CheckoutProvider {
 
   public void doCheckout(@Nonnull final Project project, @Nullable final Listener listener) {

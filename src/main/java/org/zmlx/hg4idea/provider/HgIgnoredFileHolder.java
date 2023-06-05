@@ -15,33 +15,36 @@
  */
 package org.zmlx.hg4idea.provider;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.AbstractVcs;
-import com.intellij.openapi.vcs.changes.ChangesViewRefresher;
-import com.intellij.openapi.vcs.changes.FileHolder;
-import com.intellij.openapi.vcs.changes.VcsIgnoredFilesHolder;
-import com.intellij.openapi.vcs.changes.VcsModifiableDirtyScope;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.containers.ContainerUtil;
-import javax.annotation.Nonnull;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.ide.impl.idea.openapi.vcs.changes.FileHolder;
+import consulo.ide.impl.idea.openapi.vcs.changes.VcsIgnoredFilesHolder;
+import consulo.ide.impl.idea.openapi.vcs.changes.VcsModifiableDirtyScope;
+import consulo.project.Project;
+import consulo.versionControlSystem.AbstractVcs;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
+import jakarta.inject.Inject;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.util.HgUtil;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class HgIgnoredFileHolder implements VcsIgnoredFilesHolder, ChangesViewRefresher {
+@ExtensionImpl
+public class HgIgnoredFileHolder implements VcsIgnoredFilesHolder {
   private final Project myProject;
   private final HgVcs myVcs;
   private final Map<HgRepository, HgLocalIgnoredHolder> myVcsIgnoredHolderMap;
 
+  @Inject
   public HgIgnoredFileHolder(Project project) {
     myProject = project;
     myVcs = HgVcs.getInstance(myProject);
-    myVcsIgnoredHolderMap = ContainerUtil.newHashMap();
+    myVcsIgnoredHolderMap = new HashMap<>();
   }
 
   @Override
@@ -59,7 +62,7 @@ public class HgIgnoredFileHolder implements VcsIgnoredFilesHolder, ChangesViewRe
   @Override
   public Collection<VirtualFile> values() {
     return myVcsIgnoredHolderMap.values().stream().map(HgLocalIgnoredHolder::getIgnoredFiles).flatMap(Set::stream)
-      .collect(Collectors.toSet());
+                                .collect(Collectors.toSet());
   }
 
   @Override
@@ -100,10 +103,5 @@ public class HgIgnoredFileHolder implements VcsIgnoredFilesHolder, ChangesViewRe
   @Override
   public AbstractVcs getVcs() {
     return myVcs;
-  }
-
-  @Override
-  public void refresh(Project project) {
-    HgUtil.getRepositoryManager(project).getRepositories().forEach(r -> r.getLocalIgnoredHolder().startRescan());
   }
 }

@@ -12,15 +12,15 @@
 // limitations under the License.
 package org.zmlx.hg4idea;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
+
+import consulo.application.CommonBundle;
+import jakarta.annotation.Nonnull;
 import org.jetbrains.annotations.PropertyKey;
 
 import java.util.ResourceBundle;
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
-
-import com.intellij.CommonBundle;
 
 public final class HgVcsMessages {
 
@@ -35,7 +35,7 @@ public final class HgVcsMessages {
   }
 
   private static ResourceBundle getBundle() {
-    ResourceBundle bundle = com.intellij.reference.SoftReference.dereference(ourBundle);
+    ResourceBundle bundle = consulo.util.lang.ref.SoftReference.dereference(ourBundle);
     if (bundle == null) {
       bundle = ResourceBundle.getBundle(BUNDLE);
       ourBundle = new SoftReference<>(bundle);

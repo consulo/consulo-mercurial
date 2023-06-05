@@ -15,10 +15,10 @@
  */
 package org.zmlx.hg4idea.branch;
 
-import com.intellij.dvcs.branch.DvcsMultiRootBranchConfig;
-import javax.annotation.Nonnull;
+import consulo.versionControlSystem.distributed.branch.DvcsMultiRootBranchConfig;
 import org.zmlx.hg4idea.repo.HgRepository;
 
+import jakarta.annotation.Nonnull;
 import java.util.Collection;
 
 public class HgMultiRootBranchConfig extends DvcsMultiRootBranchConfig<HgRepository> {

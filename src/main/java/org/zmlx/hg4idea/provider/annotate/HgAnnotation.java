@@ -16,15 +16,18 @@
 */
 package org.zmlx.hg4idea.provider.annotate;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.VcsKey;
-import com.intellij.openapi.vcs.annotate.*;
-import com.intellij.openapi.vcs.history.VcsFileRevision;
-import com.intellij.openapi.vcs.history.VcsRevisionNumber;
-import com.intellij.openapi.vfs.LocalFileSystem;
-import com.intellij.openapi.vfs.VirtualFile;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import consulo.ide.impl.idea.openapi.vcs.annotate.ShowAllAffectedGenericAction;
+import consulo.project.Project;
+import consulo.versionControlSystem.VcsKey;
+import consulo.versionControlSystem.annotate.FileAnnotation;
+import consulo.versionControlSystem.annotate.LineAnnotationAspect;
+import consulo.versionControlSystem.annotate.LineAnnotationAspectAdapter;
+import consulo.versionControlSystem.history.VcsFileRevision;
+import consulo.versionControlSystem.history.VcsRevisionNumber;
+import consulo.virtualFileSystem.LocalFileSystem;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.HgFile;
 import org.zmlx.hg4idea.HgFileRevision;
 import org.zmlx.hg4idea.HgVcs;
@@ -57,7 +60,7 @@ public class HgAnnotation extends FileAnnotation {
   private final VcsRevisionNumber myCurrentRevision;
 
   public HgAnnotation(@Nonnull Project project, @Nonnull HgFile hgFile, @Nonnull List<HgAnnotationLine> lines,
-					  @Nonnull List<HgFileRevision> vcsFileRevisions, VcsRevisionNumber revision) {
+                      @Nonnull List<HgFileRevision> vcsFileRevisions, VcsRevisionNumber revision) {
     super(project);
     myProject = project;
     myLines = lines;

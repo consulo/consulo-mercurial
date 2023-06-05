@@ -12,12 +12,13 @@
 // limitations under the License.
 package org.zmlx.hg4idea.action;
 
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.project.Project;
-import com.intellij.util.containers.ContainerUtil;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import consulo.application.progress.ProgressIndicator;
+import consulo.application.progress.Task;
+import consulo.project.Project;
+import consulo.util.collection.ContainerUtil;
+import jakarta.annotation.Nullable;
+
+import jakarta.annotation.Nonnull;
 import org.zmlx.hg4idea.HgVcsMessages;
 import org.zmlx.hg4idea.provider.update.HgConflictResolver;
 import org.zmlx.hg4idea.repo.HgRepository;
@@ -46,7 +47,7 @@ public class HgRunConflictResolverAction extends HgAbstractGlobalSingleRepoActio
 
   @Nullable
   private static HgRepository letUserSelectRepository(@Nonnull Project project, @Nonnull Collection<HgRepository> repositories,
-													  @Nullable HgRepository selectedRepo) {
+                                                      @Nullable HgRepository selectedRepo) {
     HgRunConflictResolverDialog dialog = new HgRunConflictResolverDialog(project, repositories, selectedRepo);
     return dialog.showAndGet() ? dialog.getRepository() : null;
   }

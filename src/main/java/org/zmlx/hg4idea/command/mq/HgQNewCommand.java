@@ -15,12 +15,12 @@
  */
 package org.zmlx.hg4idea.command.mq;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.VcsException;
-import com.intellij.util.containers.ContainerUtil;
-import com.intellij.util.messages.MessageBus;
-import javax.annotation.Nonnull;
-import org.zmlx.hg4idea.HgVcs;
+import consulo.component.messagebus.MessageBus;
+import consulo.project.Project;
+import consulo.util.collection.ContainerUtil;
+import consulo.versionControlSystem.VcsException;
+import jakarta.annotation.Nonnull;
+import org.zmlx.hg4idea.HgRemoteUpdater;
 import org.zmlx.hg4idea.action.HgCommandResultNotifier;
 import org.zmlx.hg4idea.command.HgCommitTypeCommand;
 import org.zmlx.hg4idea.execution.HgCommandException;
@@ -30,6 +30,7 @@ import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.util.HgErrorUtil;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -43,9 +44,10 @@ public class HgQNewCommand extends HgCommitTypeCommand {
   }
 
   @Override
-  protected void executeChunked(@Nonnull List<List<String>> chunkedCommits) throws HgCommandException, VcsException {
+  protected void executeChunked(@Nonnull List<List<String>> chunkedCommits) throws HgCommandException, VcsException
+  {
     if (chunkedCommits.isEmpty()) {
-      executeQNewInCurrentThread(ContainerUtil.emptyList());
+      executeQNewInCurrentThread(List.of());
     }
     else {
       int size = chunkedCommits.size();
@@ -60,11 +62,11 @@ public class HgQNewCommand extends HgCommitTypeCommand {
     }
     myRepository.update();
     final MessageBus messageBus = myProject.getMessageBus();
-    messageBus.syncPublisher(HgVcs.REMOTE_TOPIC).update(myProject, null);
+    messageBus.syncPublisher(HgRemoteUpdater.class).update(myProject, null);
   }
 
   private void executeQRefreshInCurrentThread(@Nonnull List<String> chunkFiles) throws VcsException {
-    List<String> args = ContainerUtil.newArrayList();
+    List<String> args = new ArrayList<>();
     args.add("-l");
     args.add(saveCommitMessage().getAbsolutePath());
     args.add("-s");

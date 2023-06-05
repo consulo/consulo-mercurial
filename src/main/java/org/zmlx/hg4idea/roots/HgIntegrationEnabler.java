@@ -15,17 +15,18 @@
  */
 package org.zmlx.hg4idea.roots;
 
-import com.intellij.openapi.vcs.VcsNotifier;
-import com.intellij.openapi.vcs.roots.VcsIntegrationEnabler;
-import com.intellij.openapi.vfs.VirtualFile;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import consulo.versionControlSystem.VcsNotifier;
+import consulo.versionControlSystem.root.VcsIntegrationEnabler;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.command.HgInitCommand;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 import org.zmlx.hg4idea.execution.HgCommandResultHandler;
 import org.zmlx.hg4idea.util.HgErrorUtil;
 import org.zmlx.hg4idea.util.HgUtil;
+
+import jakarta.annotation.Nonnull;
 
 import static org.zmlx.hg4idea.HgVcsMessages.message;
 

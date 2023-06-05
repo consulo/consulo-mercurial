@@ -12,13 +12,12 @@
 // limitations under the License.
 package org.zmlx.hg4idea.provider;
 
-import javax.annotation.Nonnull;
-
-import com.intellij.openapi.vcs.changes.ContentRevision;
-import com.intellij.openapi.vcs.changes.CurrentContentRevision;
-import com.intellij.openapi.vcs.history.VcsRevisionNumber;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.vcsUtil.VcsUtil;
+import consulo.versionControlSystem.change.ContentRevision;
+import consulo.versionControlSystem.change.CurrentContentRevision;
+import consulo.versionControlSystem.history.VcsRevisionNumber;
+import consulo.versionControlSystem.util.VcsUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
 import org.zmlx.hg4idea.HgFile;
 import org.zmlx.hg4idea.HgRevisionNumber;
 
@@ -26,7 +25,7 @@ class HgCurrentContentRevision extends CurrentContentRevision {
   private final VcsRevisionNumber revisionNumber;
 
   public HgCurrentContentRevision(HgFile hgFile, VcsRevisionNumber revisionNumber, VirtualFile virtualFile) {
-    super( hgFile.toFilePath() );
+    super(hgFile.toFilePath());
     this.revisionNumber = revisionNumber;
   }
 

@@ -12,12 +12,12 @@
 // limitations under the License.
 package org.zmlx.hg4idea;
 
-import com.intellij.openapi.vcs.history.VcsRevisionNumber;
-import com.intellij.vcs.log.util.VcsUserUtil;
-import javax.annotation.Nonnull;
+import consulo.versionControlSystem.history.VcsRevisionNumber;
+import consulo.versionControlSystem.log.util.VcsUserUtil;
 import org.zmlx.hg4idea.log.HgBaseLogParser;
 import org.zmlx.hg4idea.util.HgUtil;
 
+import jakarta.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;

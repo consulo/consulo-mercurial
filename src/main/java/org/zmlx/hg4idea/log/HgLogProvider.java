@@ -16,28 +16,28 @@
 
 package org.zmlx.hg4idea.log;
 
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Couple;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vcs.FilePath;
-import com.intellij.openapi.vcs.VcsException;
-import com.intellij.openapi.vcs.VcsKey;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.CollectConsumer;
-import com.intellij.util.Consumer;
-import com.intellij.util.containers.ContainerUtil;
-import com.intellij.util.messages.MessageBusConnection;
-import com.intellij.vcs.log.*;
-import com.intellij.vcs.log.impl.LogDataImpl;
-import com.intellij.vcs.log.util.UserNameRegex;
-import com.intellij.vcs.log.util.VcsUserUtil;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.component.messagebus.MessageBusConnection;
 import consulo.disposer.Disposable;
-
-import javax.annotation.Nonnull;
-
+import consulo.ide.impl.idea.util.CollectConsumer;
+import consulo.ide.impl.idea.vcs.log.impl.LogDataImpl;
+import consulo.logging.Logger;
+import consulo.project.Project;
+import consulo.util.collection.ContainerUtil;
+import consulo.util.lang.Couple;
+import consulo.util.lang.StringUtil;
+import consulo.versionControlSystem.FilePath;
+import consulo.versionControlSystem.VcsException;
+import consulo.versionControlSystem.VcsKey;
+import consulo.versionControlSystem.log.*;
+import consulo.versionControlSystem.log.util.UserNameRegex;
+import consulo.versionControlSystem.log.util.VcsUserUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+import jakarta.inject.Inject;
 import org.zmlx.hg4idea.HgNameWithHashInfo;
-import org.zmlx.hg4idea.HgUpdater;
+import org.zmlx.hg4idea.HgStatusUpdater;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 import org.zmlx.hg4idea.repo.HgConfig;
@@ -49,12 +49,12 @@ import org.zmlx.hg4idea.util.HgVersion;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Consumer;
 
 import static org.zmlx.hg4idea.util.HgUtil.HEAD_REFERENCE;
 import static org.zmlx.hg4idea.util.HgUtil.TIP_REFERENCE;
 
-import javax.annotation.Nullable;
-
+@ExtensionImpl
 public class HgLogProvider implements VcsLogProvider {
 
   private static final Logger LOG = Logger.getInstance(HgLogProvider.class);
@@ -68,6 +68,7 @@ public class HgLogProvider implements VcsLogProvider {
   @Nonnull
   private final VcsLogObjectsFactory myVcsObjectsFactory;
 
+  @Inject
   public HgLogProvider(@Nonnull Project project, @Nonnull HgRepositoryManager repositoryManager, @Nonnull VcsLogObjectsFactory factory) {
     myProject = project;
     myRepositoryManager = repositoryManager;
@@ -87,11 +88,11 @@ public class HgLogProvider implements VcsLogProvider {
   @Override
   @Nonnull
   public LogData readAllHashes(@Nonnull VirtualFile root, @Nonnull final Consumer<TimedVcsCommit> commitConsumer) throws VcsException {
-    Set<VcsUser> userRegistry = ContainerUtil.newHashSet();
+    Set<VcsUser> userRegistry = new HashSet<>();
     List<TimedVcsCommit> commits = HgHistoryUtil.readAllHashes(myProject, root, new CollectConsumer<>(userRegistry),
                                                                Collections.<String>emptyList());
     for (TimedVcsCommit commit : commits) {
-      commitConsumer.consume(commit);
+      commitConsumer.accept(commit);
     }
     return new LogDataImpl(readAllRefs(root), userRegistry);
   }
@@ -117,7 +118,7 @@ public class HgLogProvider implements VcsLogProvider {
                                                            HgHistoryUtil.prepareHashes(hashes), HgChangesetUtil.makeTemplate(templates));
     if (logResult == null) return;
     if (!logResult.getErrorLines().isEmpty()) throw new VcsException(logResult.getRawError());
-    HgHistoryUtil.createFullCommitsFromResult(myProject, root, logResult, version, false).forEach(commitConsumer::consume);
+    HgHistoryUtil.createFullCommitsFromResult(myProject, root, logResult, version, false).forEach(commitConsumer::accept);
   }
 
   @Nonnull
@@ -204,12 +205,9 @@ public class HgLogProvider implements VcsLogProvider {
   @Override
   public Disposable subscribeToRootRefreshEvents(@Nonnull final Collection<VirtualFile> roots, @Nonnull final VcsLogRefresher refresher) {
     MessageBusConnection connection = myProject.getMessageBus().connect(myProject);
-    connection.subscribe(HgVcs.STATUS_TOPIC, new HgUpdater() {
-      @Override
-      public void update(Project project, @Nullable VirtualFile root) {
-        if (root != null && roots.contains(root)) {
-          refresher.refresh(root);
-        }
+    connection.subscribe(HgStatusUpdater.class, (project, root) -> {
+      if (root != null && roots.contains(root)) {
+        refresher.refresh(root);
       }
     });
     return connection::disconnect;
@@ -304,7 +302,8 @@ public class HgLogProvider implements VcsLogProvider {
       }
     }
 
-    return HgHistoryUtil.readAllHashes(myProject, root, Consumer.EMPTY_CONSUMER, filterParameters);
+    return HgHistoryUtil.readAllHashes(myProject, root, vcsUser -> {
+    }, filterParameters);
   }
 
   @Nullable

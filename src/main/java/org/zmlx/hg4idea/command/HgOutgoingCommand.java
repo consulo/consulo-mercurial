@@ -12,11 +12,11 @@
 // limitations under the License.
 package org.zmlx.hg4idea.command;
 
-import com.intellij.openapi.application.ModalityState;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
-import javax.annotation.Nonnull;
-
+import consulo.application.Application;
+import consulo.project.Project;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 import org.zmlx.hg4idea.execution.HgRemoteCommandExecutor;
 import org.zmlx.hg4idea.log.HgHistoryUtil;
@@ -24,8 +24,6 @@ import org.zmlx.hg4idea.util.HgUtil;
 
 import java.util.LinkedList;
 import java.util.List;
-
-import javax.annotation.Nullable;
 
 public class HgOutgoingCommand extends HgRemoteChangesetsCommand {
 
@@ -52,7 +50,7 @@ public class HgOutgoingCommand extends HgRemoteChangesetsCommand {
     arguments.add(HgHistoryUtil.prepareParameter("rev", source));
     arguments.add(destination);
     HgRemoteCommandExecutor commandExecutor =
-      new HgRemoteCommandExecutor(project, destination, ModalityState.any(), doNotShowAuthorizationRequest);
+      new HgRemoteCommandExecutor(project, destination, Application.get().getAnyModalityState(), doNotShowAuthorizationRequest);
     commandExecutor.setOutputAlwaysSuppressed(true);
     return commandExecutor.executeInCurrentThread(repo, "outgoing", arguments);
   }

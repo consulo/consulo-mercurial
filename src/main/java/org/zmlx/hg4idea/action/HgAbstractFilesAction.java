@@ -12,25 +12,25 @@
 // limitations under the License.
 package org.zmlx.hg4idea.action;
 
+import consulo.application.ApplicationManager;
+import consulo.dataContext.DataContext;
+import consulo.language.editor.CommonDataKeys;
+import consulo.logging.Logger;
+import consulo.project.Project;
+import consulo.ui.ex.action.AnAction;
+import consulo.ui.ex.action.AnActionEvent;
+import consulo.ui.ex.action.Presentation;
+import consulo.versionControlSystem.AbstractVcsHelper;
+import consulo.versionControlSystem.ProjectLevelVcsManager;
+import consulo.versionControlSystem.TransactionRunnable;
+import consulo.versionControlSystem.VcsException;
+import consulo.virtualFileSystem.VirtualFile;
+import org.zmlx.hg4idea.HgVcs;
+import org.zmlx.hg4idea.util.HgUtil;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
-
-import org.zmlx.hg4idea.HgVcs;
-import org.zmlx.hg4idea.util.HgUtil;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
-import com.intellij.openapi.actionSystem.DataContext;
-import com.intellij.openapi.actionSystem.Presentation;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.AbstractVcsHelper;
-import com.intellij.openapi.vcs.ProjectLevelVcsManager;
-import com.intellij.openapi.vcs.TransactionRunnable;
-import com.intellij.openapi.vcs.VcsException;
-import com.intellij.openapi.vfs.VirtualFile;
 
 abstract class HgAbstractFilesAction extends AnAction {
 
@@ -39,12 +39,12 @@ abstract class HgAbstractFilesAction extends AnAction {
   protected abstract boolean isEnabled(Project project, HgVcs vcs, VirtualFile file);
 
   protected abstract void batchPerform(Project project, final HgVcs activeVcs,
-    List<VirtualFile> files, DataContext context) throws VcsException;
+                                       List<VirtualFile> files, DataContext context) throws VcsException;
 
   public final void actionPerformed(AnActionEvent event) {
     final DataContext dataContext = event.getDataContext();
 
-    final Project project = event.getProject();
+    final Project project = event.getData(Project.KEY);
     final VirtualFile[] files = dataContext.getData(CommonDataKeys.VIRTUAL_FILE_ARRAY);
     if (project == null || files == null || files.length == 0) {
       return;
@@ -62,7 +62,8 @@ abstract class HgAbstractFilesAction extends AnAction {
       public void run(List<VcsException> exceptions) {
         try {
           execute(project, vcs, files, dataContext);
-        } catch (VcsException ex) {
+        }
+        catch (VcsException ex) {
           exceptions.add(ex);
         }
       }
@@ -77,7 +78,7 @@ abstract class HgAbstractFilesAction extends AnAction {
     Presentation presentation = e.getPresentation();
     final DataContext dataContext = e.getDataContext();
 
-    Project project = e.getProject();
+    Project project = e.getData(Project.KEY);
     if (project == null) {
       presentation.setEnabled(false);
       return;
@@ -113,7 +114,7 @@ abstract class HgAbstractFilesAction extends AnAction {
   }
 
   private void execute(Project project, final HgVcs activeVcs,
-    final VirtualFile[] files, DataContext context) throws VcsException {
+                       final VirtualFile[] files, DataContext context) throws VcsException {
 
     List<VirtualFile> enabledFiles = new LinkedList<>();
     for (VirtualFile file : files) {
@@ -134,9 +135,10 @@ abstract class HgAbstractFilesAction extends AnAction {
 
     try {
       for (VirtualFile file : enabledFiles) {
-          HgUtil.markFileDirty(project, file);
+        HgUtil.markFileDirty(project, file);
       }
-    } catch (InvocationTargetException | InterruptedException e) {
+    }
+    catch (InvocationTargetException | InterruptedException e) {
       LOG.info("Exception while marking files dirty", e);
 
     }

@@ -15,9 +15,8 @@
  */
 package org.zmlx.hg4idea.action.mq;
 
-import javax.annotation.Nonnull;
-
-import com.intellij.vcs.log.Hash;
+import consulo.versionControlSystem.log.Hash;
+import jakarta.annotation.Nonnull;
 import org.zmlx.hg4idea.command.mq.HgQRenameCommand;
 import org.zmlx.hg4idea.repo.HgRepository;
 

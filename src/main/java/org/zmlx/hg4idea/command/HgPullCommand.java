@@ -12,11 +12,11 @@
 // limitations under the License.
 package org.zmlx.hg4idea.command;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.VirtualFile;
-import javax.annotation.Nonnull;
-import org.zmlx.hg4idea.HgVcs;
+import consulo.project.Project;
+import consulo.util.lang.StringUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
+import org.zmlx.hg4idea.HgRemoteUpdater;
 import org.zmlx.hg4idea.action.HgCommandResultNotifier;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 import org.zmlx.hg4idea.execution.HgRemoteCommandExecutor;
@@ -89,7 +89,7 @@ public class HgPullCommand {
       return UNRESOLVED;
     }
     else {
-      project.getMessageBus().syncPublisher(HgVcs.REMOTE_TOPIC).update(project, null);
+      project.getMessageBus().syncPublisher(HgRemoteUpdater.class).update(project, null);
       return SUCCESS;
     }
   }

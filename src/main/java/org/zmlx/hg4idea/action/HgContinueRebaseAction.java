@@ -15,20 +15,19 @@
  */
 package org.zmlx.hg4idea.action;
 
-import com.intellij.dvcs.repo.Repository;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.project.Project;
-import javax.annotation.Nonnull;
+import consulo.application.progress.Task;
+import consulo.versionControlSystem.distributed.repository.Repository;
+import consulo.application.progress.ProgressIndicator;
+import consulo.project.Project;
+import jakarta.annotation.Nonnull;
 
+import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.command.HgRebaseCommand;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.util.HgErrorUtil;
 
 import java.util.Collection;
-
-import javax.annotation.Nullable;
 
 public class HgContinueRebaseAction extends HgProcessStateAction {
 

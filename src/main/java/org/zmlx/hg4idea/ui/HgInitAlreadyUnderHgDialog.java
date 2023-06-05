@@ -15,9 +15,9 @@
  */
 package org.zmlx.hg4idea.ui;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.ui.TitlePanel;
+import consulo.ide.impl.idea.openapi.ui.TitlePanel;
+import consulo.project.Project;
+import consulo.ui.ex.awt.DialogWrapper;
 import org.zmlx.hg4idea.HgVcsMessages;
 
 import javax.swing.*;
@@ -51,7 +51,8 @@ public class HgInitAlreadyUnderHgDialog extends DialogWrapper {
   public Answer getAnswer() {
     if (myCreateNewRepoButton.isSelected()) {
       return Answer.CREATE_REPO_HERE;
-    } else {
+    }
+    else {
       return Answer.USE_PARENT_REPO;
     }
   }
@@ -78,5 +79,5 @@ public class HgInitAlreadyUnderHgDialog extends DialogWrapper {
     myTitlePanel = new TitlePanel(HgVcsMessages.message("hg4idea.init.already.under.hg.title"),
                                   HgVcsMessages.message("hg4idea.init.already.under.hg.description", mySelectedRoot, myParentRoot));
   }
-  
+
 }

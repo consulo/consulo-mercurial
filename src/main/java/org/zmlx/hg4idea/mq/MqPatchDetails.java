@@ -15,14 +15,14 @@
  */
 package org.zmlx.hg4idea.mq;
 
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.containers.ContainerUtil;
-import com.intellij.util.text.DateFormatUtil;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import consulo.application.util.DateFormatUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.log.HgBaseLogParser;
 
 import java.util.Date;
+import java.util.EnumMap;
 import java.util.Map;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal"})
@@ -31,7 +31,7 @@ public class MqPatchDetails {
   public enum MqPatchEnum {Name, Subject, Author, Branch, Date}
 
   @Nonnull
-  private final Map<MqPatchEnum, String> myPatchDetailsPresentationMap = ContainerUtil.newEnumMap(MqPatchEnum.class);
+  private final Map<MqPatchEnum, String> myPatchDetailsPresentationMap = new EnumMap<>(MqPatchEnum.class);
 
   @Nullable private final String myNodeId;
   @Nullable private final String myParent;
@@ -39,9 +39,12 @@ public class MqPatchDetails {
   private final Date myDate;
   @Nullable
   private final VirtualFile myRoot;
-  @Nullable private final String myBranch;
-  @Nullable private final String myMessage;
-  @Nullable private final String myUser;
+  @Nullable
+  private final String myBranch;
+  @Nullable
+  private final String myMessage;
+  @Nullable
+  private final String myUser;
 
   public static final MqPatchDetails EMPTY_PATCH_DETAILS = new MqPatchDetails(null, null, null, null, null, null, null);
 

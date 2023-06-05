@@ -12,12 +12,12 @@
 // limitations under the License.
 package org.zmlx.hg4idea;
 
-import javax.annotation.Nullable;
+import consulo.project.Project;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nullable;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
+import java.util.EventListener;
 
-public interface HgUpdater {
-
+public interface HgUpdater extends EventListener {
   void update(Project project, @Nullable VirtualFile root);
 }

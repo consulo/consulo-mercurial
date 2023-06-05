@@ -15,16 +15,16 @@
  */
 package org.zmlx.hg4idea.push;
 
-import com.intellij.dvcs.push.PushSpec;
-import com.intellij.dvcs.push.Pusher;
-import com.intellij.dvcs.push.VcsPushOptionValue;
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vcs.VcsNotifier;
-import com.intellij.openapi.vfs.VirtualFile;
-import javax.annotation.Nonnull;
-
+import consulo.logging.Logger;
+import consulo.project.Project;
+import consulo.util.lang.StringUtil;
+import consulo.versionControlSystem.VcsNotifier;
+import consulo.versionControlSystem.distributed.push.PushSpec;
+import consulo.versionControlSystem.distributed.push.Pusher;
+import consulo.versionControlSystem.distributed.push.VcsPushOptionValue;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.action.HgCommandResultNotifier;
 import org.zmlx.hg4idea.command.HgPushCommand;
 import org.zmlx.hg4idea.execution.HgCommandResult;
@@ -34,8 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.annotation.Nullable;
 
 public class HgPusher extends Pusher<HgRepository, HgPushSource, HgTarget> {
 
@@ -49,7 +47,7 @@ public class HgPusher extends Pusher<HgRepository, HgPushSource, HgTarget> {
 
   @Override
   public void push(@Nonnull Map<HgRepository, PushSpec<HgPushSource, HgTarget>> pushSpecs,
-				   @Nullable VcsPushOptionValue vcsPushOptionValue, boolean force) {
+                   @Nullable VcsPushOptionValue vcsPushOptionValue, boolean force) {
     for (Map.Entry<HgRepository, PushSpec<HgPushSource, HgTarget>> entry : pushSpecs.entrySet()) {
       HgRepository repository = entry.getKey();
       PushSpec<HgPushSource, HgTarget> hgSpec = entry.getValue();

@@ -16,21 +16,25 @@
 
 package org.zmlx.hg4idea.repo;
 
-import com.intellij.dvcs.repo.RepositoryImpl;
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Condition;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vcs.AbstractVcs;
-import com.intellij.openapi.vcs.changes.ChangesViewI;
-import com.intellij.openapi.vcs.changes.ChangesViewManager;
-import com.intellij.openapi.vfs.VfsUtilCore;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.containers.ContainerUtil;
-import com.intellij.vcs.log.Hash;
+import consulo.application.Application;
 import consulo.disposer.Disposable;
 import consulo.disposer.Disposer;
+import consulo.ide.impl.idea.openapi.vcs.changes.ChangesViewI;
+import consulo.ide.impl.idea.openapi.vcs.changes.ChangesViewManager;
+import consulo.ide.impl.idea.openapi.vfs.VfsUtilCore;
+import consulo.logging.Logger;
+import consulo.project.Project;
+import consulo.util.collection.ContainerUtil;
+import consulo.util.lang.StringUtil;
+import consulo.util.lang.function.Condition;
+import consulo.versionControlSystem.AbstractVcs;
+import consulo.versionControlSystem.distributed.repository.RepositoryImpl;
+import consulo.versionControlSystem.log.Hash;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.HgNameWithHashInfo;
+import org.zmlx.hg4idea.HgStatusUpdater;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.command.HgBranchesCommand;
 import org.zmlx.hg4idea.execution.HgCommandResult;
@@ -38,8 +42,6 @@ import org.zmlx.hg4idea.provider.AsyncFilesManagerListener;
 import org.zmlx.hg4idea.provider.HgLocalIgnoredHolder;
 import org.zmlx.hg4idea.util.HgUtil;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 
 public class HgRepositoryImpl extends RepositoryImpl implements HgRepository {
@@ -242,13 +244,11 @@ public class HgRepositoryImpl extends RepositoryImpl implements HgRepository {
         myOpenedBranches = HgBranchesCommand.collectNames(branchCommandResult);
       }
 
-      HgUtil.executeOnPooledThread(new Runnable() {
-        public void run() {
-          if (!project.isDisposed()) {
-            project.getMessageBus().syncPublisher(HgVcs.STATUS_TOPIC).update(project, getRoot());
-          }
+      Application.get().executeOnPooledThread(() -> {
+        if (!project.isDisposed()) {
+          project.getMessageBus().syncPublisher(HgStatusUpdater.class).update(project, getRoot());
         }
-      }, project);
+      });
     }
   }
 

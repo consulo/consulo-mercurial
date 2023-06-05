@@ -15,16 +15,17 @@
  */
 package org.zmlx.hg4idea;
 
-import com.intellij.ide.ui.OptionsTopHitProvider;
-import com.intellij.ide.ui.PublicMethodBasedOptionDescription;
-import com.intellij.ide.ui.search.BooleanOptionDescription;
-import com.intellij.openapi.components.ServiceManager;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.ProjectLevelVcsManager;
-import com.intellij.openapi.vcs.impl.VcsDescriptor;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.ide.ServiceManager;
+import consulo.ide.impl.idea.ide.ui.OptionsTopHitProvider;
+import consulo.ide.impl.idea.ide.ui.PublicMethodBasedOptionDescription;
+import consulo.ide.impl.idea.ide.ui.search.BooleanOptionDescription;
+import consulo.project.Project;
+import consulo.versionControlSystem.ProjectLevelVcsManager;
+import consulo.versionControlSystem.VcsDescriptor;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,6 +33,7 @@ import java.util.Collections;
 /**
  * @author Sergey.Malenkov
  */
+@ExtensionImpl
 public final class HgOptionsTopHitProvider extends OptionsTopHitProvider {
   @Override
   public String getId() {
@@ -46,7 +48,10 @@ public final class HgOptionsTopHitProvider extends OptionsTopHitProvider {
         if ("Mercurial".equals(descriptor.getDisplayName())) {
           return Collections.unmodifiableCollection(Arrays.asList(
             option(project, "Mercurial: Check for incoming and outgoing changesets", "isCheckIncomingOutgoing", "setCheckIncomingOutgoing"),
-            option(project, "Mercurial: Ignore whitespace differences in annotations", "isWhitespacesIgnoredInAnnotations", "setIgnoreWhitespacesInAnnotations")));
+            option(project,
+                   "Mercurial: Ignore whitespace differences in annotations",
+                   "isWhitespacesIgnoredInAnnotations",
+                   "setIgnoreWhitespacesInAnnotations")));
         }
       }
     }

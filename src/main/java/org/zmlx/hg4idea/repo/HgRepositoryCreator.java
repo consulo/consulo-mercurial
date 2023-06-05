@@ -15,20 +15,23 @@
  */
 package org.zmlx.hg4idea.repo;
 
-import javax.annotation.Nonnull;
-
-import com.intellij.dvcs.repo.Repository;
-import com.intellij.dvcs.repo.VcsRepositoryCreator;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.VcsKey;
-import com.intellij.openapi.vfs.VirtualFile;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.project.Project;
+import consulo.versionControlSystem.VcsKey;
+import consulo.versionControlSystem.distributed.repository.Repository;
+import consulo.versionControlSystem.distributed.repository.VcsRepositoryCreator;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
+import jakarta.inject.Inject;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.util.HgUtil;
 
-public class HgRepositoryCreator extends VcsRepositoryCreator {
+@ExtensionImpl
+public class HgRepositoryCreator implements VcsRepositoryCreator {
   @Nonnull
   private final Project myProject;
 
+  @Inject
   public HgRepositoryCreator(@Nonnull Project project) {
     myProject = project;
   }

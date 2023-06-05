@@ -12,22 +12,22 @@
 // limitations under the License.
 package org.zmlx.hg4idea.util;
 
-import com.intellij.notification.Notification;
-import com.intellij.notification.NotificationListener;
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.options.ShowSettingsUtil;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Condition;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vcs.VcsBundle;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.containers.ContainerUtil;
-import javax.annotation.Nonnull;
+import consulo.ide.setting.ShowSettingsUtil;
+import consulo.logging.Logger;
+import consulo.project.Project;
+import consulo.project.ui.notification.Notification;
+import consulo.project.ui.notification.event.NotificationListener;
+import consulo.util.collection.ContainerUtil;
+import consulo.util.lang.StringUtil;
+import consulo.util.lang.function.Condition;
+import consulo.versionControlSystem.VcsBundle;
+import consulo.virtualFileSystem.VirtualFile;
 
+import jakarta.annotation.Nonnull;
 import org.zmlx.hg4idea.action.HgCommandResultNotifier;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import javax.swing.event.HyperlinkEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;

@@ -15,13 +15,13 @@
  */
 package org.zmlx.hg4idea.util;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.zmlx.hg4idea.repo.HgRepository;
 
 import java.util.Collection;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 public class HgBranchReferenceValidator extends HgReferenceValidator {
   private final HgRepository myRepository;

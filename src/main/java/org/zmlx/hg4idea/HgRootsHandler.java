@@ -15,14 +15,18 @@
  */
 package org.zmlx.hg4idea;
 
-import com.intellij.openapi.components.ServiceManager;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.AbstractVcs;
-import com.intellij.openapi.vfs.VirtualFile;
+import consulo.annotation.component.ComponentScope;
+import consulo.annotation.component.ServiceAPI;
+import consulo.annotation.component.ServiceImpl;
+import consulo.ide.ServiceManager;
+import consulo.project.Project;
+import consulo.versionControlSystem.AbstractVcs;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.inject.Singleton;
 import org.zmlx.hg4idea.util.HgUtil;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -31,13 +35,16 @@ import java.util.Set;
 /**
  * @author Kirill Likhodedov
  */
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
+@Singleton
 public class HgRootsHandler implements AbstractVcs.RootsConvertor {
 
   public HgRootsHandler() {
   }
 
   public static HgRootsHandler getInstance(Project project) {
-    return ServiceManager.getService(project, HgRootsHandler.class);
+    return project.getInstance(HgRootsHandler.class);
   }
 
   @Nonnull

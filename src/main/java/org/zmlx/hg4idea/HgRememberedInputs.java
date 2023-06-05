@@ -15,12 +15,16 @@
  */
 package org.zmlx.hg4idea;
 
-import com.intellij.dvcs.DvcsRememberedInputs;
-import com.intellij.openapi.components.PersistentStateComponent;
-import com.intellij.openapi.components.ServiceManager;
-import com.intellij.openapi.components.State;
-import com.intellij.openapi.components.Storage;
-import com.intellij.openapi.components.StoragePathMacros;
+import consulo.annotation.component.ComponentScope;
+import consulo.annotation.component.ServiceAPI;
+import consulo.annotation.component.ServiceImpl;
+import consulo.component.persist.PersistentStateComponent;
+import consulo.ide.ServiceManager;
+import consulo.ide.impl.idea.dvcs.DvcsRememberedInputs;
+import consulo.component.persist.State;
+import consulo.component.persist.Storage;
+import consulo.component.persist.StoragePathMacros;
+import jakarta.inject.Singleton;
 
 /**
  * @author Nadya Zabrodina
@@ -29,8 +33,11 @@ import com.intellij.openapi.components.StoragePathMacros;
   name = "HgRememberedInputs",
   storages = @Storage(file = StoragePathMacros.APP_CONFIG + "/vcs.xml")
 )
+@ServiceAPI(ComponentScope.APPLICATION)
+@ServiceImpl
+@Singleton
 public class HgRememberedInputs extends DvcsRememberedInputs implements PersistentStateComponent<DvcsRememberedInputs.State> {
   public static DvcsRememberedInputs getInstance() {
-      return ServiceManager.getService(HgRememberedInputs.class);
+    return ServiceManager.getService(HgRememberedInputs.class);
   }
 }

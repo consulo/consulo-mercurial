@@ -15,23 +15,21 @@
  */
 package org.zmlx.hg4idea.action.mq;
 
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.wm.ToolWindow;
-import com.intellij.openapi.wm.ToolWindowId;
-import com.intellij.openapi.wm.ToolWindowManager;
-import com.intellij.util.ContentUtilEx;
-import com.intellij.util.ObjectUtils;
-import javax.annotation.Nonnull;
-
+import consulo.ide.impl.idea.util.ContentUtilEx;
+import consulo.project.Project;
+import consulo.project.ui.wm.ToolWindowId;
+import consulo.project.ui.wm.ToolWindowManager;
+import consulo.ui.ex.action.AnActionEvent;
+import consulo.ui.ex.toolWindow.ToolWindow;
+import consulo.util.lang.ObjectUtil;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.action.HgAbstractGlobalSingleRepoAction;
 import org.zmlx.hg4idea.action.HgActionUtil;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.ui.HgMqUnAppliedPatchesPanel;
 
 import java.util.Collection;
-
-import javax.annotation.Nullable;
 
 public class HgShowUnAppliedPatchesAction extends HgAbstractGlobalSingleRepoAction {
   @Override
@@ -48,7 +46,7 @@ public class HgShowUnAppliedPatchesAction extends HgAbstractGlobalSingleRepoActi
   }
 
   public static void showUnAppliedPatches(@Nonnull Project project, @Nonnull HgRepository selectedRepo) {
-    ToolWindow toolWindow = ObjectUtils.assertNotNull(ToolWindowManager.getInstance(project).getToolWindow(ToolWindowId.VCS));
+    ToolWindow toolWindow = ObjectUtil.assertNotNull(ToolWindowManager.getInstance(project).getToolWindow(ToolWindowId.VCS));
     ContentUtilEx
       .addTabbedContent(toolWindow.getContentManager(), new HgMqUnAppliedPatchesPanel(selectedRepo), "MQ", selectedRepo.getRoot().getName(),
                         true);

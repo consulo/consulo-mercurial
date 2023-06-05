@@ -12,15 +12,14 @@
 // limitations under the License.
 package org.zmlx.hg4idea.command;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vcs.FilePath;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.Consumer;
-import com.intellij.vcsUtil.VcsFileUtil;
-import com.intellij.vcsUtil.VcsUtil;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import consulo.project.Project;
+import consulo.util.lang.StringUtil;
+import consulo.versionControlSystem.FilePath;
+import consulo.versionControlSystem.util.VcsFileUtil;
+import consulo.versionControlSystem.util.VcsUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.HgFile;
 import org.zmlx.hg4idea.execution.HgCommandExecutor;
 import org.zmlx.hg4idea.execution.HgCommandResult;
@@ -28,6 +27,7 @@ import org.zmlx.hg4idea.execution.HgCommandResultHandler;
 
 import java.io.File;
 import java.util.*;
+import java.util.function.Consumer;
 
 public class HgResolveCommand {
 
@@ -38,7 +38,6 @@ public class HgResolveCommand {
   public HgResolveCommand(Project project) {
     myProject = project;
   }
-
 
   public Map<HgFile, HgResolveStatusEnum> getListSynchronously(VirtualFile repo) {
     if (repo == null) {
@@ -55,7 +54,7 @@ public class HgResolveCommand {
 
   public void getListAsynchronously(final VirtualFile repo, final Consumer<Map<HgFile, HgResolveStatusEnum>> resultHandler) {
     if (repo == null) {
-      resultHandler.consume(Collections.emptyMap());
+      resultHandler.accept(Collections.emptyMap());
     }
     final HgCommandExecutor executor = new HgCommandExecutor(myProject);
     executor.setSilent(true);
@@ -63,11 +62,11 @@ public class HgResolveCommand {
       @Override
       public void process(@Nullable HgCommandResult result) {
         if (result == null) {
-          resultHandler.consume(Collections.emptyMap());
+          resultHandler.accept(Collections.emptyMap());
         }
 
         final Map<HgFile, HgResolveStatusEnum> resolveStatus = handleResult(repo, result);
-        resultHandler.consume(resolveStatus);
+        resultHandler.accept(resolveStatus);
       }
     });
   }

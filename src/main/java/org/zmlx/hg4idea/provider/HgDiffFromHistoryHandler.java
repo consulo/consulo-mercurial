@@ -15,18 +15,18 @@
  */
 package org.zmlx.hg4idea.provider;
 
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.FilePath;
-import com.intellij.openapi.vcs.VcsException;
-import com.intellij.openapi.vcs.changes.Change;
-import com.intellij.openapi.vcs.history.BaseDiffFromHistoryHandler;
-import com.intellij.openapi.vcs.history.DiffFromHistoryHandler;
-import com.intellij.openapi.vcs.history.VcsFileRevision;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.vcsUtil.VcsUtil;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import consulo.ide.impl.idea.openapi.vcs.history.BaseDiffFromHistoryHandler;
+import consulo.logging.Logger;
+import consulo.project.Project;
+import consulo.versionControlSystem.FilePath;
+import consulo.versionControlSystem.VcsException;
+import consulo.versionControlSystem.change.Change;
+import consulo.versionControlSystem.history.DiffFromHistoryHandler;
+import consulo.versionControlSystem.history.VcsFileRevision;
+import consulo.versionControlSystem.util.VcsUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.HgFileRevision;
 import org.zmlx.hg4idea.util.HgUtil;
 

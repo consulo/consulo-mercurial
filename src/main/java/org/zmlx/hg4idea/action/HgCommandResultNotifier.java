@@ -12,19 +12,17 @@
 // limitations under the License.
 package org.zmlx.hg4idea.action;
 
-import com.intellij.notification.NotificationListener;
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vcs.VcsNotifier;
-import com.intellij.xml.util.XmlStringUtil;
-import javax.annotation.Nonnull;
-
+import consulo.logging.Logger;
+import consulo.project.Project;
+import consulo.project.ui.notification.event.NotificationListener;
+import consulo.util.lang.StringUtil;
+import consulo.util.lang.xml.XmlStringUtil;
+import consulo.versionControlSystem.VcsNotifier;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 
 import java.util.List;
-
-import javax.annotation.Nullable;
 
 public final class HgCommandResultNotifier {
 

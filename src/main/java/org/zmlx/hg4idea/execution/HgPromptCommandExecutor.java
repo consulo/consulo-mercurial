@@ -15,12 +15,13 @@
  */
 package org.zmlx.hg4idea.execution;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.containers.ContainerUtil;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import consulo.project.Project;
+import consulo.ui.ex.awt.Messages;
+import consulo.virtualFileSystem.VirtualFile;
+import consulo.util.collection.ContainerUtil;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 import java.awt.*;
 import java.io.DataInputStream;
@@ -70,7 +71,8 @@ public class HgPromptCommandExecutor extends HgCommandExecutor {
   }
 
   private static class PromptReceiver extends SocketServer.Protocol {
-    @Nullable HgPromptHandler myHandler;
+    @Nullable
+    HgPromptHandler myHandler;
 
     public PromptReceiver(@Nullable HgPromptHandler handler) {
       myHandler = handler;

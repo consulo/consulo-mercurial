@@ -15,8 +15,8 @@
  */
 package org.zmlx.hg4idea.branch;
 
-import com.intellij.util.containers.ContainerUtil;
-import javax.annotation.Nonnull;
+import consulo.util.collection.ContainerUtil;
+import jakarta.annotation.Nonnull;
 import org.zmlx.hg4idea.HgNameWithHashInfo;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.util.HgUtil;

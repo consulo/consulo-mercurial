@@ -15,8 +15,9 @@
  */
 package org.zmlx.hg4idea.repo;
 
-import com.intellij.openapi.vfs.VirtualFile;
-import javax.annotation.Nonnull;
+import consulo.virtualFileSystem.VirtualFile;
+
+import jakarta.annotation.Nonnull;
 
 import java.util.Arrays;
 import java.util.Collection;

@@ -15,8 +15,9 @@
  */
 package org.zmlx.hg4idea.action.mq;
 
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import javax.annotation.Nonnull;
+import consulo.ui.ex.action.AnActionEvent;
+import jakarta.annotation.Nonnull;
+
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.ui.HgMqUnAppliedPatchesPanel;
 

@@ -15,28 +15,29 @@
  */
 package org.zmlx.hg4idea.push;
 
-import com.intellij.dvcs.DvcsUtil;
-import com.intellij.dvcs.push.PushTargetPanel;
-import com.intellij.dvcs.push.VcsError;
-import com.intellij.dvcs.push.ui.PushTargetEditorListener;
-import com.intellij.dvcs.push.ui.PushTargetTextField;
-import com.intellij.dvcs.push.ui.VcsEditableTextComponent;
-import com.intellij.openapi.editor.event.DocumentAdapter;
-import com.intellij.openapi.editor.event.DocumentEvent;
-import com.intellij.openapi.ui.ValidationInfo;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.ui.ColoredTreeCellRenderer;
-import com.intellij.ui.SimpleTextAttributes;
-import com.intellij.util.textCompletion.TextFieldWithCompletion;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import consulo.document.event.DocumentAdapter;
+import consulo.document.event.DocumentEvent;
+import consulo.ide.impl.idea.dvcs.push.ui.PushTargetTextField;
+import consulo.ide.impl.idea.dvcs.push.ui.VcsEditableTextComponent;
+import consulo.ide.impl.idea.util.textCompletion.TextFieldWithCompletion;
+import consulo.ui.ex.SimpleTextAttributes;
+import consulo.ui.ex.awt.ValidationInfo;
+import consulo.ui.ex.awt.tree.ColoredTreeCellRenderer;
+import consulo.util.lang.StringUtil;
+import consulo.versionControlSystem.distributed.DvcsUtil;
+import consulo.versionControlSystem.distributed.push.PushTargetEditorListener;
+import consulo.versionControlSystem.distributed.push.PushTargetPanel;
+import consulo.versionControlSystem.distributed.push.VcsError;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.util.HgUtil;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.awt.*;
 import java.util.List;
 
-public class HgPushTargetPanel extends PushTargetPanel<HgTarget> {
+public class HgPushTargetPanel extends PushTargetPanel<HgTarget>
+{
 
   private final static String ENTER_REMOTE = "Enter Remote";
   private final HgRepository myRepository;

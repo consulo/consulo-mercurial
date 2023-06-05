@@ -12,19 +12,19 @@
 // limitations under the License.
 package org.zmlx.hg4idea.provider.update;
 
-import com.intellij.openapi.components.ServiceManager;
-import com.intellij.openapi.options.Configurable;
-import com.intellij.openapi.options.ConfigurationException;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Ref;
-import com.intellij.openapi.vcs.FilePath;
-import com.intellij.openapi.vcs.ProjectLevelVcsManager;
-import com.intellij.openapi.vcs.VcsException;
-import com.intellij.openapi.vcs.update.*;
-import com.intellij.openapi.vfs.VirtualFile;
+import consulo.application.progress.ProgressIndicator;
+import consulo.configurable.Configurable;
+import consulo.configurable.ConfigurationException;
+import consulo.ide.ServiceManager;
+import consulo.project.Project;
+import consulo.util.lang.ref.Ref;
+import consulo.versionControlSystem.FilePath;
+import consulo.versionControlSystem.ProjectLevelVcsManager;
+import consulo.versionControlSystem.VcsException;
+import consulo.versionControlSystem.update.*;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
 import org.jetbrains.annotations.Nls;
-import javax.annotation.Nonnull;
 import org.zmlx.hg4idea.ui.HgUpdateDialog;
 
 import javax.swing.*;
@@ -48,9 +48,9 @@ public class HgUpdateEnvironment implements UpdateEnvironment {
 
   @Nonnull
   public UpdateSession updateDirectories(@Nonnull FilePath[] contentRoots,
-    UpdatedFiles updatedFiles, ProgressIndicator indicator,
-    @Nonnull Ref<SequentialUpdatesContext> context) {
-    
+                                         UpdatedFiles updatedFiles, ProgressIndicator indicator,
+                                         @Nonnull Ref<SequentialUpdatesContext> context) {
+
     List<VcsException> exceptions = new LinkedList<>();
 
     boolean result = true;
@@ -67,7 +67,8 @@ public class HgUpdateEnvironment implements UpdateEnvironment {
       try {
         HgUpdater updater = new HgRegularUpdater(project, repository, updateConfiguration);
         result &= updater.update(updatedFiles, indicator, exceptions);
-      } catch (VcsException e) {
+      }
+      catch (VcsException e) {
         //TODO include module name where exception occurred
         exceptions.add(e);
       }
@@ -85,7 +86,7 @@ public class HgUpdateEnvironment implements UpdateEnvironment {
   public boolean validateOptions(Collection<FilePath> roots) {
     return true;
   }
-  
+
   public static class UpdateConfigurable implements Configurable {
     private final HgUpdateConfigurationSettings updateConfiguration;
     protected HgUpdateDialog updateDialog;

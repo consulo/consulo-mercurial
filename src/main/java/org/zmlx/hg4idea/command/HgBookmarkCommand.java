@@ -1,14 +1,14 @@
 package org.zmlx.hg4idea.command;
 
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vcs.VcsNotifier;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.ObjectUtils;
-import com.intellij.util.containers.ContainerUtil;
-import javax.annotation.Nonnull;
+import consulo.application.progress.ProgressIndicator;
+import consulo.application.progress.Task;
+import consulo.project.Project;
+import consulo.util.collection.ContainerUtil;
+import consulo.util.lang.ObjectUtil;
+import consulo.util.lang.StringUtil;
+import consulo.versionControlSystem.VcsNotifier;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
 import org.zmlx.hg4idea.HgVcsMessages;
 import org.zmlx.hg4idea.action.HgCommandResultNotifier;
 import org.zmlx.hg4idea.execution.HgCommandExecutor;
@@ -19,14 +19,13 @@ import org.zmlx.hg4idea.util.HgErrorUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.intellij.util.containers.ContainerUtil.emptyList;
 import static java.util.Collections.singletonList;
 import static org.zmlx.hg4idea.util.HgUtil.getRepositoryManager;
 
 public class HgBookmarkCommand {
 
   public static void createBookmarkAsynchronously(@Nonnull List<HgRepository> repositories, @Nonnull String name, boolean isActive) {
-    final Project project = ObjectUtils.assertNotNull(ContainerUtil.getFirstItem(repositories)).getProject();
+    final Project project = ObjectUtil.assertNotNull(ContainerUtil.getFirstItem(repositories)).getProject();
     if (StringUtil.isEmptyOrSpaces(name)) {
       VcsNotifier.getInstance(project).notifyError("Hg Error", "Bookmark name is empty");
       return;
@@ -35,7 +34,7 @@ public class HgBookmarkCommand {
       @Override
       public void run(@Nonnull ProgressIndicator indicator) {
         for (HgRepository repository : repositories) {
-          executeBookmarkCommandSynchronously(project, repository.getRoot(), name, isActive ? emptyList() : singletonList("--inactive"));
+          executeBookmarkCommandSynchronously(project, repository.getRoot(), name, isActive ? List.of() : singletonList("--inactive"));
         }
       }
     }.queue();

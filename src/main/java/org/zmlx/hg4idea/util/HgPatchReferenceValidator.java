@@ -15,10 +15,11 @@
  */
 package org.zmlx.hg4idea.util;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import consulo.util.lang.StringUtil;
 import org.zmlx.hg4idea.repo.HgRepository;
-import com.intellij.openapi.util.text.StringUtil;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 public class HgPatchReferenceValidator extends HgReferenceValidator {
   private final HgRepository myRepository;

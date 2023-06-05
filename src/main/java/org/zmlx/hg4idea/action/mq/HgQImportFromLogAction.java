@@ -15,9 +15,10 @@
  */
 package org.zmlx.hg4idea.action.mq;
 
-import javax.annotation.Nonnull;
+import consulo.application.progress.Task;
+import jakarta.annotation.Nonnull;
 
-import com.intellij.vcs.log.Hash;
+import consulo.versionControlSystem.log.Hash;
 import org.zmlx.hg4idea.action.HgLogSingleCommitAction;
 import org.zmlx.hg4idea.command.mq.HgQImportCommand;
 import org.zmlx.hg4idea.repo.HgRepository;
@@ -26,7 +27,10 @@ public class HgQImportFromLogAction extends HgLogSingleCommitAction {
   @Override
   protected void actionPerformed(@Nonnull HgRepository repository, @Nonnull Hash commit) {
     String revisionHash = commit.asString();
-    new HgQImportCommand(repository).execute(revisionHash);
+
+    Task.Backgroundable.queue(repository.getProject(), "Importing From Log...", indicator -> {
+      new HgQImportCommand(repository).executeInCurrentThread(revisionHash);
+    });
   }
 
   @Override

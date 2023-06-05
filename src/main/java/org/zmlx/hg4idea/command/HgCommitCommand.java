@@ -12,11 +12,10 @@
 // limitations under the License.
 package org.zmlx.hg4idea.command;
 
-import com.intellij.dvcs.repo.Repository;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.VcsException;
-import com.intellij.util.containers.ContainerUtil;
-import javax.annotation.Nonnull;
+import consulo.project.Project;
+import consulo.versionControlSystem.VcsException;
+import consulo.versionControlSystem.distributed.repository.Repository;
+import jakarta.annotation.Nonnull;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.execution.HgCommandException;
 import org.zmlx.hg4idea.execution.HgCommandExecutor;
@@ -58,7 +57,7 @@ public class HgCommitCommand extends HgCommitTypeCommand {
 
   protected void executeChunked(@Nonnull List<List<String>> chunkedCommits) throws HgCommandException, VcsException {
     if (chunkedCommits.isEmpty()) {
-      commitChunkFiles(ContainerUtil.<String>emptyList(), myAmend, myCloseBranch);
+      commitChunkFiles(List.of(), myAmend, myCloseBranch);
     }
     else {
       int size = chunkedCommits.size();
@@ -80,7 +79,8 @@ public class HgCommitCommand extends HgCommitTypeCommand {
   }
 
   private void commitChunkFiles(@Nonnull List<String> chunk, boolean amendCommit, boolean withSubrepos, boolean closeBranch)
-    throws VcsException {
+    throws VcsException
+  {
     List<String> parameters = new LinkedList<>();
     parameters.add("--logfile");
     parameters.add(saveCommitMessage().getAbsolutePath());

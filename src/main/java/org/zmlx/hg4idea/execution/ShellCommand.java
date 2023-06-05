@@ -12,20 +12,22 @@
 // limitations under the License.
 package org.zmlx.hg4idea.execution;
 
-import com.intellij.execution.ExecutionException;
-import com.intellij.execution.configurations.GeneralCommandLine;
-import com.intellij.execution.process.*;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.ProgressManager;
-import com.intellij.openapi.vcs.LineHandlerHelper;
-import com.intellij.vcs.VcsLocaleHelper;
+import consulo.application.ApplicationManager;
+import consulo.application.progress.ProgressIndicator;
+import consulo.application.progress.ProgressManager;
+import consulo.process.*;
+import consulo.process.cmd.GeneralCommandLine;
+import consulo.process.event.ProcessEvent;
+import consulo.process.util.CapturingProcessAdapter;
+import consulo.process.util.ProcessOutput;
 import consulo.util.dataholder.Key;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import consulo.versionControlSystem.VcsLocaleHelper;
+import consulo.versionControlSystem.util.LineHandlerHelper;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
-import java.io.File;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.List;
 
@@ -38,7 +40,7 @@ public final class ShellCommand {
     }
     myCommandLine = new GeneralCommandLine(commandLine);
     if (dir != null) {
-      myCommandLine.setWorkDirectory(new File(dir));
+      myCommandLine.setWorkingDirectory(Path.of(dir));
     }
     if (charset != null) {
       myCommandLine.setCharset(charset);
@@ -54,7 +56,12 @@ public final class ShellCommand {
   public HgCommandResult execute(final boolean showTextOnIndicator, boolean isBinary) throws ShellCommandException, InterruptedException {
     final ProgressIndicator indicator = ProgressManager.getInstance().getProgressIndicator();
     try {
-      OSProcessHandler processHandler = isBinary ? new BinaryOSProcessHandler(myCommandLine) : new OSProcessHandler(myCommandLine);
+      ProcessHandler processHandler;
+      ProcessHandlerBuilder builder = ProcessHandlerBuilder.create(myCommandLine);
+      if (isBinary) {
+        builder = builder.binary();
+      }
+      processHandler = builder.build();
       CapturingProcessAdapter outputAdapter = new CapturingProcessAdapter() {
 
         @Override
@@ -84,7 +91,7 @@ public final class ShellCommand {
         }
       }
       ProcessOutput output = outputAdapter.getOutput();
-      return isBinary ? new HgCommandResult(output, ((BinaryOSProcessHandler)processHandler).getOutput()) : new HgCommandResult(output);
+      return isBinary ? new HgCommandResult(output, ((BinaryProcessHandler)processHandler).getOutput()) : new HgCommandResult(output);
     }
     catch (ExecutionException e) {
       throw new ShellCommandException(e);

@@ -15,13 +15,11 @@
  */
 package org.zmlx.hg4idea;
 
-import javax.annotation.Nonnull;
-
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.VcsException;
-import com.intellij.openapi.vcs.changes.BinaryContentRevision;
-
-import javax.annotation.Nullable;
+import consulo.project.Project;
+import consulo.versionControlSystem.VcsException;
+import consulo.versionControlSystem.change.BinaryContentRevision;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 public class HgBinaryContentRevision extends HgContentRevision implements BinaryContentRevision {
 
@@ -33,7 +31,8 @@ public class HgBinaryContentRevision extends HgContentRevision implements Binary
 
   @Nullable
   @Override
-  public byte[] getBinaryContent() throws VcsException {
+  public byte[] getBinaryContent() throws VcsException
+  {
     return getContentAsBytes();
   }
 }

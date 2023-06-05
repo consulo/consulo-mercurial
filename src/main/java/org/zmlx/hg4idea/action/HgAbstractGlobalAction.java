@@ -12,30 +12,27 @@
 // limitations under the License.
 package org.zmlx.hg4idea.action;
 
+import consulo.language.editor.CommonDataKeys;
+import consulo.project.Project;
+import consulo.ui.ex.action.AnActionEvent;
+import consulo.ui.ex.action.DumbAwareAction;
+import consulo.util.lang.ObjectUtil;
+import consulo.versionControlSystem.ProjectLevelVcsManager;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
+import org.zmlx.hg4idea.HgVcs;
+import org.zmlx.hg4idea.repo.HgRepository;
+import org.zmlx.hg4idea.repo.HgRepositoryManager;
+import org.zmlx.hg4idea.util.HgUtil;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
-import org.zmlx.hg4idea.HgVcs;
-import org.zmlx.hg4idea.repo.HgRepository;
-import org.zmlx.hg4idea.repo.HgRepositoryManager;
-import org.zmlx.hg4idea.util.HgUtil;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
-import com.intellij.openapi.project.DumbAwareAction;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.ProjectLevelVcsManager;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.ObjectUtils;
-import com.intellij.util.containers.ContainerUtil;
-
 public abstract class HgAbstractGlobalAction extends DumbAwareAction {
-
   public void actionPerformed(@Nonnull AnActionEvent event) {
-    final Project project = event.getProject();
+    final Project project = event.getData(Project.KEY);
     if (project == null) {
       return;
     }
@@ -44,8 +41,8 @@ public abstract class HgAbstractGlobalAction extends DumbAwareAction {
     List<HgRepository> repositories = repositoryManager.getRepositories();
     if (!repositories.isEmpty()) {
       List<HgRepository> selectedRepositories = files != null
-                                                ? HgActionUtil.collectRepositoriesFromFiles(repositoryManager, Arrays.asList(files))
-                                                : ContainerUtil.<HgRepository>emptyList();
+        ? HgActionUtil.collectRepositoriesFromFiles(repositoryManager, Arrays.asList(files))
+        : List.of();
 
       execute(project, repositories,
               selectedRepositories.isEmpty() ? Collections.singletonList(HgUtil.getCurrentRepository(project)) : selectedRepositories);
@@ -68,7 +65,7 @@ public abstract class HgAbstractGlobalAction extends DumbAwareAction {
     if (project == null) {
       return false;
     }
-    HgVcs vcs = ObjectUtils.assertNotNull(HgVcs.getInstance(project));
+    HgVcs vcs = ObjectUtil.assertNotNull(HgVcs.getInstance(project));
     final VirtualFile[] roots = ProjectLevelVcsManager.getInstance(project).getRootsUnderVcs(vcs);
     if (roots == null || roots.length == 0) {
       return false;

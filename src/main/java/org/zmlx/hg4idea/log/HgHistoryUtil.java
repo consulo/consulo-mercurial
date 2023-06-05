@@ -15,29 +15,27 @@
  */
 package org.zmlx.hg4idea.log;
 
-import com.intellij.openapi.components.ServiceManager;
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vcs.FilePath;
-import com.intellij.openapi.vcs.FileStatus;
-import com.intellij.openapi.vcs.VcsException;
-import com.intellij.openapi.vcs.VcsNotifier;
-import com.intellij.openapi.vcs.changes.Change;
-import com.intellij.openapi.vcs.changes.ChangeListManager;
-import com.intellij.openapi.vcs.changes.ContentRevision;
-import com.intellij.openapi.vcs.changes.CurrentContentRevision;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.ArrayUtil;
-import com.intellij.util.Consumer;
-import com.intellij.util.Function;
-import com.intellij.util.SmartList;
-import com.intellij.util.containers.ContainerUtil;
-import com.intellij.vcs.log.*;
-import com.intellij.vcsUtil.VcsFileUtil;
-import com.intellij.vcsUtil.VcsUtil;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import consulo.ide.ServiceManager;
+import consulo.logging.Logger;
+import consulo.project.Project;
+import consulo.util.collection.ArrayUtil;
+import consulo.util.collection.ContainerUtil;
+import consulo.util.collection.SmartList;
+import consulo.util.lang.StringUtil;
+import consulo.versionControlSystem.FilePath;
+import consulo.versionControlSystem.VcsException;
+import consulo.versionControlSystem.VcsNotifier;
+import consulo.versionControlSystem.change.Change;
+import consulo.versionControlSystem.change.ChangeListManager;
+import consulo.versionControlSystem.change.ContentRevision;
+import consulo.versionControlSystem.change.CurrentContentRevision;
+import consulo.versionControlSystem.log.*;
+import consulo.versionControlSystem.util.VcsFileUtil;
+import consulo.versionControlSystem.util.VcsUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import consulo.virtualFileSystem.status.FileStatus;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.*;
 import org.zmlx.hg4idea.command.HgLogCommand;
 import org.zmlx.hg4idea.execution.HgCommandResult;
@@ -48,6 +46,8 @@ import org.zmlx.hg4idea.util.HgVersion;
 
 import java.io.File;
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class HgHistoryUtil {
 
@@ -58,8 +58,8 @@ public class HgHistoryUtil {
 
   @Nonnull
   public static List<VcsCommitMetadata> loadMetadata(@Nonnull final Project project,
-													 @Nonnull final VirtualFile root, int limit,
-													 @Nonnull List<String> parameters) throws VcsException {
+                                                     @Nonnull final VirtualFile root, int limit,
+                                                     @Nonnull List<String> parameters) throws VcsException {
 
     final VcsLogObjectsFactory factory = getObjectsFactoryWithDisposeCheck(project);
     if (factory == null) {
@@ -112,8 +112,8 @@ public class HgHistoryUtil {
    */
   @Nonnull
   public static List<? extends VcsFullCommitDetails> history(@Nonnull final Project project,
-															 @Nonnull final VirtualFile root, final int limit,
-															 @Nonnull List<String> hashParameters, final boolean silent)
+                                                             @Nonnull final VirtualFile root, final int limit,
+                                                             @Nonnull List<String> hashParameters, final boolean silent)
     throws VcsException {
     HgVcs hgvcs = HgVcs.getInstance(project);
     assert hgvcs != null;
@@ -131,9 +131,9 @@ public class HgHistoryUtil {
   }
 
   public static List<? extends VcsFullCommitDetails> createFullCommitsFromResult(@Nonnull Project project,
-																				 @Nonnull VirtualFile root,
-																				 @Nullable HgCommandResult result,
-																				 @Nonnull HgVersion version, boolean silent) {
+                                                                                 @Nonnull VirtualFile root,
+                                                                                 @Nullable HgCommandResult result,
+                                                                                 @Nonnull HgVersion version, boolean silent) {
     final VcsLogObjectsFactory factory = getObjectsFactoryWithDisposeCheck(project);
     if (factory == null) {
       return Collections.emptyList();
@@ -181,8 +181,8 @@ public class HgHistoryUtil {
 
   @Nullable
   public static HgCommandResult getLogResult(@Nonnull final Project project,
-											 @Nonnull final VirtualFile root, @Nonnull HgVersion version, int limit,
-											 @Nonnull List<String> parameters, @Nonnull String template) {
+                                             @Nonnull final VirtualFile root, @Nonnull HgVersion version, int limit,
+                                             @Nonnull List<String> parameters, @Nonnull String template) {
     HgFile originalHgFile = getOriginalHgFile(project, root);
     HgLogCommand hgLogCommand = new HgLogCommand(project);
     List<String> args = new ArrayList<>(parameters);
@@ -211,8 +211,8 @@ public class HgHistoryUtil {
 
   @Nonnull
   public static <CommitInfo> List<CommitInfo> getCommitRecords(@Nonnull Project project,
-															   @Nullable HgCommandResult result,
-															   @Nonnull Function<String, CommitInfo> converter, boolean silent) {
+                                                               @Nullable HgCommandResult result,
+                                                               @Nonnull Function<String, CommitInfo> converter, boolean silent) {
     final List<CommitInfo> revisions = new LinkedList<>();
     if (result == null) {
       return revisions;
@@ -225,7 +225,8 @@ public class HgHistoryUtil {
           LOG.debug(errors.toString());
         }
         else {
-          VcsNotifier.getInstance(project).notifyError(HgVcsMessages.message("hg4idea.error.log.command.execution"), errors.toString());
+          VcsNotifier.getInstance(project)
+                     .notifyError(HgVcsMessages.message("hg4idea.error.log.command.execution"), errors.toString());
         }
         return Collections.emptyList();
       }
@@ -283,7 +284,7 @@ public class HgHistoryUtil {
 
   @Nonnull
   public static List<TimedVcsCommit> readAllHashes(@Nonnull Project project, @Nonnull VirtualFile root,
-												   @Nonnull final Consumer<VcsUser> userRegistry, @Nonnull List<String> params)
+                                                   @Nonnull final Consumer<VcsUser> userRegistry, @Nonnull List<String> params)
     throws VcsException {
 
     final VcsLogObjectsFactory factory = getObjectsFactoryWithDisposeCheck(project);
@@ -309,7 +310,7 @@ public class HgHistoryUtil {
         for (HgRevisionNumber parent : parents) {
           parentsHash.add(factory.createHash(parent.getChangeset()));
         }
-        userRegistry.consume(factory.createUser(author, email));
+        userRegistry.accept(factory.createUser(author, email));
         return factory.createTimedCommit(factory.createHash(changeset),
                                          parentsHash, revisionDate.getTime());
       }
@@ -325,15 +326,15 @@ public class HgHistoryUtil {
 
   @Nonnull
   public static Change createChange(@Nonnull Project project, @Nonnull VirtualFile root,
-									@Nullable String fileBefore,
-									@Nullable HgRevisionNumber revisionBefore,
-									@Nullable String fileAfter,
-									HgRevisionNumber revisionAfter,
-									FileStatus aStatus) {
+                                    @Nullable String fileBefore,
+                                    @Nullable HgRevisionNumber revisionBefore,
+                                    @Nullable String fileAfter,
+                                    HgRevisionNumber revisionAfter,
+                                    FileStatus aStatus) {
 
     HgContentRevision beforeRevision =
       fileBefore == null || aStatus == FileStatus.ADDED ? null
-                                                        : HgContentRevision
+        : HgContentRevision
         .create(project, new HgFile(root, new File(root.getPath(), fileBefore)), revisionBefore);
     ContentRevision afterRevision;
     if (aStatus == FileStatus.DELETED) {
@@ -346,7 +347,7 @@ public class HgHistoryUtil {
     else {
       assert revisionAfter != null;
       afterRevision = fileAfter == null ? null :
-                      HgContentRevision.create(project, new HgFile(root, new File(root.getPath(), fileAfter)), revisionAfter);
+        HgContentRevision.create(project, new HgFile(root, new File(root.getPath(), fileAfter)), revisionAfter);
     }
     return new Change(beforeRevision, afterRevision, aStatus);
   }

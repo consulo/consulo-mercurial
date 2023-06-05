@@ -15,13 +15,13 @@
  */
 package org.zmlx.hg4idea.mq;
 
-import com.intellij.dvcs.DvcsUtil;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.VfsUtil;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.containers.ContainerUtil;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import consulo.util.collection.ContainerUtil;
+import consulo.util.lang.StringUtil;
+import consulo.versionControlSystem.distributed.DvcsUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import consulo.virtualFileSystem.util.VirtualFileUtil;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.util.HgUtil;
 
 import java.io.File;
@@ -43,7 +43,7 @@ public class HgMqAdditionalPatchReader {
   public static MqPatchDetails readMqPatchInfo(@Nullable VirtualFile root, @Nullable File patchFile) {
     if (patchFile == null) return MqPatchDetails.EMPTY_PATCH_DETAILS;
     String context = DvcsUtil.tryLoadFileOrReturn(patchFile, "");
-    return parseAdditionalMqInfo(root == null ? HgUtil.getNearestHgRoot(VfsUtil.findFileByIoFile(patchFile, true)) : root, context);
+    return parseAdditionalMqInfo(root == null ? HgUtil.getNearestHgRoot(VirtualFileUtil.findFileByIoFile(patchFile, true)) : root, context);
   }
 
   @Nonnull

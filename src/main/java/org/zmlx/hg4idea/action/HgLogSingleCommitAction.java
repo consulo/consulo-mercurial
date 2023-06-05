@@ -16,19 +16,19 @@
 
 package org.zmlx.hg4idea.action;
 
-import javax.annotation.Nonnull;
+import consulo.ide.ServiceManager;
+import consulo.ide.impl.idea.dvcs.ui.VcsLogSingleCommitAction;
+import consulo.project.Project;
+import consulo.versionControlSystem.distributed.repository.AbstractRepositoryManager;
+import consulo.virtualFileSystem.VirtualFile;
 
-import com.intellij.dvcs.repo.AbstractRepositoryManager;
-import com.intellij.dvcs.ui.VcsLogSingleCommitAction;
-import com.intellij.openapi.components.ServiceManager;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
-
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
+import jakarta.annotation.Nonnull;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.repo.HgRepositoryManager;
 
-public abstract class HgLogSingleCommitAction extends VcsLogSingleCommitAction<HgRepository> {
+public abstract class HgLogSingleCommitAction extends VcsLogSingleCommitAction<HgRepository>
+{
 
   @Nonnull
   @Override

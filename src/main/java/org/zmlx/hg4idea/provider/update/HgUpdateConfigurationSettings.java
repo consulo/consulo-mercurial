@@ -15,25 +15,30 @@
  */
 package org.zmlx.hg4idea.provider.update;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import com.intellij.openapi.components.PersistentStateComponent;
-import com.intellij.openapi.components.State;
-import com.intellij.openapi.components.Storage;
-import com.intellij.openapi.components.StoragePathMacros;
+import consulo.annotation.component.ComponentScope;
+import consulo.annotation.component.ServiceAPI;
+import consulo.annotation.component.ServiceImpl;
+import consulo.component.persist.PersistentStateComponent;
+import consulo.component.persist.State;
+import consulo.component.persist.Storage;
+import consulo.component.persist.StoragePathMacros;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+import jakarta.inject.Singleton;
 
 @State(
-		name = "HgUpdateConfigurationSettings",
-		storages = @Storage(file = StoragePathMacros.WORKSPACE_FILE))
-public class HgUpdateConfigurationSettings implements PersistentStateComponent<HgUpdateConfigurationSettings.State>
-{
+  name = "HgUpdateConfigurationSettings",
+  storages = @Storage(file = StoragePathMacros.WORKSPACE_FILE))
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
+@Singleton
+public class HgUpdateConfigurationSettings implements PersistentStateComponent<HgUpdateConfigurationSettings.State> {
   private State myState = new State();
 
   public static class State {
     public boolean shouldPull = true;
     @Nonnull
-	public HgUpdateType updateType = HgUpdateType.ONLY_UPDATE;
+    public HgUpdateType updateType = HgUpdateType.ONLY_UPDATE;
     public boolean shouldCommitAfterMerge = false;
   }
 

@@ -15,9 +15,9 @@
  */
 package org.zmlx.hg4idea.branch;
 
-import com.intellij.openapi.project.Project;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import consulo.project.Project;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.action.HgAbstractGlobalSingleRepoAction;
 import org.zmlx.hg4idea.repo.HgRepository;
 

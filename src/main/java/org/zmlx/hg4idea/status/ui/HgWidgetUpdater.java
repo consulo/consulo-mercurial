@@ -15,17 +15,20 @@
  */
 package org.zmlx.hg4idea.status.ui;
 
+import consulo.annotation.component.ComponentScope;
+import consulo.annotation.component.TopicAPI;
+
+import java.util.EventListener;
+
 /**
  * Interface for {@link HgIncomingOutgoingWidget} that allows it to show/hide or update itself depending on the situation:
- * if incoming/outgoing changes need to be checked or not ({@link org.zmlx.hg4idea.HgVcs#INCOMING_OUTGOING_CHECK_TOPIC}).
+ * if incoming/outgoing changes need to be checked or not ({@link HgWidgetUpdater).
  */
-public interface HgWidgetUpdater
-{
-	default void updateVisibility()
-	{
-	}
+@TopicAPI(ComponentScope.PROJECT)
+public interface HgWidgetUpdater extends EventListener {
+  default void updateVisibility() {
+  }
 
-	default void update()
-	{
-	}
+  default void update() {
+  }
 }

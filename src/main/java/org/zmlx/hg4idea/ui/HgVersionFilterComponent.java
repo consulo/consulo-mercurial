@@ -15,15 +15,16 @@
  */
 package org.zmlx.hg4idea.ui;
 
-import com.intellij.openapi.vcs.versionBrowser.ChangeBrowserSettings;
-import com.intellij.openapi.vcs.versionBrowser.StandardVersionFilterComponent;
+import consulo.versionControlSystem.versionBrowser.ChangeBrowserSettings;
+import consulo.ide.impl.idea.openapi.vcs.versionBrowser.StandardVersionFilterComponent;
 
 import javax.swing.*;
 
 /**
  * The component for version filter.
  */
-public class HgVersionFilterComponent extends StandardVersionFilterComponent<ChangeBrowserSettings> {
+public class HgVersionFilterComponent extends StandardVersionFilterComponent<ChangeBrowserSettings>
+{
 
   public HgVersionFilterComponent(boolean showDateFilter) {
     super(showDateFilter);

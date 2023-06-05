@@ -15,25 +15,23 @@
  */
 package org.zmlx.hg4idea.provider;
 
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.vcs.FilePath;
-import com.intellij.openapi.vcs.VcsException;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.Alarm;
-import com.intellij.util.EventDispatcher;
-import com.intellij.util.containers.ContainerUtil;
-import com.intellij.util.ui.update.MergingUpdateQueue;
-import com.intellij.util.ui.update.Update;
-import com.intellij.vcsUtil.VcsUtil;
+import consulo.logging.Logger;
+import consulo.proxy.EventDispatcher;
+import consulo.ui.ex.awt.util.Alarm;
+import consulo.versionControlSystem.FilePath;
+import consulo.versionControlSystem.VcsException;
+import consulo.versionControlSystem.util.VcsUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import consulo.util.collection.ContainerUtil;
+import consulo.ui.ex.awt.util.MergingUpdateQueue;
+import consulo.ui.ex.awt.util.Update;
 import consulo.disposer.Disposable;
 import org.zmlx.hg4idea.command.HgStatusCommand;
 import org.zmlx.hg4idea.repo.HgRepository;
 
-import javax.annotation.Nonnull;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import jakarta.annotation.Nonnull;
+
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -53,7 +51,7 @@ public class HgLocalIgnoredHolder implements Disposable {
 
   public HgLocalIgnoredHolder(@Nonnull HgRepository repository) {
     myRepository = repository;
-    myIgnoredSet = ContainerUtil.newHashSet();
+    myIgnoredSet = new HashSet<>();
     myInUpdateMode = new AtomicBoolean(false);
     myUpdateQueue = new MergingUpdateQueue("HgIgnoreUpdate", 500, true, null, this, null, Alarm.ThreadToUse.POOLED_THREAD);
   }
@@ -90,7 +88,7 @@ public class HgLocalIgnoredHolder implements Disposable {
   }
 
   private void rescanAllIgnored() {
-    Set<VirtualFile> ignored = ContainerUtil.newHashSet();
+    Set<VirtualFile> ignored = new HashSet<>();
     try {
       ignored.addAll(new HgStatusCommand.Builder(false).ignored(true).build(myRepository.getProject())
                        .getFiles(myRepository.getRoot(), null));
@@ -157,7 +155,7 @@ public class HgLocalIgnoredHolder implements Disposable {
   public Set<VirtualFile> getIgnoredFiles() {
     try {
       SET_LOCK.readLock().lock();
-      return ContainerUtil.newHashSet(myIgnoredSet);
+      return new HashSet<>(myIgnoredSet);
     }
     finally {
       SET_LOCK.readLock().unlock();

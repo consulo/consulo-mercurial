@@ -15,15 +15,16 @@
  */
 package org.zmlx.hg4idea.execution;
 
-import com.intellij.execution.ui.ConsoleViewContentType;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.vcsUtil.VcsImplUtil;
-import javax.annotation.Nonnull;
-
+import consulo.application.ApplicationManager;
+import consulo.application.progress.Task;
+import consulo.execution.ui.console.ConsoleViewContentType;
+import consulo.logging.Logger;
+import consulo.project.Project;
+import consulo.util.lang.StringUtil;
+import consulo.versionControlSystem.util.VcsImplUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.HgGlobalSettings;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.HgVcsMessages;
@@ -37,8 +38,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.annotation.Nullable;
-
 /**
  * <p>Executes an hg external command synchronously or asynchronously with the consequent call of {@link HgCommandResultHandler}</p>
  * <p/>
@@ -51,7 +50,7 @@ import javax.annotation.Nullable;
  */
 
 public class HgCommandExecutor {
-  protected static final Logger LOG = Logger.getInstance(HgCommandExecutor.class.getName());
+  protected static final Logger LOG = Logger.getInstance(HgCommandExecutor.class);
   private static final List<String> DEFAULT_OPTIONS = Arrays.asList("--config", "ui.merge=internal:merge");
 
   protected final Project myProject;
@@ -100,16 +99,13 @@ public class HgCommandExecutor {
   }
 
   public void execute(@Nullable final VirtualFile repo, @Nonnull final String operation, @Nullable final List<String> arguments,
-					  @Nullable final HgCommandResultHandler handler) {
-    HgUtil.executeOnPooledThread(new Runnable() {
-      @Override
-      public void run() {
-        HgCommandResult result = executeInCurrentThread(repo, operation, arguments);
-        if (handler != null) {
-          handler.process(result);
-        }
+                      @Nullable final HgCommandResultHandler handler) {
+    Task.Backgroundable.queue(myProject, operation, indicator -> {
+      HgCommandResult result = executeInCurrentThread(repo, operation, arguments);
+      if (handler != null) {
+        handler.process(result);
       }
-    }, myProject);
+    });
   }
 
   public HgCommandResult executeInCurrentThread(@Nullable final VirtualFile repo,
@@ -253,8 +249,8 @@ public class HgCommandExecutor {
     final HgVcs vcs = HgVcs.getInstance(myProject);
     if (vcs == null) return;
     String message = HgVcsMessages.message("hg4idea.command.executable.error", vcs.getGlobalSettings().getHgExecutable()) +
-                     "\nOriginal Error:\n" +
-                     e.getMessage();
+      "\nOriginal Error:\n" +
+      e.getMessage();
     VcsImplUtil.showErrorMessage(myProject, message, HgVcsMessages.message("hg4idea.error"));
   }
 }

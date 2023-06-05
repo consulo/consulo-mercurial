@@ -15,17 +15,18 @@
  */
 package org.zmlx.hg4idea;
 
-import com.intellij.dvcs.branch.DvcsTaskHandler;
-import com.intellij.openapi.fileEditor.FileDocumentManager;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.VcsException;
-import com.intellij.openapi.vcs.VcsNotifier;
-import com.intellij.openapi.vcs.update.UpdatedFiles;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.Function;
-import com.intellij.util.containers.ContainerUtil;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.document.FileDocumentManager;
+import consulo.project.Project;
+import consulo.util.collection.ContainerUtil;
+import consulo.versionControlSystem.VcsException;
+import consulo.versionControlSystem.VcsNotifier;
+import consulo.versionControlSystem.distributed.branch.DvcsTaskHandler;
+import consulo.versionControlSystem.update.UpdatedFiles;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+import jakarta.inject.Inject;
 import org.zmlx.hg4idea.branch.HgBranchUtil;
 import org.zmlx.hg4idea.command.HgBookmarkCommand;
 import org.zmlx.hg4idea.command.HgCommitCommand;
@@ -41,10 +42,12 @@ import org.zmlx.hg4idea.util.HgUtil;
 import java.util.Collections;
 import java.util.List;
 
+@ExtensionImpl
 public class HgTaskHandler extends DvcsTaskHandler<HgRepository> {
 
   private HgReferenceValidator myNameValidator;
 
+  @Inject
   public HgTaskHandler(@Nonnull HgRepositoryManager repositoryManager,
                        @Nonnull Project project) {
     super(repositoryManager, project, "bookmark");
@@ -75,12 +78,7 @@ public class HgTaskHandler extends DvcsTaskHandler<HgRepository> {
     //be careful with equality names of branches/bookmarks =(
     Iterable<String> names =
       ContainerUtil.concat(HgUtil.getSortedNamesWithoutHashes(repository.getBookmarks()), repository.getOpenedBranches());
-    return ContainerUtil.map(names, new Function<String, TaskInfo>() {
-      @Override
-      public TaskInfo fun(String s) {
-        return new TaskInfo(s, Collections.singleton(repository.getPresentableUrl()));
-      }
-    });
+    return ContainerUtil.map(names, s -> new TaskInfo(s, Collections.singleton(repository.getPresentableUrl())));
   }
 
   @Override
@@ -100,11 +98,11 @@ public class HgTaskHandler extends DvcsTaskHandler<HgRepository> {
             HgBookmarkCommand.deleteBookmarkSynchronously(project, repositoryRoot, branch);
           }
           catch (HgCommandException e) {
-              HgErrorUtil.handleException(project, e);
+            HgErrorUtil.handleException(project, e);
           }
           catch (VcsException e) {
             VcsNotifier.getInstance(project)
-              .notifyError("Exception during merge commit with " + branch, e.getMessage());
+                       .notifyError("Exception during merge commit with " + branch, e.getMessage());
           }
         }
       });
@@ -113,7 +111,8 @@ public class HgTaskHandler extends DvcsTaskHandler<HgRepository> {
 
   @Override
   protected boolean hasBranch(@Nonnull HgRepository repository, @Nonnull TaskInfo name) {
-    return HgUtil.getNamesWithoutHashes(repository.getBookmarks()).contains(name.getName()) || repository.getOpenedBranches().contains(name.getName());
+    return HgUtil.getNamesWithoutHashes(repository.getBookmarks()).contains(name.getName()) || repository.getOpenedBranches()
+                                                                                                         .contains(name.getName());
   }
 
   @Override

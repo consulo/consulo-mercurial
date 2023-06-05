@@ -15,30 +15,30 @@
  */
 package org.zmlx.hg4idea;
 
-import com.intellij.execution.ui.ConsoleViewContentType;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.*;
-import com.intellij.openapi.vcs.changes.Change;
-import com.intellij.openapi.vcs.changes.ChangeListManager;
-import com.intellij.openapi.vcs.changes.ChangeListManagerImpl;
-import com.intellij.openapi.vcs.changes.VcsDirtyScopeManager;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.ui.AppUIUtil;
-import com.intellij.util.Function;
-import com.intellij.util.ObjectUtils;
-import com.intellij.util.containers.ContainerUtil;
-import com.intellij.util.ui.UIUtil;
-import com.intellij.util.ui.VcsBackgroundTask;
-import com.intellij.vcsUtil.VcsUtil;
-import javax.annotation.Nonnull;
+import consulo.application.ApplicationManager;
+import consulo.application.progress.ProgressIndicator;
+import consulo.application.progress.Task;
+import consulo.execution.ui.console.ConsoleViewContentType;
+import consulo.ide.impl.idea.openapi.vcs.changes.ChangeListManagerImpl;
+import consulo.ide.impl.idea.ui.AppUIUtil;
+import consulo.ide.impl.idea.util.ui.VcsBackgroundTask;
+import consulo.logging.Logger;
+import consulo.project.Project;
+import consulo.ui.ex.awt.UIUtil;
+import consulo.util.collection.ContainerUtil;
+import consulo.util.lang.ObjectUtil;
+import consulo.versionControlSystem.*;
+import consulo.versionControlSystem.change.Change;
+import consulo.versionControlSystem.change.ChangeListManager;
+import consulo.versionControlSystem.change.VcsDirtyScopeManager;
+import consulo.versionControlSystem.util.VcsUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import consulo.virtualFileSystem.status.FileStatus;
 import org.zmlx.hg4idea.command.*;
 import org.zmlx.hg4idea.provider.HgLocalIgnoredHolder;
 import org.zmlx.hg4idea.util.HgUtil;
 
+import jakarta.annotation.Nonnull;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -102,8 +102,9 @@ public class HgVFSListener extends VcsVFSListener {
           final Collection<VirtualFile> files = e.getValue();
           pi.setText(repo.getPresentableUrl());
           try {
-            Collection<VirtualFile> untrackedForRepo = new HgStatusCommand.Builder(false).unknown(true).removed(true).build(myProject)
-              .getFiles(repo, new ArrayList<>(files));
+            Collection<VirtualFile> untrackedForRepo =
+              new HgStatusCommand.Builder(false).unknown(true).removed(true).build((Project)myProject)
+                                                .getFiles(repo, new ArrayList<>(files));
             untrackedFiles.addAll(untrackedForRepo);
             List<VirtualFile> ignoredForRepo = files.stream().filter(file -> !untrackedForRepo.contains(file)).collect(Collectors.toList());
             getIgnoreRepoHolder(repo).addFiles(ignoredForRepo);
@@ -120,12 +121,7 @@ public class HgVFSListener extends VcsVFSListener {
         // select files to add if there is something to select
         if (!addedFiles.isEmpty() || !copyFromMap.isEmpty()) {
 
-          AppUIUtil.invokeLaterIfProjectAlive(myProject, new Runnable() {
-            @Override
-            public void run() {
-              originalExecuteAdd(addedFiles, copyFromMap);
-            }
-          });
+          AppUIUtil.invokeLaterIfProjectAlive((Project)myProject, (Runnable)() -> originalExecuteAdd(addedFiles, copyFromMap));
         }
       }
     }.queue();
@@ -133,8 +129,9 @@ public class HgVFSListener extends VcsVFSListener {
 
   @Nonnull
   HgLocalIgnoredHolder getIgnoreRepoHolder(@Nonnull VirtualFile repoRoot) {
-    return ObjectUtils.assertNotNull(HgUtil.getRepositoryManager(myProject).getRepositoryForRootQuick(repoRoot)).getLocalIgnoredHolder();
+    return ObjectUtil.assertNotNull(HgUtil.getRepositoryManager(myProject).getRepositoryForRootQuick(repoRoot)).getLocalIgnoredHolder();
   }
+
   /**
    * The version of execute add before overriding
    *
@@ -150,23 +147,21 @@ public class HgVFSListener extends VcsVFSListener {
     (new Task.ConditionalModal(myProject,
                                HgVcsMessages.message("hg4idea.add.progress"),
                                false,
-                               VcsConfiguration.getInstance(myProject).getAddRemoveOption() ) {
-      @Override public void run(@Nonnull ProgressIndicator aProgressIndicator) {
+                               VcsConfiguration.getInstance(myProject).getAddRemoveOption()) {
+      @Override
+      public void run(@Nonnull ProgressIndicator aProgressIndicator) {
         final ArrayList<VirtualFile> adds = new ArrayList<>();
         final HashMap<VirtualFile, VirtualFile> copies = new HashMap<>(); // from -> to
         //delete unversioned and ignored files from copy source
         LOG.assertTrue(myProject != null, "Project is null");
         Collection<VirtualFile> unversionedAndIgnoredFiles = new ArrayList<>();
-        final Map<VirtualFile, Collection<VirtualFile>> sortedSourceFilesByRepos = HgUtil.sortByHgRoots(myProject, copyFromMap.values());
-        HgStatusCommand statusCommand = new HgStatusCommand.Builder(false).unknown(true).ignored(true).build(myProject);
+        final Map<VirtualFile, Collection<VirtualFile>> sortedSourceFilesByRepos =
+          HgUtil.sortByHgRoots((Project)myProject, copyFromMap.values());
+        HgStatusCommand statusCommand = new HgStatusCommand.Builder(false).unknown(true).ignored(true).build((Project)myProject);
         for (Map.Entry<VirtualFile, Collection<VirtualFile>> entry : sortedSourceFilesByRepos.entrySet()) {
           Set<HgChange> changes =
-            statusCommand.executeInCurrentThread(entry.getKey(), ContainerUtil.map(entry.getValue(), new Function<VirtualFile, FilePath>() {
-              @Override
-              public FilePath fun(VirtualFile virtualFile) {
-                return VcsUtil.getFilePath(virtualFile);
-              }
-            }));
+            statusCommand.executeInCurrentThread(entry.getKey(), ContainerUtil.map(entry.getValue(),
+                                                                                   virtualFile -> VcsUtil.getFilePath(virtualFile)));
           for (HgChange change : changes) {
             unversionedAndIgnoredFiles.add(change.afterFile().toFilePath().getVirtualFile());
           }
@@ -182,20 +177,21 @@ public class HgVFSListener extends VcsVFSListener {
           final VirtualFile copyFrom = copyFromMap.get(file);
           if (copyFrom != null) {
             copies.put(copyFrom, file);
-          } else {
+          }
+          else {
             adds.add(file);
           }
         }
 
         // add for all files at once
         if (!adds.isEmpty()) {
-          new HgAddCommand(myProject).executeInCurrentThread(adds);
+          new HgAddCommand((Project)myProject).executeInCurrentThread(adds);
         }
 
         // copy needs to be run for each file separately
         if (!copies.isEmpty()) {
           for (Map.Entry<VirtualFile, VirtualFile> copy : copies.entrySet()) {
-            new HgCopyCommand(myProject).executeInCurrentThread(copy.getKey(), copy.getValue());
+            new HgCopyCommand((Project)myProject).executeInCurrentThread(copy.getKey(), copy.getValue());
           }
         }
 
@@ -224,8 +220,8 @@ public class HgVFSListener extends VcsVFSListener {
   @Override
   protected VcsDeleteType needConfirmDeletion(final VirtualFile file) {
     return ChangeListManagerImpl.getInstanceImpl(myProject).getUnversionedFiles().contains(file)
-           ? VcsDeleteType.IGNORE
-           : VcsDeleteType.CONFIRM;
+      ? VcsDeleteType.IGNORE
+      : VcsDeleteType.CONFIRM;
   }
 
   protected void executeDelete() {
@@ -256,7 +252,8 @@ public class HgVFSListener extends VcsVFSListener {
                               HgVcsMessages.message("hg4idea.remove.progress"),
                               false,
                               VcsConfiguration.getInstance(myProject).getAddRemoveOption()) {
-      @Override public void run( @Nonnull ProgressIndicator indicator ) {
+      @Override
+      public void run(@Nonnull ProgressIndicator indicator) {
         // confirm removal from the VCS if needed
         if (myRemoveOption.getValue() != VcsShowConfirmationOption.Value.DO_NOTHING_SILENTLY) {
           if (myRemoveOption.getValue() == VcsShowConfirmationOption.Value.DO_ACTION_SILENTLY || filesToConfirmDeletion.isEmpty()) {
@@ -282,15 +279,15 @@ public class HgVFSListener extends VcsVFSListener {
   private List<FilePath> processAndGetVcsIgnored(@Nonnull List<FilePath> filePaths) {
     Map<VirtualFile, Collection<FilePath>> groupFilePathsByHgRoots = HgUtil.groupFilePathsByHgRoots(myProject, filePaths);
     return groupFilePathsByHgRoots.entrySet().stream()
-      .map(entry -> getIgnoreRepoHolder(entry.getKey()).removeIgnoredFiles(entry.getValue()))
-      .flatMap(List::stream).collect(Collectors.toList());
+                                  .map(entry -> getIgnoreRepoHolder(entry.getKey()).removeIgnoredFiles(entry.getValue()))
+                                  .flatMap(List::stream).collect(Collectors.toList());
   }
 
   /**
    * Changes the given collection of files by filtering out unversioned files and
    * files which are not under Mercurial repository.
    *
-   * @param filesToFilter    files to be filtered.
+   * @param filesToFilter files to be filtered.
    */
   private void skipNotUnderHg(Collection<FilePath> filesToFilter) {
     for (Iterator<FilePath> iter = filesToFilter.iterator(); iter.hasNext(); ) {
@@ -302,7 +299,7 @@ public class HgVFSListener extends VcsVFSListener {
   }
 
   @Override
-  protected void performDeletion( final List<FilePath> filesToDelete) {
+  protected void performDeletion(final List<FilePath> filesToDelete) {
     final ArrayList<HgFile> deletes = new ArrayList<>();
     for (FilePath file : filesToDelete) {
       if (file.isDirectory()) {
@@ -327,16 +324,16 @@ public class HgVFSListener extends VcsVFSListener {
   @Override
   protected void performMoveRename(List<MovedFileInfo> movedFiles) {
     (new VcsBackgroundTask<MovedFileInfo>(myProject,
-                                        HgVcsMessages.message("hg4idea.move.progress"),
-                                        VcsConfiguration.getInstance(myProject).getAddRemoveOption(),
-                                        movedFiles) {
+                                          HgVcsMessages.message("hg4idea.move.progress"),
+                                          VcsConfiguration.getInstance(myProject).getAddRemoveOption(),
+                                          movedFiles) {
       protected void process(final MovedFileInfo file) throws VcsException {
         final FilePath source = VcsUtil.getFilePath(file.myOldPath);
         final FilePath target = VcsUtil.getFilePath(file.myNewPath);
-        VirtualFile sourceRoot = VcsUtil.getVcsRootFor(myProject, source);
-        VirtualFile targetRoot = VcsUtil.getVcsRootFor(myProject, target);
+        VirtualFile sourceRoot = VcsUtil.getVcsRootFor((Project)myProject, source);
+        VirtualFile targetRoot = VcsUtil.getVcsRootFor((Project)myProject, target);
         if (sourceRoot != null && targetRoot != null) {
-          (new HgMoveCommand(myProject)).execute(new HgFile(sourceRoot, source), new HgFile(targetRoot, target));
+          (new HgMoveCommand((Project)myProject)).execute(new HgFile(sourceRoot, source), new HgFile(targetRoot, target));
         }
         dirtyScopeManager.fileDirty(source);
         dirtyScopeManager.fileDirty(target);

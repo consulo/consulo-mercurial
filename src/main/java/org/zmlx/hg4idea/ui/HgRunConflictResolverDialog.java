@@ -12,25 +12,24 @@
 // limitations under the License.
 package org.zmlx.hg4idea.ui;
 
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.ModalityState;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.Consumer;
-import javax.annotation.Nonnull;
-
+import consulo.application.ApplicationManager;
+import consulo.project.Project;
+import consulo.ui.ModalityState;
+import consulo.ui.ex.awt.DialogWrapper;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.HgFile;
 import org.zmlx.hg4idea.command.HgResolveCommand;
 import org.zmlx.hg4idea.command.HgResolveStatusEnum;
 import org.zmlx.hg4idea.repo.HgRepository;
 
-import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class HgRunConflictResolverDialog extends DialogWrapper {
 
@@ -76,7 +75,7 @@ public class HgRunConflictResolverDialog extends DialogWrapper {
     final ModalityState modalityState = ApplicationManager.getApplication().getModalityStateForComponent(getRootPane());
     command.getListAsynchronously(repo, new Consumer<Map<HgFile, HgResolveStatusEnum>>() {
       @Override
-      public void consume(Map<HgFile, HgResolveStatusEnum> status) {
+      public void accept(Map<HgFile, HgResolveStatusEnum> status) {
         final DefaultListModel model = new DefaultListModel();
         for (Map.Entry<HgFile, HgResolveStatusEnum> entry : status.entrySet()) {
           if (entry.getValue() == HgResolveStatusEnum.UNRESOLVED) {

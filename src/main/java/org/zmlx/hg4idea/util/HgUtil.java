@@ -12,33 +12,40 @@
 // limitations under the License.
 package org.zmlx.hg4idea.util;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import org.zmlx.hg4idea.HgChange;
-import org.zmlx.hg4idea.HgFile;
-import org.zmlx.hg4idea.HgFileRevision;
-import org.zmlx.hg4idea.HgFileStatusEnum;
-import org.zmlx.hg4idea.HgNameWithHashInfo;
-import org.zmlx.hg4idea.HgProjectSettings;
-import org.zmlx.hg4idea.HgRevisionNumber;
-import org.zmlx.hg4idea.HgVcsMessages;
+import consulo.application.ApplicationManager;
+import consulo.application.WriteAction;
+import consulo.ide.ServiceManager;
+import consulo.ide.impl.idea.openapi.vcs.CalledInAwt;
+import consulo.ide.impl.idea.openapi.vcs.history.FileHistoryPanelImpl;
+import consulo.ide.impl.idea.openapi.vcs.vfs.AbstractVcsVirtualFile;
+import consulo.ide.impl.idea.openapi.vcs.vfs.VcsVirtualFile;
+import consulo.ide.impl.idea.openapi.vfs.VfsUtil;
+import consulo.logging.Logger;
+import consulo.project.Project;
+import consulo.ui.ex.awt.Messages;
+import consulo.util.collection.ArrayUtil;
+import consulo.util.collection.ContainerUtil;
+import consulo.util.io.CharsetToolkit;
+import consulo.util.io.FileUtil;
+import consulo.util.lang.Couple;
+import consulo.util.lang.ShutDownTracker;
+import consulo.util.lang.StringUtil;
+import consulo.versionControlSystem.AbstractVcs;
+import consulo.versionControlSystem.FilePath;
+import consulo.versionControlSystem.VcsException;
+import consulo.versionControlSystem.change.Change;
+import consulo.versionControlSystem.change.ChangeListManager;
+import consulo.versionControlSystem.change.ContentRevision;
+import consulo.versionControlSystem.change.VcsDirtyScopeManager;
+import consulo.versionControlSystem.distributed.DvcsUtil;
+import consulo.versionControlSystem.history.VcsFileRevisionEx;
+import consulo.versionControlSystem.util.VcsUtil;
+import consulo.virtualFileSystem.LocalFileSystem;
+import consulo.virtualFileSystem.VirtualFile;
+import consulo.virtualFileSystem.status.FileStatus;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+import org.zmlx.hg4idea.*;
 import org.zmlx.hg4idea.command.HgCatCommand;
 import org.zmlx.hg4idea.command.HgRemoveCommand;
 import org.zmlx.hg4idea.command.HgStatusCommand;
@@ -50,39 +57,12 @@ import org.zmlx.hg4idea.log.HgHistoryUtil;
 import org.zmlx.hg4idea.provider.HgChangeProvider;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.repo.HgRepositoryManager;
-import com.intellij.dvcs.DvcsUtil;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.components.ServiceManager;
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.util.BackgroundTaskUtil;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.util.Couple;
-import com.intellij.openapi.util.ShutDownTracker;
-import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vcs.CalledInAwt;
-import com.intellij.openapi.vcs.FilePath;
-import com.intellij.openapi.vcs.FileStatus;
-import com.intellij.openapi.vcs.VcsException;
-import com.intellij.openapi.vcs.changes.Change;
-import com.intellij.openapi.vcs.changes.ChangeListManager;
-import com.intellij.openapi.vcs.changes.ContentRevision;
-import com.intellij.openapi.vcs.changes.VcsDirtyScopeManager;
-import com.intellij.openapi.vcs.history.FileHistoryPanelImpl;
-import com.intellij.openapi.vcs.history.VcsFileRevisionEx;
-import com.intellij.openapi.vcs.vfs.AbstractVcsVirtualFile;
-import com.intellij.openapi.vcs.vfs.VcsVirtualFile;
-import com.intellij.openapi.vfs.CharsetToolkit;
-import com.intellij.openapi.vfs.LocalFileSystem;
-import com.intellij.openapi.vfs.VfsUtil;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.ui.GuiUtils;
-import com.intellij.util.ArrayUtil;
-import com.intellij.util.containers.ContainerUtil;
-import com.intellij.vcsUtil.VcsUtil;
-import consulo.disposer.Disposable;
+
+import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * HgUtil is a collection of static utility methods for Mercurial.
@@ -108,7 +88,8 @@ public abstract class HgUtil {
       int bytesRead;
       while ((bytesRead = in.read(buffer)) != -1)
         out.write(buffer, 0, bytesRead);
-    } finally {
+    }
+    finally {
       try {
         out.close();
       }
@@ -141,7 +122,7 @@ public abstract class HgUtil {
    * Runs the given task as a write action in the event dispatching thread and waits for its completion.
    */
   public static void runWriteActionAndWait(@Nonnull final Runnable runnable) throws InvocationTargetException, InterruptedException {
-    GuiUtils.runOrInvokeAndWait(() -> ApplicationManager.getApplication().runWriteAction(runnable));
+    WriteAction.runAndWait(runnable);
   }
 
   /**
@@ -153,7 +134,7 @@ public abstract class HgUtil {
 
   /**
    * Returns a temporary python file that will be deleted on exit.
-   *
+   * <p>
    * Also all compiled version of the python file will be deleted.
    *
    * @param base The basename of the file to copy
@@ -174,15 +155,17 @@ public abstract class HgUtil {
         }
       });
       return file;
-    } catch (IOException e) {
+    }
+    catch (IOException e) {
       return null;
     }
   }
 
   /**
    * Calls 'hg remove' to remove given files from the VCS.
+   *
    * @param project
-   * @param files files to be removed from the VCS.
+   * @param files   files to be removed from the VCS.
    */
   public static void removeFilesFromVcs(Project project, List<FilePath> files) {
     final HgRemoveCommand command = new HgRemoveCommand(project);
@@ -198,10 +181,11 @@ public abstract class HgUtil {
 
   /**
    * Finds the nearest parent directory which is an hg root.
+   *
    * @param dir Directory which parent will be checked.
    * @return Directory which is the nearest hg root being a parent of this directory,
    * or <code>null</code> if this directory is not under hg.
-   * @see com.intellij.openapi.vcs.AbstractVcs#isVersionedDirectory(VirtualFile)
+   * @see AbstractVcs#isVersionedDirectory(VirtualFile)
    */
   @Nullable
   public static VirtualFile getNearestHgRoot(VirtualFile dir) {
@@ -254,6 +238,7 @@ public abstract class HgUtil {
   /**
    * Gets the Mercurial root for the given file path or null if non exists:
    * the root should not only be in directory mappings, but also the .hg repository folder should exist.
+   *
    * @see #getHgRootOrThrow(Project, FilePath)
    * @see #getHgRootOrNull(Project, FilePath)
    */
@@ -265,6 +250,7 @@ public abstract class HgUtil {
   /**
    * Gets the Mercurial root for the given file path or throws a VcsException if non exists:
    * the root should not only be in directory mappings, but also the .hg repository folder should exist.
+   *
    * @see #getHgRootOrNull(Project, FilePath)
    */
   @Nonnull
@@ -297,6 +283,7 @@ public abstract class HgUtil {
    * Checks is a merge operation is in progress on the given repository.
    * Actually gets the number of parents of the current revision. If there are 2 parents, then a merge is going on. Otherwise there is
    * only one parent.
+   *
    * @param project    project to work on.
    * @param repository repository which is checked on merge.
    * @return True if merge operation is in progress, false if there is no merge operation.
@@ -304,8 +291,10 @@ public abstract class HgUtil {
   public static boolean isMergeInProgress(@Nonnull Project project, VirtualFile repository) {
     return new HgWorkingCopyRevisionsCommand(project).parents(repository).size() > 1;
   }
+
   /**
    * Groups the given files by their Mercurial repositories and returns the map of relative paths to files for each repository.
+   *
    * @param hgFiles files to be grouped.
    * @return key is repository, values is the non-empty list of relative paths to files, which belong to this repository.
    */
@@ -315,7 +304,7 @@ public abstract class HgUtil {
     if (hgFiles == null) {
       return map;
     }
-    for(HgFile file : hgFiles) {
+    for (HgFile file : hgFiles) {
       final VirtualFile repo = file.getRepo();
       List<String> files = map.get(repo);
       if (files == null) {
@@ -353,7 +342,7 @@ public abstract class HgUtil {
 
     FileStatus status = change.getFileStatus();
     if (status == HgChangeProvider.COPIED ||
-        status == HgChangeProvider.RENAMED) {
+      status == HgChangeProvider.RENAMED) {
       ContentRevision beforeRevision = change.getBeforeRevision();
       assert beforeRevision != null : "If a file's status is copied or renamed, there must be an previous version";
       return beforeRevision.getFile();
@@ -403,14 +392,9 @@ public abstract class HgUtil {
     return sorted;
   }
 
-  @Nonnull
-  public static ProgressIndicator executeOnPooledThread(@Nonnull Runnable runnable, @Nonnull Disposable parentDisposable) {
-    return BackgroundTaskUtil.executeOnPooledThread(parentDisposable, runnable);
-  }
-
   /**
    * Convert {@link VcsVirtualFile} to the {@link LocalFileSystem local} Virtual File.
-   *
+   * <p>
    * TODO
    * It is a workaround for the following problem: VcsVirtualFiles returned from the {@link FileHistoryPanelImpl} contain the current path
    * of the file, not the path that was in certain revision. This has to be fixed by making {@link HgFileRevision} implement
@@ -439,14 +423,14 @@ public abstract class HgUtil {
     if (revNum1 != null) {
       //rev2==null means "compare with local version"
       statusCommand = new HgStatusCommand.Builder(true).ignored(false).unknown(false).copySource(!path.isDirectory()).baseRevision(revNum1)
-        .targetRevision(revNum2).build(project);
+                                                       .targetRevision(revNum2).build(project);
     }
     else {
       LOG.assertTrue(revNum2 != null, "revision1 and revision2 can't both be null. Path: " + path); //rev1 and rev2 can't be null both//
       //get initial changes//
       statusCommand =
         new HgStatusCommand.Builder(true).ignored(false).unknown(false).copySource(false).baseRevision(revNum2)
-          .build(project);
+                                         .build(project);
     }
 
     Collection<HgChange> hgChanges = statusCommand.executeInCurrentThread(root, Collections.singleton(path));
@@ -631,7 +615,8 @@ public abstract class HgUtil {
       userName = "";
       if (startEmailIndex >= 0 && startDomainIndex > startEmailIndex && startDomainIndex < endEmailIndex) {
         email = authorString.substring(startEmailIndex + 1, endEmailIndex).trim();
-      } else {
+      }
+      else {
         email = authorString;
       }
     }

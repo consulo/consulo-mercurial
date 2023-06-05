@@ -15,10 +15,10 @@
  */
 package org.zmlx.hg4idea.action.mq;
 
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.progress.ProgressManager;
-import com.intellij.openapi.project.DumbAwareAction;
-import javax.annotation.Nonnull;
+import consulo.ui.ex.action.AnActionEvent;
+import consulo.application.progress.ProgressManager;
+import consulo.ui.ex.action.DumbAwareAction;
+import jakarta.annotation.Nonnull;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.ui.HgMqUnAppliedPatchesPanel;
 

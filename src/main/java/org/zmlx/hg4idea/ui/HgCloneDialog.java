@@ -15,17 +15,17 @@
  */
 package org.zmlx.hg4idea.ui;
 
-import javax.annotation.Nonnull;
+import consulo.application.Application;
+import consulo.ide.ServiceManager;
+import consulo.ide.impl.idea.dvcs.DvcsRememberedInputs;
+import consulo.ide.impl.idea.dvcs.ui.CloneDvcsDialog;
+import consulo.project.Project;
+import jakarta.annotation.Nonnull;
 import org.zmlx.hg4idea.HgRememberedInputs;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.command.HgIdentifyCommand;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 import org.zmlx.hg4idea.util.HgUtil;
-import com.intellij.dvcs.DvcsRememberedInputs;
-import com.intellij.dvcs.ui.CloneDvcsDialog;
-import com.intellij.openapi.application.ModalityState;
-import com.intellij.openapi.components.ServiceManager;
-import com.intellij.openapi.project.Project;
 
 /**
  * A dialog for the mercurial clone options
@@ -57,7 +57,7 @@ public class HgCloneDialog extends CloneDvcsDialog {
   protected TestResult test(@Nonnull final String url) {
     HgIdentifyCommand identifyCommand = new HgIdentifyCommand(myProject);
     identifyCommand.setSource(url);
-    HgCommandResult result = identifyCommand.execute(ModalityState.stateForComponent(getRootPane()));
+    HgCommandResult result = identifyCommand.execute(Application.get().getModalityStateForComponent(getRootPane()));
     return result != null && result.getExitValue() == 0 ? TestResult.SUCCESS : new TestResult(result.getRawError());
   }
 }

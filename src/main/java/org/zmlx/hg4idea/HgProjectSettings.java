@@ -12,22 +12,29 @@
 // limitations under the License.
 package org.zmlx.hg4idea;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import com.intellij.dvcs.branch.DvcsSyncSettings;
-import com.intellij.openapi.components.PersistentStateComponent;
-import com.intellij.openapi.components.ServiceManager;
-import com.intellij.openapi.components.State;
-import com.intellij.openapi.components.Storage;
-import com.intellij.openapi.components.StoragePathMacros;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.changes.VcsAnnotationRefresher;
+import consulo.annotation.component.ComponentScope;
+import consulo.annotation.component.ServiceAPI;
+import consulo.annotation.component.ServiceImpl;
+import consulo.component.persist.PersistentStateComponent;
+import consulo.component.persist.State;
+import consulo.component.persist.Storage;
+import consulo.component.persist.StoragePathMacros;
+import consulo.ide.ServiceManager;
+import consulo.project.Project;
+import consulo.versionControlSystem.change.VcsAnnotationRefresher;
+import consulo.versionControlSystem.distributed.branch.DvcsSyncSettings;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 @State(
-		name = "hg4idea.settings",
-		storages = @Storage(file = StoragePathMacros.WORKSPACE_FILE))
-public class HgProjectSettings implements PersistentStateComponent<HgProjectSettings.State>, DvcsSyncSettings
-{
+  name = "hg4idea.settings",
+  storages = @Storage(file = StoragePathMacros.WORKSPACE_FILE))
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
+@Singleton
+public class HgProjectSettings implements PersistentStateComponent<HgProjectSettings.State>, DvcsSyncSettings {
 
   @Nonnull
   private final HgGlobalSettings myAppSettings;
@@ -36,6 +43,7 @@ public class HgProjectSettings implements PersistentStateComponent<HgProjectSett
 
   private State myState = new State();
 
+  @Inject
   public HgProjectSettings(@Nonnull Project project, @Nonnull HgGlobalSettings appSettings) {
     myProject = project;
     myAppSettings = appSettings;
@@ -102,7 +110,7 @@ public class HgProjectSettings implements PersistentStateComponent<HgProjectSett
   public void setIgnoreWhitespacesInAnnotations(boolean ignoreWhitespacesInAnnotations) {
     if (myState.myIgnoreWhitespacesInAnnotations != ignoreWhitespacesInAnnotations) {
       myState.myIgnoreWhitespacesInAnnotations = ignoreWhitespacesInAnnotations;
-      myProject.getMessageBus().syncPublisher(VcsAnnotationRefresher.LOCAL_CHANGES_CHANGED).configurationChanged(HgVcs.getKey());
+      myProject.getMessageBus().syncPublisher(VcsAnnotationRefresher.class).configurationChanged(HgVcs.getKey());
     }
   }
 

@@ -15,19 +15,17 @@
  */
 package org.zmlx.hg4idea.util;
 
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.util.text.StringUtil;
-import javax.annotation.Nonnull;
-
+import consulo.logging.Logger;
+import consulo.util.lang.StringUtil;
+import jakarta.annotation.Nonnull;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 import org.zmlx.hg4idea.execution.ShellCommandException;
 
+import jakarta.annotation.Nullable;
 import java.text.ParseException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.annotation.Nullable;
 
 /**
  * The version of Hg.

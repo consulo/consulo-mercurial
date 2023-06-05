@@ -15,9 +15,8 @@
  */
 package org.zmlx.hg4idea.push;
 
-import javax.annotation.Nonnull;
-
-import com.intellij.dvcs.push.PushTarget;
+import consulo.versionControlSystem.distributed.push.PushTarget;
+import jakarta.annotation.Nonnull;
 import org.zmlx.hg4idea.util.HgUtil;
 
 public class HgTarget implements PushTarget {

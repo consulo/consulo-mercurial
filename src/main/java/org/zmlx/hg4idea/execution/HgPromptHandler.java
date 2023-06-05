@@ -15,8 +15,8 @@
  */
 package org.zmlx.hg4idea.execution;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * HgPromptHandler is used by {@link HgPromptCommandExecutor, when you want to change the behavior of

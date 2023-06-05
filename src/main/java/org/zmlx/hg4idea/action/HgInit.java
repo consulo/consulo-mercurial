@@ -15,18 +15,17 @@
  */
 package org.zmlx.hg4idea.action;
 
-import javax.annotation.Nullable;
-
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
-import com.intellij.openapi.project.DumbAwareAction;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.project.ProjectManager;
-import com.intellij.openapi.vcs.ProjectLevelVcsManager;
-import com.intellij.openapi.vcs.VcsNotifier;
-import com.intellij.openapi.vfs.VfsUtil;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.vcsUtil.VcsUtil;
+import consulo.language.editor.CommonDataKeys;
+import consulo.project.Project;
+import consulo.project.ProjectManager;
+import consulo.ui.ex.action.AnActionEvent;
+import consulo.ui.ex.action.DumbAwareAction;
+import consulo.versionControlSystem.ProjectLevelVcsManager;
+import consulo.versionControlSystem.VcsNotifier;
+import consulo.versionControlSystem.util.VcsUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import consulo.virtualFileSystem.util.VirtualFileUtil;
+import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.HgVcsMessages;
 import org.zmlx.hg4idea.command.HgInitCommand;
@@ -40,6 +39,7 @@ import org.zmlx.hg4idea.util.HgUtil;
 /**
  * Action for initializing a Mercurial repository.
  * Command "hg init".
+ *
  * @author Kirill Likhodedov
  */
 public class HgInit extends DumbAwareAction {
@@ -96,13 +96,12 @@ public class HgInit extends DumbAwareAction {
 
   // update vcs directory mappings if new repository was created inside the current project directory
   private void updateDirectoryMappings(VirtualFile mapRoot) {
-    if (myProject != null && (! myProject.isDefault()) && myProject.getBaseDir() != null && VfsUtil
+    if (myProject != null && (!myProject.isDefault()) && myProject.getBaseDir() != null && VirtualFileUtil
       .isAncestor(myProject.getBaseDir(), mapRoot, false)) {
       mapRoot.refresh(false, false);
       final String path = mapRoot.equals(myProject.getBaseDir()) ? "" : mapRoot.getPath();
       ProjectLevelVcsManager manager = ProjectLevelVcsManager.getInstance(myProject);
       manager.setDirectoryMappings(VcsUtil.addMapping(manager.getDirectoryMappings(), path, HgVcs.VCS_NAME));
-      manager.updateActiveVcss();
     }
   }
 
@@ -127,5 +126,5 @@ public class HgInit extends DumbAwareAction {
       }
     });
   }
-  
+
 }

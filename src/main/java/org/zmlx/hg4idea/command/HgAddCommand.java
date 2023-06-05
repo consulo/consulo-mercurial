@@ -12,13 +12,13 @@
 // limitations under the License.
 package org.zmlx.hg4idea.command;
 
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.vcsUtil.VcsFileUtil;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import consulo.application.progress.ProgressIndicator;
+import consulo.application.progress.Task;
+import consulo.project.Project;
+import consulo.versionControlSystem.util.VcsFileUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.execution.HgCommandExecutor;
 import org.zmlx.hg4idea.util.HgUtil;
 
@@ -46,23 +46,13 @@ public class HgAddCommand {
   }
 
   public void addWithProgress(final Collection<VirtualFile> files) {
-    if (files.size() >= HgUtil.MANY_FILES) {
-      new Task.Backgroundable(myProject, "Adding Files to Mercurial", true) {
-        @Override
-        public void run(@Nonnull ProgressIndicator indicator) {
-          indicator.setIndeterminate(false);
-          executeInCurrentThread(files, indicator);
-        }
-      }.queue();
-    }
-    else {
-      HgUtil.executeOnPooledThread(new Runnable() {
-        @Override
-        public void run() {
-          executeInCurrentThread(files);
-        }
-      }, myProject);
-    }
+    new Task.Backgroundable(myProject, "Adding Files to Mercurial", true) {
+      @Override
+      public void run(@Nonnull ProgressIndicator indicator) {
+        indicator.setIndeterminate(false);
+        executeInCurrentThread(files, indicator);
+      }
+    }.queue();
   }
 
   private void executeInCurrentThread(@Nonnull Collection<VirtualFile> files, @Nullable ProgressIndicator indicator) {

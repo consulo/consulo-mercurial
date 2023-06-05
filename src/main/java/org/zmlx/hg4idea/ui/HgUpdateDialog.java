@@ -12,10 +12,10 @@
 // limitations under the License.
 package org.zmlx.hg4idea.ui;
 
-import com.intellij.ui.IdeBorderFactory;
-import com.intellij.ui.components.JBCheckBox;
+import consulo.ui.ex.awt.IdeBorderFactory;
+import consulo.ui.ex.awt.JBCheckBox;
 import net.miginfocom.swing.MigLayout;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import org.zmlx.hg4idea.provider.update.HgUpdateConfigurationSettings;
 import org.zmlx.hg4idea.provider.update.HgUpdateType;
 

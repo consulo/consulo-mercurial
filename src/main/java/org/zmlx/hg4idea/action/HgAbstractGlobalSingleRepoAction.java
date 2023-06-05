@@ -15,9 +15,10 @@
  */
 package org.zmlx.hg4idea.action;
 
-import com.intellij.openapi.project.Project;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import consulo.project.Project;
+import jakarta.annotation.Nonnull;
+
+import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.repo.HgRepository;
 
 import java.util.Collection;

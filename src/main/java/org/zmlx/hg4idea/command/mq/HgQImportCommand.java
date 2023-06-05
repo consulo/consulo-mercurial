@@ -15,9 +15,10 @@
  */
 package org.zmlx.hg4idea.command.mq;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.util.containers.ContainerUtil;
-import javax.annotation.Nonnull;
+import consulo.project.Project;
+import consulo.util.collection.ContainerUtil;
+import jakarta.annotation.Nonnull;
+
 import org.zmlx.hg4idea.action.HgCommandResultNotifier;
 import org.zmlx.hg4idea.execution.HgCommandExecutor;
 import org.zmlx.hg4idea.execution.HgCommandResult;
@@ -34,15 +35,6 @@ public class HgQImportCommand {
 
   public HgQImportCommand(@Nonnull HgRepository repository) {
     myRepository = repository;
-  }
-
-  public void execute(@Nonnull final String startRevisionNumber) {
-    HgUtil.executeOnPooledThread(new Runnable() {
-      @Override
-      public void run() {
-        executeInCurrentThread(startRevisionNumber);
-      }
-    }, myRepository.getProject());
   }
 
   public void executeInCurrentThread(@Nonnull final String startRevisionNumber) {

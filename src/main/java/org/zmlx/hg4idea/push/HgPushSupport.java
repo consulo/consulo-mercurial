@@ -15,22 +15,23 @@
  */
 package org.zmlx.hg4idea.push;
 
-import javax.annotation.Nonnull;
-
-import com.intellij.dvcs.branch.DvcsSyncSettings;
-import com.intellij.dvcs.push.*;
-import com.intellij.dvcs.repo.RepositoryManager;
-import com.intellij.openapi.components.ServiceManager;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.AbstractVcs;
-import com.intellij.util.ObjectUtils;
-
-import javax.annotation.Nullable;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.ide.impl.idea.dvcs.push.PushSettings;
+import consulo.project.Project;
+import consulo.util.lang.ObjectUtil;
+import consulo.versionControlSystem.AbstractVcs;
+import consulo.versionControlSystem.distributed.branch.DvcsSyncSettings;
+import consulo.versionControlSystem.distributed.push.*;
+import consulo.versionControlSystem.distributed.repository.RepositoryManager;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+import jakarta.inject.Inject;
 import org.zmlx.hg4idea.HgProjectSettings;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.util.HgUtil;
 
+@ExtensionImpl
 public class HgPushSupport extends PushSupport<HgRepository, HgPushSource, HgTarget> {
 
   @Nonnull
@@ -42,11 +43,12 @@ public class HgPushSupport extends PushSupport<HgRepository, HgPushSource, HgTar
   @Nonnull
   private final PushSettings myCommonPushSettings;
 
-  public HgPushSupport(@Nonnull Project project) {
+  @Inject
+  public HgPushSupport(@Nonnull Project project, @Nonnull PushSettings pushSettings) {
     myProject = project;
-    myVcs = ObjectUtils.assertNotNull(HgVcs.getInstance(myProject));
+    myVcs = ObjectUtil.assertNotNull(HgVcs.getInstance(myProject));
     mySettings = myVcs.getProjectSettings();
-    myCommonPushSettings = ServiceManager.getService(project, PushSettings.class);
+    myCommonPushSettings = pushSettings;
   }
 
   @Nonnull

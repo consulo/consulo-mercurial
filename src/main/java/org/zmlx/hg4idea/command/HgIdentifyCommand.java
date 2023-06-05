@@ -1,9 +1,10 @@
 package org.zmlx.hg4idea.command;
 
-import com.intellij.openapi.application.ModalityState;
-import com.intellij.openapi.project.Project;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import consulo.project.Project;
+import consulo.ui.ModalityState;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 import org.zmlx.hg4idea.execution.HgRemoteCommandExecutor;
 

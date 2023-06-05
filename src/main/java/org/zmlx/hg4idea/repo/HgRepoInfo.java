@@ -15,12 +15,12 @@
  */
 package org.zmlx.hg4idea.repo;
 
-import com.intellij.dvcs.repo.Repository;
-import com.intellij.vcs.log.Hash;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import consulo.versionControlSystem.distributed.repository.Repository;
+import consulo.versionControlSystem.log.Hash;
 import org.zmlx.hg4idea.HgNameWithHashInfo;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.util.*;
 
 public class HgRepoInfo {
@@ -50,15 +50,15 @@ public class HgRepoInfo {
   private List<String> myMqNames = Collections.emptyList();
 
   public HgRepoInfo(@Nonnull String currentBranch,
-					@Nullable String currentRevision,
-					@Nullable String currentTipRevision,
-					@Nonnull Repository.State state,
-					@Nonnull Map<String, LinkedHashSet<Hash>> branches,
-					@Nonnull Collection<HgNameWithHashInfo> bookmarks,
-					@Nullable String currentBookmark,
-					@Nonnull Collection<HgNameWithHashInfo> tags,
-					@Nonnull Collection<HgNameWithHashInfo> localTags, @Nonnull Collection<HgNameWithHashInfo> subrepos,
-					@Nonnull List<HgNameWithHashInfo> mqApplied, @Nonnull List<String> mqNames) {
+                    @Nullable String currentRevision,
+                    @Nullable String currentTipRevision,
+                    @Nonnull Repository.State state,
+                    @Nonnull Map<String, LinkedHashSet<Hash>> branches,
+                    @Nonnull Collection<HgNameWithHashInfo> bookmarks,
+                    @Nullable String currentBookmark,
+                    @Nonnull Collection<HgNameWithHashInfo> tags,
+                    @Nonnull Collection<HgNameWithHashInfo> localTags, @Nonnull Collection<HgNameWithHashInfo> subrepos,
+                    @Nonnull List<HgNameWithHashInfo> mqApplied, @Nonnull List<String> mqNames) {
     myCurrentBranch = currentBranch;
     myCurrentRevision = currentRevision;
     myTipRevision = currentTipRevision;

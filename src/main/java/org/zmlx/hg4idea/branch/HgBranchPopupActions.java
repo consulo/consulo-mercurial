@@ -15,29 +15,27 @@
  */
 package org.zmlx.hg4idea.branch;
 
-import com.intellij.dvcs.DvcsUtil;
-import com.intellij.dvcs.repo.Repository;
-import com.intellij.dvcs.ui.LightActionGroup;
-import com.intellij.dvcs.ui.NewBranchAction;
-import com.intellij.icons.AllIcons;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.ModalityState;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.project.DumbAwareAction;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vcs.VcsBundle;
-import com.intellij.openapi.vcs.changes.*;
-import com.intellij.openapi.vcs.changes.ui.CommitChangeListDialog;
-import com.intellij.util.ArrayUtil;
-import com.intellij.util.containers.ContainerUtil;
-import com.intellij.vcs.log.Hash;
-import com.intellij.vcs.log.impl.HashImpl;
+import consulo.application.AllIcons;
+import consulo.application.Application;
+import consulo.application.ApplicationManager;
+import consulo.application.progress.ProgressIndicator;
+import consulo.application.progress.Task;
+import consulo.ide.impl.idea.dvcs.ui.LightActionGroup;
+import consulo.ide.impl.idea.dvcs.ui.NewBranchAction;
+import consulo.ide.impl.idea.openapi.vcs.changes.ui.CommitChangeListDialog;
+import consulo.project.Project;
+import consulo.ui.ex.action.*;
+import consulo.util.collection.ArrayUtil;
+import consulo.util.collection.ContainerUtil;
+import consulo.util.lang.StringUtil;
+import consulo.versionControlSystem.VcsBundle;
+import consulo.versionControlSystem.change.*;
+import consulo.versionControlSystem.distributed.DvcsUtil;
+import consulo.versionControlSystem.distributed.repository.Repository;
+import consulo.versionControlSystem.log.Hash;
+import consulo.versionControlSystem.log.base.HashImpl;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.action.HgCommandResultNotifier;
 import org.zmlx.hg4idea.command.HgBookmarkCommand;
@@ -51,8 +49,6 @@ import org.zmlx.hg4idea.ui.HgBookmarkDialog;
 import org.zmlx.hg4idea.util.HgErrorUtil;
 import org.zmlx.hg4idea.util.HgUtil;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 
 import static org.zmlx.hg4idea.util.HgUtil.getNewBranchNameFromUser;
@@ -164,9 +160,9 @@ public class HgBranchPopupActions {
       final Project project = myPreselectedRepo.getProject();
       ApplicationManager.getApplication().saveAll();
       ChangeListManager.getInstance(project)
-        .invokeAfterUpdate(() -> commitAndCloseBranch(project), InvokeAfterUpdateMode.SYNCHRONOUS_CANCELLABLE, VcsBundle
+                       .invokeAfterUpdate(() -> commitAndCloseBranch(project), InvokeAfterUpdateMode.SYNCHRONOUS_CANCELLABLE, VcsBundle
                              .message("waiting.changelists.update.for.show.commit.dialog.message"),
-                                                               ModalityState.current());
+                                          Application.get().getCurrentModalityState());
     }
 
     private void commitAndCloseBranch(@Nonnull final Project project) {
@@ -265,7 +261,7 @@ public class HgBranchPopupActions {
         branchHeadActions
           .add(new HgCommonBranchActions(myRepository.getProject(), Collections.singletonList(myRepository), hash.toShortString()));
       }
-      return ContainerUtil.toArray(branchHeadActions, new AnAction[branchHeadActions.size()]);
+      return branchHeadActions.toArray(new AnAction[branchHeadActions.size()]);
     }
 
     @Override
@@ -302,11 +298,14 @@ public class HgBranchPopupActions {
 
       @Override
       public void actionPerformed(AnActionEvent e) {
-        HgUtil.executeOnPooledThread(() -> {
-          for (HgRepository repository : myRepositories) {
-            HgBookmarkCommand.deleteBookmarkSynchronously(myProject, repository.getRoot(), myBranchName);
+        new Task.Backgroundable(myProject, "Deleting Bookmarks....") {
+          @Override
+          public void run(@Nonnull ProgressIndicator progressIndicator) {
+            for (HgRepository repository : myRepositories) {
+              HgBookmarkCommand.deleteBookmarkSynchronously((Project)myProject, repository.getRoot(), myBranchName);
+            }
           }
-        }, myProject);
+        }.queue();
       }
     }
   }

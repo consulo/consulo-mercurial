@@ -15,9 +15,9 @@
  */
 package org.zmlx.hg4idea.command.mq;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.VcsNotifier;
-import javax.annotation.Nonnull;
+import consulo.project.Project;
+import consulo.versionControlSystem.VcsNotifier;
+import jakarta.annotation.Nonnull;
 import org.zmlx.hg4idea.action.HgCommandResultNotifier;
 import org.zmlx.hg4idea.execution.HgCommandExecutor;
 import org.zmlx.hg4idea.execution.HgCommandResult;

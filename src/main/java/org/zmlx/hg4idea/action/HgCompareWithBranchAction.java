@@ -16,20 +16,18 @@
 package org.zmlx.hg4idea.action;
 
 import com.google.common.collect.Iterables;
-import com.intellij.dvcs.actions.DvcsCompareWithBranchAction;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Condition;
-import com.intellij.openapi.vcs.FilePath;
-import com.intellij.openapi.vcs.VcsException;
-import com.intellij.openapi.vcs.changes.Change;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.ObjectUtils;
-import com.intellij.util.containers.ContainerUtil;
-import com.intellij.vcs.log.Hash;
-import com.intellij.vcs.log.impl.HashImpl;
-import com.intellij.vcsUtil.VcsUtil;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import consulo.ide.impl.idea.dvcs.actions.DvcsCompareWithBranchAction;
+import consulo.project.Project;
+import consulo.util.collection.ContainerUtil;
+import consulo.util.lang.ObjectUtil;
+import consulo.util.lang.function.Condition;
+import consulo.versionControlSystem.FilePath;
+import consulo.versionControlSystem.VcsException;
+import consulo.versionControlSystem.change.Change;
+import consulo.versionControlSystem.log.Hash;
+import consulo.versionControlSystem.log.base.HashImpl;
+import consulo.versionControlSystem.util.VcsUtil;
+import consulo.virtualFileSystem.VirtualFile;
 import org.zmlx.hg4idea.HgContentRevision;
 import org.zmlx.hg4idea.HgFile;
 import org.zmlx.hg4idea.HgNameWithHashInfo;
@@ -39,9 +37,11 @@ import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.repo.HgRepositoryManager;
 import org.zmlx.hg4idea.util.HgUtil;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.util.*;
 
-import static com.intellij.openapi.vcs.history.VcsDiffUtil.createChangesWithCurrentContentForFile;
+import static consulo.ide.impl.idea.openapi.vcs.history.VcsDiffUtil.createChangesWithCurrentContentForFile;
 
 public class HgCompareWithBranchAction extends DvcsCompareWithBranchAction<HgRepository> {
   @Override
@@ -89,7 +89,7 @@ public class HgCompareWithBranchAction extends DvcsCompareWithBranchAction<HgRep
   private static Hash getHeavyBranchMainHash(@Nonnull HgRepository repository, @Nonnull String branchName) {
     // null for new branch or not heavy ref
     final LinkedHashSet<Hash> branchHashes = repository.getBranches().get(branchName);
-    return branchHashes != null ? ObjectUtils.assertNotNull(Iterables.getLast(branchHashes)) : null;
+    return branchHashes != null ? ObjectUtil.assertNotNull(Iterables.getLast(branchHashes)) : null;
   }
 
   @Nullable
@@ -148,8 +148,12 @@ public class HgCompareWithBranchAction extends DvcsCompareWithBranchAction<HgRep
   private static boolean existInBranch(@Nonnull HgRepository repository,
                                        @Nonnull FilePath path,
                                        @Nonnull HgRevisionNumber compareWithRevisionNumber) {
-    HgStatusCommand statusCommand = new HgStatusCommand.Builder(true).ignored(false).unknown(false).copySource(!path.isDirectory())
-      .baseRevision(compareWithRevisionNumber).targetRevision(null).build(repository.getProject());
+    HgStatusCommand statusCommand = new HgStatusCommand.Builder(true).ignored(false)
+                                                                     .unknown(false)
+                                                                     .copySource(!path.isDirectory())
+                                                                     .baseRevision(compareWithRevisionNumber)
+                                                                     .targetRevision(null)
+                                                                     .build(repository.getProject());
     statusCommand.cleanFilesOption(true);
     return !statusCommand.executeInCurrentThread(repository.getRoot(), Collections.singleton(path)).isEmpty();
   }

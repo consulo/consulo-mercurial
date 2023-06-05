@@ -12,23 +12,21 @@
 // limitations under the License.
 package org.zmlx.hg4idea.provider;
 
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.openapi.vcs.FilePath;
-import com.intellij.openapi.vcs.VcsActions;
-import com.intellij.openapi.vcs.VcsConfiguration;
-import com.intellij.openapi.vcs.VcsException;
-import com.intellij.openapi.vcs.annotate.ShowAllAffectedGenericAction;
-import com.intellij.openapi.vcs.changes.ChangeListManager;
-import com.intellij.openapi.vcs.history.*;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.containers.ContainerUtil;
-import com.intellij.util.ui.ColumnInfo;
-import com.intellij.vcsUtil.VcsUtil;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import consulo.ide.impl.idea.openapi.vcs.VcsActions;
+import consulo.ide.impl.idea.openapi.vcs.annotate.ShowAllAffectedGenericAction;
+import consulo.project.Project;
+import consulo.ui.ex.action.ActionManager;
+import consulo.ui.ex.action.AnAction;
+import consulo.ui.ex.awt.ColumnInfo;
+import consulo.util.collection.ContainerUtil;
+import consulo.util.io.FileUtil;
+import consulo.versionControlSystem.FilePath;
+import consulo.versionControlSystem.VcsConfiguration;
+import consulo.versionControlSystem.VcsException;
+import consulo.versionControlSystem.change.ChangeListManager;
+import consulo.versionControlSystem.history.*;
+import consulo.versionControlSystem.util.VcsUtil;
+import consulo.virtualFileSystem.VirtualFile;
 import org.zmlx.hg4idea.HgFile;
 import org.zmlx.hg4idea.HgFileRevision;
 import org.zmlx.hg4idea.HgRevisionNumber;
@@ -42,12 +40,15 @@ import org.zmlx.hg4idea.util.HgChangesetUtil;
 import org.zmlx.hg4idea.util.HgUtil;
 import org.zmlx.hg4idea.util.HgVersion;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class HgHistoryProvider implements VcsHistoryProvider {
+public class HgHistoryProvider implements VcsHistoryProvider
+{
 
   private final Project myProject;
 
@@ -56,12 +57,13 @@ public class HgHistoryProvider implements VcsHistoryProvider {
   }
 
   public VcsDependentHistoryComponents getUICustomization(VcsHistorySession session,
-                                                          JComponent forShortcutRegistration) {
+														  JComponent forShortcutRegistration) {
     return VcsDependentHistoryComponents.createOnlyColumns(ColumnInfo.EMPTY_ARRAY);
   }
 
   public AnAction[] getAdditionalActions(Runnable runnable) {
-    return new AnAction[]{ShowAllAffectedGenericAction.getInstance(),
+    return new AnAction[]{
+			ShowAllAffectedGenericAction.getInstance(),
       ActionManager.getInstance().getAction(VcsActions.ACTION_COPY_REVISION_NUMBER)};
   }
 
@@ -158,8 +160,8 @@ public class HgHistoryProvider implements VcsHistoryProvider {
    * Workaround for getting follow file history in case of uncommitted move/rename change
    */
   private static List<HgFileRevision> getHistoryForUncommittedRenamed(@Nonnull FilePath originalHgFilePath,
-																	  @Nonnull VirtualFile vcsRoot,
-																	  @Nonnull Project project, int limit) {
+                                                                      @Nonnull VirtualFile vcsRoot,
+                                                                      @Nonnull Project project, int limit) {
     HgFile originalHgFile = new HgFile(vcsRoot, originalHgFilePath);
     final HgLogCommand logCommand = new HgLogCommand(project);
     logCommand.setIncludeRemoved(true);

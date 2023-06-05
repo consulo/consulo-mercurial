@@ -15,8 +15,8 @@
  */
 package org.zmlx.hg4idea.action;
 
-import com.intellij.vcs.log.Hash;
-import javax.annotation.Nonnull;
+import consulo.versionControlSystem.log.Hash;
+import jakarta.annotation.Nonnull;
 import org.zmlx.hg4idea.repo.HgRepository;
 
 import java.util.Collections;

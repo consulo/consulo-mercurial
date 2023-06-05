@@ -12,8 +12,8 @@
 // limitations under the License.
 package org.zmlx.hg4idea.execution;
 
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.diagnostic.Logger;
+import consulo.application.ApplicationManager;
+import consulo.logging.Logger;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

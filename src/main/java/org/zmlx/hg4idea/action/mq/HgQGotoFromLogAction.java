@@ -15,19 +15,18 @@
  */
 package org.zmlx.hg4idea.action.mq;
 
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Condition;
-import com.intellij.util.Consumer;
-import com.intellij.util.containers.ContainerUtil;
-import com.intellij.vcs.log.Hash;
-import com.intellij.vcs.log.VcsFullCommitDetails;
-import com.intellij.vcs.log.VcsLog;
-import com.intellij.vcs.log.VcsLogDataKeys;
-import javax.annotation.Nonnull;
+import consulo.application.progress.ProgressIndicator;
+import consulo.application.progress.Task;
+import consulo.language.editor.CommonDataKeys;
+import consulo.project.Project;
+import consulo.ui.ex.action.AnActionEvent;
+import consulo.util.collection.ContainerUtil;
+import consulo.util.lang.function.Condition;
+import consulo.versionControlSystem.log.Hash;
+import consulo.versionControlSystem.log.VcsFullCommitDetails;
+import consulo.versionControlSystem.log.VcsLog;
+import consulo.versionControlSystem.log.VcsLogDataKeys;
+import jakarta.annotation.Nonnull;
 import org.zmlx.hg4idea.HgNameWithHashInfo;
 import org.zmlx.hg4idea.HgVcsMessages;
 import org.zmlx.hg4idea.command.mq.HgQGotoCommand;
@@ -35,6 +34,7 @@ import org.zmlx.hg4idea.command.mq.HgQPopCommand;
 import org.zmlx.hg4idea.repo.HgRepository;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class HgQGotoFromLogAction extends HgMqAppliedPatchAction {
 
@@ -82,7 +82,7 @@ public class HgQGotoFromLogAction extends HgMqAppliedPatchAction {
 
     log.requestSelectedDetails(new Consumer<List<VcsFullCommitDetails>>() {
       @Override
-      public void consume(List<VcsFullCommitDetails> selectedDetails) {
+      public void accept(List<VcsFullCommitDetails> selectedDetails) {
         VcsFullCommitDetails fullCommitDetails = ContainerUtil.getFirstItem(selectedDetails);
 
         assert fullCommitDetails != null;

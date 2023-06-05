@@ -15,22 +15,23 @@
  */
 package org.zmlx.hg4idea.command;
 
-import com.intellij.notification.Notification;
-import com.intellij.notification.NotificationListener;
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.options.ShowSettingsUtil;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
+import consulo.ide.setting.ShowSettingsUtil;
+import consulo.logging.Logger;
+import consulo.project.Project;
+import consulo.project.ui.notification.Notification;
+import consulo.project.ui.notification.event.NotificationListener;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.HgProjectSettings;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.action.HgCommandResultNotifier;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 import org.zmlx.hg4idea.execution.HgRemoteCommandExecutor;
+import org.zmlx.hg4idea.status.ui.HgWidgetUpdater;
 import org.zmlx.hg4idea.util.HgErrorUtil;
 import org.zmlx.hg4idea.util.HgUtil;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.event.HyperlinkEvent;
 import java.util.List;
 
@@ -88,7 +89,7 @@ public abstract class HgRemoteChangesetsCommand extends HgChangesetsCommand {
                                                        });
       final HgProjectSettings projectSettings = vcs.getProjectSettings();
       projectSettings.setCheckIncomingOutgoing(false);
-      project.getMessageBus().syncPublisher(HgVcs.INCOMING_OUTGOING_CHECK_TOPIC).updateVisibility();
+      project.getMessageBus().syncPublisher(HgWidgetUpdater.class).updateVisibility();
     }
     return result;
   }

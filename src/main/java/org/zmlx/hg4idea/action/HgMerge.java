@@ -15,18 +15,17 @@
  */
 package org.zmlx.hg4idea.action;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vcs.update.UpdatedFiles;
-import javax.annotation.Nonnull;
+import consulo.project.Project;
+import consulo.util.lang.StringUtil;
+import consulo.versionControlSystem.update.UpdatedFiles;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.command.HgMergeCommand;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.ui.HgMergeDialog;
 
 import java.util.Collection;
-
-import javax.annotation.Nullable;
 
 public class HgMerge extends HgAbstractGlobalSingleRepoAction {
 

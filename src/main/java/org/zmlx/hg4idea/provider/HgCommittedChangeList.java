@@ -1,13 +1,13 @@
 package org.zmlx.hg4idea.provider;
 
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vcs.AbstractVcs;
-import com.intellij.openapi.vcs.changes.Change;
-import com.intellij.vcs.CommittedChangeListForRevision;
-import javax.annotation.Nonnull;
+import consulo.util.lang.StringUtil;
+import consulo.versionControlSystem.AbstractVcs;
+import consulo.versionControlSystem.change.Change;
+import consulo.versionControlSystem.versionBrowser.CommittedChangeListForRevision;
 import org.zmlx.hg4idea.HgRevisionNumber;
 import org.zmlx.hg4idea.HgVcs;
 
+import jakarta.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Date;
 
@@ -19,7 +19,7 @@ public class HgCommittedChangeList extends CommittedChangeListForRevision {
   private String myBranch;
 
   public HgCommittedChangeList(@Nonnull HgVcs vcs, @Nonnull HgRevisionNumber revision, @Nonnull String branch, String comment,
-							   String committerName, Date commitDate, Collection<Change> changes) {
+                               String committerName, Date commitDate, Collection<Change> changes) {
     super(revision.asString() + ": " + comment, comment, committerName, commitDate, changes, revision);
     myVcs = vcs;
     myBranch = StringUtil.isEmpty(branch) ? "default" : branch;

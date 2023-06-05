@@ -12,9 +12,9 @@
 // limitations under the License.
 package org.zmlx.hg4idea.execution;
 
-import com.intellij.execution.process.ProcessOutput;
-import com.intellij.util.ArrayUtil;
-import javax.annotation.Nonnull;
+import consulo.process.util.ProcessOutput;
+import consulo.util.collection.ArrayUtil;
+import jakarta.annotation.Nonnull;
 
 import java.util.List;
 

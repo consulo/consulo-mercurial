@@ -15,16 +15,16 @@
  */
 package org.zmlx.hg4idea;
 
+import consulo.versionControlSystem.log.Hash;
+import jakarta.annotation.Nonnull;
+import org.zmlx.hg4idea.repo.HgRepositoryReader;
+
 import java.util.Objects;
-
-import javax.annotation.Nonnull;
-
-import com.intellij.vcs.log.Hash;
 
 /**
  * Used for storing branch information from repository internal hg files, f.e.  branchheads, bookmarks
  *
- * @see org.zmlx.hg4idea.repo.HgRepositoryReader
+ * @see HgRepositoryReader
  * @author Nadya Zabrodina
  */
 public class HgNameWithHashInfo {

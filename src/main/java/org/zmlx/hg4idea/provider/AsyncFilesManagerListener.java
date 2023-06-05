@@ -15,7 +15,7 @@
  */
 package org.zmlx.hg4idea.provider;
 
-import com.intellij.openapi.vcs.changes.ChangeListManager;
+import consulo.versionControlSystem.change.ChangeListManager;
 
 import java.util.EventListener;
 

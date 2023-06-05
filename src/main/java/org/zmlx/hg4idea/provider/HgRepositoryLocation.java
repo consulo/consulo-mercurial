@@ -12,11 +12,12 @@
 // limitations under the License.
 package org.zmlx.hg4idea.provider;
 
-import com.intellij.openapi.vcs.RepositoryLocation;
-import com.intellij.openapi.vcs.VcsException;
-import com.intellij.openapi.vfs.VirtualFile;
+import consulo.versionControlSystem.RepositoryLocation;
+import consulo.versionControlSystem.VcsException;
+import consulo.virtualFileSystem.VirtualFile;
 
-public class HgRepositoryLocation implements RepositoryLocation {
+public class HgRepositoryLocation implements RepositoryLocation
+{
 
   private final String myUrl;
   private final VirtualFile myRoot;

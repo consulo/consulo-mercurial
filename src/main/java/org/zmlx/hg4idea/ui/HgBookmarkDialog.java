@@ -1,24 +1,24 @@
 package org.zmlx.hg4idea.ui;
 
-import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.ui.DocumentAdapter;
-import com.intellij.ui.components.JBCheckBox;
-import com.intellij.ui.components.JBLabel;
-import com.intellij.ui.components.JBTextField;
-import com.intellij.util.ui.GridBag;
-import com.intellij.util.ui.UIUtil;
+import consulo.ui.ex.awt.*;
+import consulo.ui.ex.awt.event.DocumentAdapter;
+import consulo.ui.ex.awt.JBCheckBox;
+import consulo.ui.ex.awt.JBLabel;
+import consulo.ui.ex.awt.JBTextField;
+import consulo.ui.ex.awt.GridBag;
+import consulo.ui.ex.awt.UIUtil;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.util.HgBranchReferenceValidator;
 import org.zmlx.hg4idea.util.HgReferenceValidator;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import java.awt.*;
 
-import static com.intellij.util.ui.UIUtil.DEFAULT_HGAP;
-import static com.intellij.util.ui.UIUtil.DEFAULT_VGAP;
+import static consulo.ui.ex.awt.UIUtil.DEFAULT_HGAP;
+import static consulo.ui.ex.awt.UIUtil.DEFAULT_VGAP;
 
 public class HgBookmarkDialog extends DialogWrapper {
   @Nonnull

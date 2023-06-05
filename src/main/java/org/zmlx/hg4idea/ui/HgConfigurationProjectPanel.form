@@ -21,7 +21,7 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="83ec6" class="com.intellij.openapi.ui.TextFieldWithBrowseButton" binding="myPathSelector" custom-create="true">
+          <component id="83ec6" class="consulo.ui.ex.awt.TextFieldWithBrowseButton" binding="myPathSelector" custom-create="true">
             <constraints>
               <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false">
                 <minimum-size width="100" height="-1"/>
@@ -69,7 +69,7 @@
           <text resource-bundle="org/zmlx/hg4idea/HgVcsMessages" key="hg4idea.configuration.ignore.whitespace.in.annotate"/>
         </properties>
       </component>
-      <component id="fadf2" class="com.intellij.ui.components.JBCheckBox" binding="mySyncControl">
+      <component id="fadf2" class="consulo.ui.ex.awt.JBCheckBox" binding="mySyncControl">
         <constraints>
           <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>

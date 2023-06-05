@@ -1,9 +1,9 @@
 package org.zmlx.hg4idea.ui;
 
-import com.intellij.openapi.fileChooser.FileChooserDescriptor;
-import com.intellij.openapi.options.ConfigurationException;
-import com.intellij.openapi.ui.TextFieldWithBrowseButton;
-import com.intellij.openapi.vfs.VirtualFile;
+import consulo.configurable.ConfigurationException;
+import consulo.fileChooser.FileChooserDescriptor;
+import consulo.ui.ex.awt.TextFieldWithBrowseButton;
+import consulo.virtualFileSystem.VirtualFile;
 import org.zmlx.hg4idea.HgProjectSettings;
 import org.zmlx.hg4idea.HgVcsMessages;
 import org.zmlx.hg4idea.util.HgUtil;
@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * HgSetExecutablePathPanel is a {@link com.intellij.openapi.ui.TextFieldWithBrowseButton}, which opens a file chooser for hg executable
+ * HgSetExecutablePathPanel is a {@link TextFieldWithBrowseButton}, which opens a file chooser for hg executable
  * and checks validity of the selected file to be an hg executable.
  */
 class HgSetExecutablePathPanel extends TextFieldWithBrowseButton {

@@ -12,7 +12,7 @@
 // limitations under the License.
 package org.zmlx.hg4idea;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import java.util.Objects;
 

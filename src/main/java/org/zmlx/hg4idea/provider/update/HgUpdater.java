@@ -12,9 +12,9 @@
 // limitations under the License.
 package org.zmlx.hg4idea.provider.update;
 
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.vcs.VcsException;
-import com.intellij.openapi.vcs.update.UpdatedFiles;
+import consulo.application.progress.ProgressIndicator;
+import consulo.versionControlSystem.VcsException;
+import consulo.versionControlSystem.update.UpdatedFiles;
 
 import java.util.List;
 

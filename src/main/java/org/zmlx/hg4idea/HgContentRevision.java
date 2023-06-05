@@ -12,19 +12,17 @@
 // limitations under the License.
 package org.zmlx.hg4idea;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.FilePath;
-import com.intellij.openapi.vcs.VcsException;
-import com.intellij.openapi.vcs.changes.ByteBackedContentRevision;
-import com.intellij.openapi.vfs.CharsetToolkit;
-import com.intellij.vcsUtil.VcsUtil;
-import javax.annotation.Nonnull;
-
+import consulo.ide.impl.idea.openapi.vcs.changes.ByteBackedContentRevision;
+import consulo.project.Project;
+import consulo.util.io.CharsetToolkit;
+import consulo.versionControlSystem.FilePath;
+import consulo.versionControlSystem.VcsException;
+import consulo.versionControlSystem.util.VcsUtil;
 import org.zmlx.hg4idea.util.HgUtil;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.util.Objects;
-
-import javax.annotation.Nullable;
 
 public class HgContentRevision implements ByteBackedContentRevision {
 
@@ -51,7 +49,8 @@ public class HgContentRevision implements ByteBackedContentRevision {
 
   @Nullable
   @Override
-  public String getContent() throws VcsException {
+  public String getContent() throws VcsException
+  {
     if (myRevisionNumber.isWorkingVersion()) return VcsUtil.getFileContent(myHgFile.getFile().getPath());
     final HgFile fileToCat = HgUtil.getFileNameInTargetRevision(myProject, myRevisionNumber, myHgFile);
     return CharsetToolkit.bytesToString(HgUtil.loadContent(myProject, myRevisionNumber, fileToCat), getFile().getCharset());

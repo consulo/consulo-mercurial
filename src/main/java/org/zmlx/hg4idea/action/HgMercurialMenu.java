@@ -12,10 +12,10 @@
 // limitations under the License.
 package org.zmlx.hg4idea.action;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.AbstractVcs;
-import com.intellij.openapi.vcs.ProjectLevelVcsManager;
-import com.intellij.openapi.vcs.actions.StandardVcsGroup;
+import consulo.project.Project;
+import consulo.versionControlSystem.AbstractVcs;
+import consulo.versionControlSystem.ProjectLevelVcsManager;
+import consulo.versionControlSystem.action.StandardVcsGroup;
 import org.zmlx.hg4idea.HgVcs;
 
 public class HgMercurialMenu extends StandardVcsGroup {

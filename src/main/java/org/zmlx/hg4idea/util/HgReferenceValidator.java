@@ -19,12 +19,13 @@ import static org.zmlx.hg4idea.util.HgUtil.TIP_REFERENCE;
 
 import java.util.regex.Pattern;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import com.intellij.openapi.ui.InputValidatorEx;
-import com.intellij.openapi.util.text.StringUtil;
+import jakarta.annotation.Nullable;
+import consulo.ui.ex.InputValidatorEx;
+import consulo.util.lang.StringUtil;
+import jakarta.annotation.Nonnull;
 
-public class HgReferenceValidator implements InputValidatorEx {
+public class HgReferenceValidator implements InputValidatorEx
+{
   protected String myErrorText;
   private static final HgReferenceValidator INSTANCE = new HgReferenceValidator();
 

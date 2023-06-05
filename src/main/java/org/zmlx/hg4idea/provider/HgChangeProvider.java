@@ -12,18 +12,23 @@
 // limitations under the License.
 package org.zmlx.hg4idea.provider;
 
-import com.intellij.openapi.fileEditor.FileDocumentManager;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.*;
-import com.intellij.openapi.vcs.changes.*;
-import com.intellij.openapi.vfs.VfsUtil;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.containers.ContainerUtil;
-import com.intellij.vcsUtil.VcsUtil;
+import consulo.application.progress.ProgressIndicator;
+import consulo.document.FileDocumentManager;
+import consulo.ide.impl.idea.openapi.vfs.VfsUtil;
 import consulo.localize.LocalizeValue;
+import consulo.project.Project;
 import consulo.ui.style.StandardColors;
 import consulo.ui.util.ColorValueUtil;
+import consulo.util.collection.ContainerUtil;
+import consulo.versionControlSystem.FilePath;
+import consulo.versionControlSystem.ProjectLevelVcsManager;
+import consulo.versionControlSystem.VcsException;
+import consulo.versionControlSystem.VcsKey;
+import consulo.versionControlSystem.change.*;
+import consulo.versionControlSystem.util.VcsUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import consulo.virtualFileSystem.status.FileStatus;
+import consulo.virtualFileSystem.status.FileStatusFactory;
 import org.zmlx.hg4idea.*;
 import org.zmlx.hg4idea.command.HgResolveCommand;
 import org.zmlx.hg4idea.command.HgResolveStatusEnum;
@@ -32,12 +37,13 @@ import org.zmlx.hg4idea.command.HgWorkingCopyRevisionsCommand;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.util.HgUtil;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.io.File;
 import java.util.*;
 
-public class HgChangeProvider implements ChangeProvider {
+public class HgChangeProvider implements ChangeProvider
+{
 
   private final Project myProject;
   private final VcsKey myVcsKey;
@@ -71,7 +77,8 @@ public class HgChangeProvider implements ChangeProvider {
   }
 
   public void getChanges(@Nonnull VcsDirtyScope dirtyScope, @Nonnull ChangelistBuilder builder,
-						 @Nonnull ProgressIndicator progress, @Nonnull ChangeListManagerGate addGate) throws VcsException {
+						 @Nonnull ProgressIndicator progress, @Nonnull ChangeListManagerGate addGate) throws VcsException
+  {
     if (myProject.isDisposed()) return;
     final Collection<HgChange> changes = new HashSet<>();
     changes.addAll(process(builder, dirtyScope.getRecursivelyDirtyDirectories()));
@@ -203,8 +210,8 @@ public class HgChangeProvider implements ChangeProvider {
     DELETED() {
       @Override
       void process(Project project, VcsKey vcsKey, ChangelistBuilder builder,
-        HgRevisionNumber currentNumber, HgRevisionNumber parentRevision,
-        HgFile beforeFile, HgFile afterFile) {
+				   HgRevisionNumber currentNumber, HgRevisionNumber parentRevision,
+				   HgFile beforeFile, HgFile afterFile) {
         processChange(
           HgContentRevision.create(project, beforeFile, parentRevision),
           null,

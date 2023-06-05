@@ -15,24 +15,22 @@
  */
 package org.zmlx.hg4idea.repo;
 
-import com.intellij.dvcs.DvcsUtil;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.changes.VcsDirtyScopeManager;
-import com.intellij.openapi.vfs.LocalFileSystem;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileManager;
-import com.intellij.openapi.vfs.newvfs.BulkFileListener;
-import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
-import com.intellij.util.Alarm;
-import com.intellij.util.messages.MessageBusConnection;
-import com.intellij.util.ui.update.MergingUpdateQueue;
-import com.intellij.util.ui.update.Update;
-import com.intellij.vcsUtil.VcsUtil;
+import consulo.component.messagebus.MessageBusConnection;
 import consulo.disposer.Disposable;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import org.zmlx.hg4idea.HgVcs;
+import consulo.project.Project;
+import consulo.ui.ex.awt.util.Alarm;
+import consulo.ui.ex.awt.util.MergingUpdateQueue;
+import consulo.ui.ex.awt.util.Update;
+import consulo.versionControlSystem.change.VcsDirtyScopeManager;
+import consulo.versionControlSystem.distributed.DvcsUtil;
+import consulo.versionControlSystem.util.VcsUtil;
+import consulo.virtualFileSystem.LocalFileSystem;
+import consulo.virtualFileSystem.VirtualFile;
+import consulo.virtualFileSystem.event.BulkFileListener;
+import consulo.virtualFileSystem.event.VFileEvent;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+import org.zmlx.hg4idea.HgRemoteUpdater;
 
 import java.util.List;
 
@@ -47,7 +45,8 @@ final class HgRepositoryUpdater implements Disposable, BulkFileListener {
   private final MessageBusConnection myMessageBusConnection;
   @Nonnull
   private final MergingUpdateQueue myUpdateQueue;
-  @Nullable private final VirtualFile myBranchHeadsDir;
+  @Nullable
+  private final VirtualFile myBranchHeadsDir;
   private static final int TIME_SPAN = 300;
   @Nullable
   private VirtualFile myMqDir;
@@ -75,7 +74,7 @@ final class HgRepositoryUpdater implements Disposable, BulkFileListener {
     myUpdateConfigQueue = new MergingUpdateQueue("HgConfigUpdate", TIME_SPAN, true, null, this, null, Alarm.ThreadToUse.POOLED_THREAD);
     if (!myProject.isDisposed()) {
       myMessageBusConnection = myProject.getMessageBus().connect();
-      myMessageBusConnection.subscribe(VirtualFileManager.VFS_CHANGES, this);
+      myMessageBusConnection.subscribe(BulkFileListener.class, this);
     }
     else {
       myMessageBusConnection = null;
@@ -164,8 +163,8 @@ final class HgRepositoryUpdater implements Disposable, BulkFileListener {
     }
 
     if (branchHeadsChanged || branchFileChanged || dirstateFileChanged || mergeFileChanged || rebaseFileChanged ||
-        bookmarksFileChanged || currentBookmarkFileChanged || tagsFileChanged || localTagsFileChanged ||
-        mqChanged) {
+      bookmarksFileChanged || currentBookmarkFileChanged || tagsFileChanged || localTagsFileChanged ||
+      mqChanged) {
       myUpdateQueue.queue(new MyUpdater("hgrepositoryUpdate"));
     }
     if (configHgrcChanged) {
@@ -177,7 +176,7 @@ final class HgRepositoryUpdater implements Disposable, BulkFileListener {
       myDirtyScopeManager.dirDirtyRecursively(root);
       if (dirstateFileChanged) {
         //update async incoming/outgoing model
-        myProject.getMessageBus().syncPublisher(HgVcs.REMOTE_TOPIC).update(myProject, root);
+        myProject.getMessageBus().syncPublisher(HgRemoteUpdater.class).update(myProject, root);
       }
     }
   }

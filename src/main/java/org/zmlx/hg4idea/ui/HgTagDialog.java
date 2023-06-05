@@ -12,12 +12,13 @@
 // limitations under the License.
 package org.zmlx.hg4idea.ui;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.ui.DocumentAdapter;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import consulo.project.Project;
+import consulo.ui.ex.awt.DialogWrapper;
+import consulo.virtualFileSystem.VirtualFile;
+import consulo.ui.ex.awt.event.DocumentAdapter;
+import jakarta.annotation.Nonnull;
+
+import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.util.HgBranchReferenceValidator;
 import org.zmlx.hg4idea.util.HgReferenceValidator;
@@ -27,7 +28,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.util.Collection;
 
-public class HgTagDialog extends DialogWrapper {
+public class HgTagDialog extends DialogWrapper
+{
 
   private JPanel contentPanel;
   private JTextField tagTxt;

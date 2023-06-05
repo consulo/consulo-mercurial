@@ -15,10 +15,10 @@
  */
 package org.zmlx.hg4idea.execution;
 
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.ui.Messages;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import consulo.logging.Logger;
+import consulo.ui.ex.awt.Messages;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 import java.awt.*;
 import java.lang.reflect.InvocationTargetException;

@@ -12,22 +12,24 @@
  */
 package org.zmlx.hg4idea.provider;
 
+import consulo.annotation.component.ExtensionImpl;
+import consulo.dataContext.DataContext;
+import consulo.logging.Logger;
+import consulo.project.Project;
+import consulo.ui.ex.action.ActionManager;
+import consulo.ui.ex.action.AnAction;
+import consulo.versionControlSystem.distributed.action.DvcsQuickListContentProvider;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+import org.zmlx.hg4idea.HgVcs;
+
 import java.util.Collections;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import org.zmlx.hg4idea.HgVcs;
-import com.intellij.dvcs.actions.DvcsQuickListContentProvider;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.DataContext;
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.project.Project;
-
+@ExtensionImpl
 public class HgQuickListProvider extends DvcsQuickListContentProvider {
 
-  private static final Logger LOG = Logger.getInstance(HgQuickListProvider.class.getName());
+  private static final Logger LOG = Logger.getInstance(HgQuickListProvider.class);
 
   @Nonnull
   @Override

@@ -15,12 +15,12 @@
  */
 package org.zmlx.hg4idea.action;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
-import com.intellij.openapi.fileEditor.FileDocumentManager;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.vcs.log.Hash;
+import consulo.document.FileDocumentManager;
+import consulo.project.Project;
+import consulo.versionControlSystem.log.Hash;
+import consulo.virtualFileSystem.VirtualFile;
 import org.zmlx.hg4idea.command.HgUpdateCommand;
 import org.zmlx.hg4idea.repo.HgRepository;
 

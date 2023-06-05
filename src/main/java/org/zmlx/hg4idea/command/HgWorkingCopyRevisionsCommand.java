@@ -12,16 +12,16 @@
 // limitations under the License.
 package org.zmlx.hg4idea.command;
 
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Couple;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vcs.FilePath;
-import com.intellij.openapi.vcs.ObjectsConvertor;
-import com.intellij.openapi.vcs.changes.ChangeListManager;
-import com.intellij.openapi.vfs.VirtualFile;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import consulo.logging.Logger;
+import consulo.project.Project;
+import consulo.util.lang.Couple;
+import consulo.util.lang.StringUtil;
+import consulo.versionControlSystem.FilePath;
+import consulo.versionControlSystem.change.ChangeListManager;
+import consulo.versionControlSystem.util.ObjectsConvertor;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.HgRevisionNumber;
 import org.zmlx.hg4idea.execution.HgCommandExecutor;
 import org.zmlx.hg4idea.execution.HgCommandResult;
@@ -49,7 +49,7 @@ public class HgWorkingCopyRevisionsCommand {
    * Current repository revision(s).
    * @param repo repository to work on.
    * @return List of parent's revision numbers.
-   * @see #parents(com.intellij.openapi.vfs.VirtualFile, com.intellij.openapi.vfs.VirtualFile, org.zmlx.hg4idea.HgRevisionNumber)
+   * @see #parents(VirtualFile, VirtualFile, HgRevisionNumber)
    * TODO: return Pair
    */
   @Nonnull
@@ -58,7 +58,7 @@ public class HgWorkingCopyRevisionsCommand {
   }
 
   /**
-   * @see #parents(com.intellij.openapi.vfs.VirtualFile, com.intellij.openapi.vfs.VirtualFile, org.zmlx.hg4idea.HgRevisionNumber)
+   * @see #parents(VirtualFile, VirtualFile, HgRevisionNumber)
    */
   @Nonnull
   public Couple<HgRevisionNumber> parents(@Nonnull VirtualFile repo, @Nullable VirtualFile file) {
@@ -76,7 +76,7 @@ public class HgWorkingCopyRevisionsCommand {
    */
   @Nonnull
   public Couple<HgRevisionNumber> parents(@Nonnull VirtualFile repo, @Nullable VirtualFile file, @Nullable HgRevisionNumber revision) {
-    return parents(repo, ObjectsConvertor.VIRTUAL_FILEPATH.convert(file), revision);
+    return parents(repo, ObjectsConvertor.VIRTUAL_FILEPATH.apply(file), revision);
   }
 
   /**

@@ -33,7 +33,7 @@
               <text resource-bundle="org/zmlx/hg4idea/HgVcsMessages" key="hg4idea.init.dialog.option.select.folder"/>
             </properties>
           </component>
-          <component id="d4405" class="com.intellij.openapi.ui.TextFieldWithBrowseButton" binding="myTextFieldBrowser">
+          <component id="d4405" class="consulo.ui.ex.awt.TextFieldWithBrowseButton" binding="myTextFieldBrowser">
             <constraints>
               <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>

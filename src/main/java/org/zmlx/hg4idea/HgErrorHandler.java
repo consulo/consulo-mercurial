@@ -12,14 +12,12 @@
 // limitations under the License.
 package org.zmlx.hg4idea;
 
-import javax.annotation.Nonnull;
-
-import com.intellij.openapi.vcs.VcsException;
-
-import javax.annotation.Nullable;
-
+import consulo.versionControlSystem.VcsException;
+import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 import org.zmlx.hg4idea.util.HgErrorUtil;
+
+import jakarta.annotation.Nonnull;
 
 public abstract class HgErrorHandler {
   public static HgCommandResult ensureSuccess(@Nullable HgCommandResult result) throws VcsException {

@@ -15,12 +15,12 @@
  */
 package org.zmlx.hg4idea.push;
 
-import com.intellij.dvcs.push.*;
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.vcs.log.VcsFullCommitDetails;
-import javax.annotation.Nonnull;
+import consulo.logging.Logger;
+import consulo.project.Project;
+import consulo.util.lang.StringUtil;
+import consulo.versionControlSystem.distributed.push.*;
+import consulo.versionControlSystem.log.VcsFullCommitDetails;
+import jakarta.annotation.Nonnull;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.command.HgOutgoingCommand;
 import org.zmlx.hg4idea.execution.HgCommandResult;

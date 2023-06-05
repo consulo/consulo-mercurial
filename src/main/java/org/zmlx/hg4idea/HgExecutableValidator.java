@@ -12,10 +12,10 @@
 // limitations under the License.
 package org.zmlx.hg4idea;
 
-import javax.annotation.Nonnull;
-
-import com.intellij.execution.ExecutableValidator;
-import com.intellij.openapi.project.Project;
+import consulo.execution.ExecutableValidator;
+import consulo.ide.setting.ShowSettingsUtil;
+import consulo.project.Project;
+import jakarta.annotation.Nonnull;
 import org.zmlx.hg4idea.util.HgUtil;
 
 public class HgExecutableValidator extends ExecutableValidator {
@@ -34,14 +34,13 @@ public class HgExecutableValidator extends ExecutableValidator {
     return myVcs.getGlobalSettings().getHgExecutable();
   }
 
-  @Nonnull
-  @Override
-  protected String getConfigurableDisplayName() {
-    return HgProjectConfigurable.DISPLAY_NAME;
-  }
-
   @Override
   public boolean isExecutableValid(@Nonnull String executable) {
     return HgUtil.isExecutableValid(executable);
+  }
+
+  @Override
+  protected void showSettings() {
+    ShowSettingsUtil.getInstance().showAndSelect(myProject, HgProjectConfigurable.class);
   }
 }

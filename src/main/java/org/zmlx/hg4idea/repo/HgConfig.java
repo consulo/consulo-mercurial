@@ -1,17 +1,15 @@
 package org.zmlx.hg4idea.repo;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.VirtualFile;
-import javax.annotation.Nonnull;
-
+import consulo.project.Project;
+import consulo.util.lang.StringUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
 import org.zmlx.hg4idea.command.HgShowConfigCommand;
 
+import jakarta.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-
-import javax.annotation.Nullable;
 
 /**
  * @author Nadya Zabrodina

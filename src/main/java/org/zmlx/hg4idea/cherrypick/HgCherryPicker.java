@@ -15,15 +15,15 @@
  */
 package org.zmlx.hg4idea.cherrypick;
 
-import com.intellij.dvcs.DvcsUtil;
-import com.intellij.dvcs.cherrypick.VcsCherryPicker;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.VcsKey;
-import com.intellij.openapi.vcs.update.UpdatedFiles;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.containers.ContainerUtil;
-import com.intellij.vcs.log.VcsFullCommitDetails;
-import javax.annotation.Nonnull;
+import consulo.project.Project;
+import consulo.util.collection.ContainerUtil;
+import consulo.versionControlSystem.VcsKey;
+import consulo.versionControlSystem.distributed.DvcsUtil;
+import consulo.versionControlSystem.distributed.VcsCherryPicker;
+import consulo.versionControlSystem.log.VcsFullCommitDetails;
+import consulo.versionControlSystem.update.UpdatedFiles;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.action.HgCommandResultNotifier;
 import org.zmlx.hg4idea.command.HgGraftCommand;

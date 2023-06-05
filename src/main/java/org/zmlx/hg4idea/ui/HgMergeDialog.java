@@ -12,10 +12,11 @@
 // limitations under the License.
 package org.zmlx.hg4idea.ui;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.ui.IdeBorderFactory;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import consulo.project.Project;
+import consulo.ui.ex.awt.IdeBorderFactory;
+import jakarta.annotation.Nonnull;
+
+import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.repo.HgRepository;
 
 import java.util.Collection;

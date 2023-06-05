@@ -15,12 +15,13 @@
  */
 package org.zmlx.hg4idea.ui;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.ui.ValidationInfo;
-import com.intellij.openapi.util.text.StringUtil;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import consulo.project.Project;
+import consulo.ui.ex.awt.DialogWrapper;
+import consulo.ui.ex.awt.ValidationInfo;
+import consulo.util.lang.StringUtil;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.util.HgUtil;
 
@@ -33,7 +34,8 @@ import java.util.Collection;
 
 import static org.zmlx.hg4idea.util.HgUtil.TIP_REFERENCE;
 
-public class HgCommonDialogWithChoices extends DialogWrapper {
+public class HgCommonDialogWithChoices extends DialogWrapper
+{
 
 
   private JPanel contentPanel;

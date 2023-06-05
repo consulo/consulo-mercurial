@@ -15,18 +15,17 @@
  */
 package org.zmlx.hg4idea.command;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vcs.VcsException;
-import com.intellij.util.Function;
-import com.intellij.util.containers.ContainerUtil;
-import com.intellij.util.messages.MessageBus;
-import com.intellij.vcsUtil.VcsFileUtil;
+import consulo.component.messagebus.MessageBus;
 import consulo.container.boot.ContainerPathManager;
-import javax.annotation.Nonnull;
+import consulo.project.Project;
+import consulo.util.collection.ContainerUtil;
+import consulo.util.io.FileUtil;
+import consulo.util.lang.StringUtil;
+import consulo.versionControlSystem.VcsException;
+import consulo.versionControlSystem.util.VcsFileUtil;
+import jakarta.annotation.Nonnull;
 import org.zmlx.hg4idea.HgFile;
-import org.zmlx.hg4idea.HgVcs;
+import org.zmlx.hg4idea.HgRemoteUpdater;
 import org.zmlx.hg4idea.HgVcsMessages;
 import org.zmlx.hg4idea.execution.HgCommandException;
 import org.zmlx.hg4idea.repo.HgRepository;
@@ -88,18 +87,13 @@ public abstract class HgCommitTypeCommand {
       executeChunked(Collections.<List<String>>emptyList());
     }
     else {
-      List<String> relativePaths = ContainerUtil.map2List(myFiles, new Function<HgFile, String>() {
-        @Override
-        public String fun(HgFile file) {
-          return file.getRelativePath();
-        }
-      });
+      List<String> relativePaths = ContainerUtil.map2List(myFiles, file -> file.getRelativePath());
       List<List<String>> chunkedCommits = VcsFileUtil.chunkArguments(relativePaths);
       executeChunked(chunkedCommits);
     }
     myRepository.update();
     final MessageBus messageBus = myProject.getMessageBus();
-    messageBus.syncPublisher(HgVcs.REMOTE_TOPIC).update(myProject, null);
+    messageBus.syncPublisher(HgRemoteUpdater.class).update(myProject, null);
   }
 
   protected abstract void executeChunked(@Nonnull List<List<String>> chunkedCommits) throws HgCommandException, VcsException;

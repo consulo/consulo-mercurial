@@ -15,19 +15,18 @@
  */
 package org.zmlx.hg4idea.provider;
 
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Couple;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vcs.VcsBundle;
-import com.intellij.openapi.vcs.VcsException;
-import com.intellij.openapi.vcs.merge.MergeData;
-import com.intellij.openapi.vcs.merge.MergeProvider;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.ArrayUtil;
-import com.intellij.vcsUtil.VcsRunnable;
-import com.intellij.vcsUtil.VcsUtil;
-import javax.annotation.Nonnull;
+import consulo.logging.Logger;
+import consulo.project.Project;
+import consulo.util.collection.ArrayUtil;
+import consulo.util.lang.Couple;
+import consulo.util.lang.StringUtil;
+import consulo.versionControlSystem.VcsBundle;
+import consulo.versionControlSystem.VcsException;
+import consulo.versionControlSystem.merge.MergeData;
+import consulo.versionControlSystem.merge.MergeProvider;
+import consulo.versionControlSystem.util.VcsRunnable;
+import consulo.versionControlSystem.util.VcsUtil;
+import consulo.virtualFileSystem.VirtualFile;
 import org.zmlx.hg4idea.HgContentRevision;
 import org.zmlx.hg4idea.HgFile;
 import org.zmlx.hg4idea.HgRevisionNumber;
@@ -39,6 +38,7 @@ import org.zmlx.hg4idea.execution.HgCommandResult;
 import org.zmlx.hg4idea.execution.HgPromptCommandExecutor;
 import org.zmlx.hg4idea.util.HgUtil;
 
+import jakarta.annotation.Nonnull;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +46,8 @@ import java.util.List;
 /**
  * @author Kirill Likhodedov
  */
-public class HgMergeProvider implements MergeProvider {
+public class HgMergeProvider implements MergeProvider
+{
   private static final Logger LOG = Logger.getInstance(HgMergeProvider.class.getName());
   private final Project myProject;
 
@@ -56,7 +57,8 @@ public class HgMergeProvider implements MergeProvider {
 
   @Nonnull
   @Override
-  public MergeData loadRevisions(@Nonnull final VirtualFile file) throws VcsException {
+  public MergeData loadRevisions(@Nonnull final VirtualFile file) throws VcsException
+  {
     final MergeData mergeData = new MergeData();
     final VcsRunnable runnable = new VcsRunnable() {
       @Override

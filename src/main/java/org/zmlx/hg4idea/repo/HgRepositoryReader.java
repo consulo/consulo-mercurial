@@ -15,37 +15,30 @@
  */
 package org.zmlx.hg4idea.repo;
 
+import com.google.common.io.BaseEncoding;
+import consulo.ide.ServiceManager;
+import consulo.logging.Logger;
+import consulo.util.collection.ContainerUtil;
+import consulo.util.io.FileUtil;
+import consulo.util.lang.StringUtil;
+import consulo.versionControlSystem.distributed.DvcsUtil;
+import consulo.versionControlSystem.distributed.repository.RepoStateException;
+import consulo.versionControlSystem.distributed.repository.Repository;
+import consulo.versionControlSystem.log.Hash;
+import consulo.versionControlSystem.log.VcsLogObjectsFactory;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+import org.zmlx.hg4idea.HgNameWithHashInfo;
+import org.zmlx.hg4idea.HgVcs;
+import org.zmlx.hg4idea.util.HgVersion;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import org.zmlx.hg4idea.HgNameWithHashInfo;
-import org.zmlx.hg4idea.HgVcs;
-import org.zmlx.hg4idea.util.HgVersion;
-import com.google.common.io.BaseEncoding;
-import com.intellij.dvcs.DvcsUtil;
-import com.intellij.dvcs.repo.RepoStateException;
-import com.intellij.dvcs.repo.Repository;
-import com.intellij.openapi.components.ServiceManager;
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.util.containers.ContainerUtil;
-import com.intellij.vcs.log.Hash;
-import com.intellij.vcs.log.VcsLogObjectsFactory;
 
 /**
  * Reads information about the Hg repository from Hg service files located in the {@code .hg} folder.
@@ -280,7 +273,7 @@ public class HgRepositoryReader {
 
   @Nonnull
   private Collection<HgNameWithHashInfo> readReferences(@Nonnull File fileWithReferences) {
-    HashSet<HgNameWithHashInfo> result = ContainerUtil.newHashSet();
+    HashSet<HgNameWithHashInfo> result = new HashSet<>();
     readReferences(fileWithReferences, result);
     return result;
   }
@@ -320,6 +313,6 @@ public class HgRepositoryReader {
   @Nonnull
   public List<String> readMqPatchNames() {
     File seriesFile = new File(myMqInternalDir, "series");
-    return seriesFile.exists() ? StringUtil.split(DvcsUtil.tryLoadFileOrReturn(seriesFile, ""), "\n") : ContainerUtil.<String>emptyList();
+    return seriesFile.exists() ? StringUtil.split(DvcsUtil.tryLoadFileOrReturn(seriesFile, ""), "\n") : List.of();
   }
 }

@@ -16,17 +16,15 @@
 
 package org.zmlx.hg4idea.repo;
 
-import com.intellij.dvcs.repo.Repository;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.vcs.log.Hash;
-import javax.annotation.Nonnull;
-
+import consulo.versionControlSystem.distributed.repository.Repository;
+import consulo.versionControlSystem.log.Hash;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
 import org.zmlx.hg4idea.HgNameWithHashInfo;
 import org.zmlx.hg4idea.provider.HgLocalIgnoredHolder;
 
+import jakarta.annotation.Nullable;
 import java.util.*;
-
-import javax.annotation.Nullable;
 
 
 public interface HgRepository extends Repository {

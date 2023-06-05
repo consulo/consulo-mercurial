@@ -12,21 +12,22 @@
 // limitations under the License.
 package org.zmlx.hg4idea;
 
+import consulo.project.Project;
+import consulo.versionControlSystem.RepositoryLocation;
+import consulo.versionControlSystem.VcsException;
+import consulo.versionControlSystem.history.VcsFileRevision;
+import org.zmlx.hg4idea.util.HgUtil;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import org.zmlx.hg4idea.util.HgUtil;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.RepositoryLocation;
-import com.intellij.openapi.vcs.VcsException;
-import com.intellij.openapi.vcs.history.VcsFileRevision;
-
-public class HgFileRevision implements VcsFileRevision {
+public class HgFileRevision implements VcsFileRevision
+{
 
   private final Project myProject;
   @Nonnull
@@ -43,8 +44,8 @@ public class HgFileRevision implements VcsFileRevision {
   private final Map<String, String> myFilesMoved; // actually we collect moved and track copied as added
 
   public HgFileRevision(Project project, @Nonnull HgFile hgFile, @Nonnull HgRevisionNumber vcsRevisionNumber,
-						String branchName, Date revisionDate, String author, String commitMessage,
-						Set<String> filesModified, Set<String> filesAdded, Set<String> filesDeleted, Map<String, String> filesMoved) {
+                        String branchName, Date revisionDate, String author, String commitMessage,
+                        Set<String> filesModified, Set<String> filesAdded, Set<String> filesDeleted, Map<String, String> filesMoved) {
     myProject = project;
     myFile = hgFile;
     myRevisionNumber = vcsRevisionNumber;

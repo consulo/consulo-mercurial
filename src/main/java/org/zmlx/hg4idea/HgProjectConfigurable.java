@@ -12,13 +12,14 @@
 // limitations under the License.
 package org.zmlx.hg4idea;
 
-import com.intellij.openapi.options.ConfigurationException;
-import com.intellij.openapi.options.SearchableConfigurable;
-import com.intellij.openapi.project.Project;
+import consulo.configurable.ConfigurationException;
+import consulo.configurable.SearchableConfigurable;
+import consulo.project.Project;
+import jakarta.annotation.Nonnull;
 import org.jetbrains.annotations.Nls;
+import org.zmlx.hg4idea.status.ui.HgWidgetUpdater;
 import org.zmlx.hg4idea.ui.HgConfigurationProjectPanel;
 
-import javax.annotation.Nonnull;
 import javax.swing.*;
 
 public class HgProjectConfigurable implements SearchableConfigurable {
@@ -51,9 +52,10 @@ public class HgProjectConfigurable implements SearchableConfigurable {
     return myPanel.isModified();
   }
 
-  public void apply() throws ConfigurationException {
+  public void apply() throws ConfigurationException
+  {
     myPanel.saveSettings();
-    myProject.getMessageBus().syncPublisher(HgVcs.INCOMING_OUTGOING_CHECK_TOPIC).updateVisibility();
+    myProject.getMessageBus().syncPublisher(HgWidgetUpdater.class).updateVisibility();
   }
 
   public void reset() {

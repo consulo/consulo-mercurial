@@ -12,32 +12,30 @@
 // limitations under the License.
 package org.zmlx.hg4idea.provider.commit;
 
-import com.intellij.dvcs.AmendComponent;
-import com.intellij.dvcs.push.ui.VcsPushDialog;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.ModalityState;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.vcs.CheckinProjectPanel;
-import com.intellij.openapi.vcs.FilePath;
-import com.intellij.openapi.vcs.VcsException;
-import com.intellij.openapi.vcs.changes.*;
-import com.intellij.openapi.vcs.checkin.CheckinEnvironment;
-import com.intellij.openapi.vcs.ui.RefreshableOnComponent;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.ui.GuiUtils;
-import com.intellij.util.FunctionUtil;
-import com.intellij.util.NullableFunction;
-import com.intellij.util.PairConsumer;
-import com.intellij.util.containers.ContainerUtil;
-import com.intellij.util.ui.GridBag;
-import com.intellij.util.ui.JBUI;
-import com.intellij.vcsUtil.VcsUtil;
-import com.intellij.xml.util.XmlStringUtil;
-import javax.annotation.Nonnull;
-
+import consulo.application.Application;
+import consulo.application.ApplicationManager;
+import consulo.application.progress.ProgressIndicator;
+import consulo.application.progress.Task;
+import consulo.ide.impl.idea.dvcs.AmendComponent;
+import consulo.ide.impl.idea.dvcs.push.ui.VcsPushDialog;
+import consulo.ide.impl.idea.util.FunctionUtil;
+import consulo.project.Project;
+import consulo.ui.ex.awt.GridBag;
+import consulo.ui.ex.awt.JBUI;
+import consulo.ui.ex.awt.Messages;
+import consulo.util.collection.ContainerUtil;
+import consulo.util.lang.function.PairConsumer;
+import consulo.util.lang.xml.XmlStringUtil;
+import consulo.versionControlSystem.FilePath;
+import consulo.versionControlSystem.VcsException;
+import consulo.versionControlSystem.change.*;
+import consulo.versionControlSystem.checkin.CheckinEnvironment;
+import consulo.versionControlSystem.checkin.CheckinProjectPanel;
+import consulo.versionControlSystem.ui.RefreshableOnComponent;
+import consulo.versionControlSystem.util.VcsUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.*;
 import org.zmlx.hg4idea.action.HgActionUtil;
 import org.zmlx.hg4idea.command.*;
@@ -50,15 +48,15 @@ import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.repo.HgRepositoryManager;
 import org.zmlx.hg4idea.util.HgUtil;
 
-import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.*;
 import java.util.List;
+import java.util.*;
+import java.util.function.Function;
 
-import static com.intellij.util.ObjectUtils.assertNotNull;
+import static consulo.util.lang.ObjectUtil.assertNotNull;
 import static org.zmlx.hg4idea.util.HgUtil.getRepositoryManager;
 
 public class HgCheckinEnvironment implements CheckinEnvironment {
@@ -104,7 +102,7 @@ public class HgCheckinEnvironment implements CheckinEnvironment {
 
   public List<VcsException> commit(List<Change> changes,
                                    String preparedComment,
-                                   @Nonnull NullableFunction<Object, Object> parametersHolder,
+                                   @Nonnull Function<Object, Object> parametersHolder,
                                    Set<String> feedback) {
     List<VcsException> exceptions = new LinkedList<>();
     Map<HgRepository, Set<HgFile>> repositoriesMap = getFilesByRepository(changes);
@@ -114,8 +112,8 @@ public class HgCheckinEnvironment implements CheckinEnvironment {
       HgRepository repo = entry.getKey();
       Set<HgFile> selectedFiles = entry.getValue();
       HgCommitTypeCommand command = myMqNewPatch ? new HgQNewCommand(myProject, repo, preparedComment, myNextCommitAmend) :
-                                    new HgCommitCommand(myProject, repo, preparedComment, myNextCommitAmend, myCloseBranch,
-                                                        myShouldCommitSubrepos && !selectedFiles.isEmpty());
+        new HgCommitCommand(myProject, repo, preparedComment, myNextCommitAmend, myCloseBranch,
+                            myShouldCommitSubrepos && !selectedFiles.isEmpty());
 
       if (isMergeCommit(repo.getRoot())) {
         //partial commits are not allowed during merges
@@ -164,9 +162,9 @@ public class HgCheckinEnvironment implements CheckinEnvironment {
     // push if needed
     if (myNextCommitIsPushed && exceptions.isEmpty()) {
       final List<HgRepository> preselectedRepositories = ContainerUtil.newArrayList(repositoriesMap.keySet());
-      GuiUtils.invokeLaterIfNeeded(() ->
-                                     new VcsPushDialog(myProject, preselectedRepositories, HgUtil.getCurrentRepository(myProject)).show(),
-                                   ModalityState.defaultModalityState());
+      Application application = Application.get();
+      application.invokeLater(() -> new VcsPushDialog(myProject, preselectedRepositories, HgUtil.getCurrentRepository(myProject)).show(),
+                              application.getDefaultModalityState());
     }
 
     return exceptions;
@@ -230,7 +228,7 @@ public class HgCheckinEnvironment implements CheckinEnvironment {
     new Task.Backgroundable(myProject, "Removing Files...") {
       @Override
       public void run(@Nonnull ProgressIndicator indicator) {
-        new HgRemoveCommand(myProject).executeInCurrentThread(filesWithRoots);
+        new HgRemoveCommand((Project)myProject).executeInCurrentThread(filesWithRoots);
       }
     }.queue();
     return null;
@@ -271,8 +269,8 @@ public class HgCheckinEnvironment implements CheckinEnvironment {
     FilePath filePath = contentRevision.getFile();
     // try to find repository from hgFile from change: to be able commit sub repositories as expected
     HgRepository repo = HgUtil.getRepositoryForFile(myProject, contentRevision instanceof HgCurrentBinaryContentRevision
-                                                               ? ((HgCurrentBinaryContentRevision)contentRevision).getRepositoryRoot()
-                                                               : ChangesUtil.findValidParentAccurately(filePath));
+      ? ((HgCurrentBinaryContentRevision)contentRevision).getRepositoryRoot()
+      : ChangesUtil.findValidParentAccurately(filePath));
     if (repo == null) {
       return;
     }
@@ -316,11 +314,11 @@ public class HgCheckinEnvironment implements CheckinEnvironment {
    */
   public class HgCommitAdditionalComponent implements RefreshableOnComponent {
     @Nonnull
-	private final JPanel myPanel;
+    private final JPanel myPanel;
     @Nonnull
-	private final AmendComponent myAmend;
+    private final AmendComponent myAmend;
     @Nonnull
-	private final JCheckBox myCommitSubrepos;
+    private final JCheckBox myCommitSubrepos;
 
     HgCommitAdditionalComponent(@Nonnull Project project, @Nonnull CheckinProjectPanel panel) {
       HgVcs vcs = assertNotNull(HgVcs.getInstance(myProject));
@@ -331,7 +329,7 @@ public class HgCheckinEnvironment implements CheckinEnvironment {
       myCommitSubrepos = new JCheckBox("Commit subrepositories", false);
       myCommitSubrepos.setToolTipText(XmlStringUtil.wrapInHtml(
         "Commit all subrepos for selected repositories.<br>" +
-        " <code>hg ci <i><b>files</b></i> -S <i><b>subrepos</b></i></code>"));
+          " <code>hg ci <i><b>files</b></i> -S <i><b>subrepos</b></i></code>"));
       myCommitSubrepos.setMnemonic('s');
       Collection<HgRepository> repos = HgActionUtil.collectRepositoriesFromFiles(getRepositoryManager(myProject), panel.getRoots());
       myCommitSubrepos.setVisible(ContainerUtil.exists(repos, HgRepository::hasSubrepos));
@@ -340,10 +338,10 @@ public class HgCheckinEnvironment implements CheckinEnvironment {
       myAmend.getCheckBox().addActionListener(new MySelectionListener(myCommitSubrepos));
 
       GridBag gb = new GridBag().
-        setDefaultInsets(JBUI.insets(2)).
-        setDefaultAnchor(GridBagConstraints.WEST).
-        setDefaultWeightX(1).
-        setDefaultFill(GridBagConstraints.HORIZONTAL);
+                                  setDefaultInsets(JBUI.insets(2)).
+                                  setDefaultAnchor(GridBagConstraints.WEST).
+                                  setDefaultWeightX(1).
+                                  setDefaultFill(GridBagConstraints.HORIZONTAL);
       myPanel = new JPanel(new GridBagLayout());
       myPanel.add(myAmend.getComponent(), gb.nextLine().next());
       myPanel.add(myCommitSubrepos, gb.nextLine().next());

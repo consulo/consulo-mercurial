@@ -15,12 +15,13 @@
  */
 package org.zmlx.hg4idea.action;
 
-import com.intellij.openapi.fileEditor.FileDocumentManager;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.project.Project;
-import com.intellij.vcs.log.Hash;
-import javax.annotation.Nonnull;
+import consulo.application.progress.ProgressIndicator;
+import consulo.application.progress.Task;
+import consulo.document.FileDocumentManager;
+import consulo.project.Project;
+import consulo.versionControlSystem.log.Hash;
+import jakarta.annotation.Nonnull;
+
 import org.zmlx.hg4idea.HgVcsMessages;
 import org.zmlx.hg4idea.branch.HgBranchPopupActions;
 import org.zmlx.hg4idea.command.HgUpdateCommand;

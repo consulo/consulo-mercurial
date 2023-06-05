@@ -15,10 +15,10 @@
  */
 package org.zmlx.hg4idea.action;
 
+import consulo.ui.ex.action.AnActionEvent;
 import org.zmlx.hg4idea.repo.HgRepository;
-import com.intellij.dvcs.repo.Repository;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.vcs.CalledInAwt;
+import consulo.versionControlSystem.distributed.repository.Repository;
+import consulo.ide.impl.idea.openapi.vcs.CalledInAwt;
 
 public abstract class HgProcessStateAction extends HgAbstractGlobalSingleRepoAction {
   final Repository.State myState;
