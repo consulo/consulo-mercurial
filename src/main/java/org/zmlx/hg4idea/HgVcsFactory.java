@@ -1,6 +1,7 @@
 package org.zmlx.hg4idea;
 
 import consulo.annotation.component.ExtensionImpl;
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.versionControlSystem.AbstractVcs;
 import consulo.versionControlSystem.ProjectLevelVcsManager;
@@ -15,6 +16,8 @@ import jakarta.inject.Provider;
  */
 @ExtensionImpl
 public class HgVcsFactory implements VcsFactory {
+  private static final LocalizeValue Mercurial = LocalizeValue.localizeTODO("Mercurial");
+
   private final Project myProject;
   private final Provider<HgGlobalSettings> myGlobalSettingsProvider;
   private final Provider<HgProjectSettings> myProjectSettingsProvider;
@@ -34,13 +37,13 @@ public class HgVcsFactory implements VcsFactory {
   @Nonnull
   @Override
   public String getId() {
-    return "hg4idea";
+    return "Mercurial";
   }
 
   @Nonnull
   @Override
-  public String getDisplayName() {
-    return "Mercurial";
+  public LocalizeValue getDisplayName() {
+    return Mercurial;
   }
 
   @Nonnull
