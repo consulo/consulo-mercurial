@@ -3,6 +3,7 @@ package org.zmlx.hg4idea.status.ui;
 
 import consulo.project.Project;
 import consulo.project.ui.wm.StatusBarWidget;
+import consulo.project.ui.wm.StatusBarWidgetFactory;
 import consulo.ui.ex.popup.ListPopup;
 import consulo.versionControlSystem.distributed.DvcsUtil;
 import consulo.versionControlSystem.distributed.ui.DvcsStatusWidget;
@@ -19,15 +20,13 @@ import org.zmlx.hg4idea.util.HgUtil;
  * Widget to display basic hg status in the status bar.
  */
 public class HgStatusWidget extends DvcsStatusWidget<HgRepository> {
-  public static final String ID = "hg";
-
   @Nonnull
   private final HgVcs myVcs;
   @Nonnull
   private final HgProjectSettings myProjectSettings;
 
-  public HgStatusWidget(@Nonnull HgVcs vcs, @Nonnull Project project, @Nonnull HgProjectSettings projectSettings) {
-    super(project, vcs.getShortName());
+  public HgStatusWidget(@Nonnull HgVcs vcs, @Nonnull Project project, @Nonnull StatusBarWidgetFactory factory, @Nonnull HgProjectSettings projectSettings) {
+    super(project, factory, vcs.getShortName());
     myVcs = vcs;
     myProjectSettings = projectSettings;
 
@@ -35,15 +34,8 @@ public class HgStatusWidget extends DvcsStatusWidget<HgRepository> {
   }
 
   @Override
-  public
-  @Nonnull
-  String ID() {
-    return ID;
-  }
-
-  @Override
   public StatusBarWidget copy() {
-    return new HgStatusWidget(myVcs, myProject, myProjectSettings);
+    return new HgStatusWidget(myVcs, myProject, myFactory, myProjectSettings);
   }
 
   @Nullable

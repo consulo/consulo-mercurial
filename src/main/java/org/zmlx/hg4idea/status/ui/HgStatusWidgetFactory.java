@@ -15,14 +15,8 @@ import org.zmlx.hg4idea.repo.HgRepositoryManager;
 
 import java.util.Objects;
 
-@ExtensionImpl(id = "hgWidget", order = "after codeStyleWidget,before readOnlyWidget")
+@ExtensionImpl(id = "hgWidget", order = "after codeStyleWidget, before readOnlyWidget")
 public class HgStatusWidgetFactory implements StatusBarWidgetFactory {
-  @Override
-  @Nonnull
-  public String getId() {
-    return HgStatusWidget.ID;
-  }
-
   @Override
   @Nls
   @Nonnull
@@ -38,7 +32,7 @@ public class HgStatusWidgetFactory implements StatusBarWidgetFactory {
   @Override
   @Nonnull
   public StatusBarWidget createWidget(@Nonnull Project project) {
-    return new HgStatusWidget(Objects.requireNonNull(HgVcs.getInstance(project)), project, HgProjectSettings.getInstance(project));
+    return new HgStatusWidget(Objects.requireNonNull(HgVcs.getInstance(project)), project, this, HgProjectSettings.getInstance(project));
   }
 
   @Override

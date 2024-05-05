@@ -5,7 +5,6 @@ import consulo.project.ui.wm.StatusBar;
 import consulo.project.ui.wm.StatusBarWidget;
 import consulo.project.ui.wm.StatusBarWidgetFactory;
 import jakarta.annotation.Nonnull;
-import org.jetbrains.annotations.Nls;
 import org.zmlx.hg4idea.HgProjectSettings;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.HgVcsMessages;
@@ -28,12 +27,7 @@ abstract class HgIncomingOutgoingWidgetFactory implements StatusBarWidgetFactory
   @Nonnull
   public StatusBarWidget createWidget(@Nonnull Project project) {
     HgVcs hgVcs = Objects.requireNonNull(HgVcs.getInstance(project));
-    return new HgIncomingOutgoingWidget(hgVcs, myIsIncoming);
-  }
-
-  @Override
-  public void disposeWidget(@Nonnull StatusBarWidget widget) {
-    consulo.disposer.Disposer.dispose(widget);
+    return new HgIncomingOutgoingWidget(hgVcs, this, myIsIncoming);
   }
 
   @Override
@@ -42,18 +36,8 @@ abstract class HgIncomingOutgoingWidgetFactory implements StatusBarWidgetFactory
   }
 
   @Override
-  public
   @Nonnull
-  String getId() {
-    return myIsIncoming ? HgIncomingOutgoingWidget.INCOMING_WIDGET_ID : HgIncomingOutgoingWidget.OUTGOING_WIDGET_ID;
-  }
-
-  @Override
-  public
-  @Nls
-  @Nonnull
-  String getDisplayName() {
-    return myIsIncoming ? HgVcsMessages.message("hg4idea.status.bar.incoming.widget.name")
-      : HgVcsMessages.message("hg4idea.status.bar.outgoing.widget.name");
+  public String getDisplayName() {
+    return myIsIncoming ? HgVcsMessages.message("hg4idea.status.bar.incoming.widget.name")  : HgVcsMessages.message("hg4idea.status.bar.outgoing.widget.name");
   }
 }

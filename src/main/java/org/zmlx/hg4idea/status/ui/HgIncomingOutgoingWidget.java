@@ -4,11 +4,12 @@ package org.zmlx.hg4idea.status.ui;
 import consulo.application.AllIcons;
 import consulo.application.ApplicationManager;
 import consulo.component.messagebus.MessageBusConnection;
+import consulo.disposer.Disposer;
 import consulo.fileEditor.FileEditorManager;
 import consulo.fileEditor.event.FileEditorManagerEvent;
 import consulo.fileEditor.statusBar.EditorBasedWidget;
-import consulo.ide.impl.idea.openapi.util.Disposer;
 import consulo.project.ui.wm.StatusBarWidget;
+import consulo.project.ui.wm.StatusBarWidgetFactory;
 import consulo.ui.image.Image;
 import consulo.ui.image.ImageEffects;
 import consulo.versionControlSystem.distributed.repository.VcsRepositoryMappingListener;
@@ -25,9 +26,6 @@ import java.awt.event.MouseEvent;
 import java.util.function.Consumer;
 
 final class HgIncomingOutgoingWidget extends EditorBasedWidget implements StatusBarWidget.IconPresentation, StatusBarWidget.Multiframe {
-  static final String INCOMING_WIDGET_ID = "InHgIncomingOutgoingWidget";
-  static final String OUTGOING_WIDGET_ID = "OutHgIncomingOutgoingWidget";
-
   @Nonnull
   private final HgVcs myVcs;
   private final boolean myIsIncoming;
@@ -39,8 +37,8 @@ final class HgIncomingOutgoingWidget extends EditorBasedWidget implements Status
   private volatile String myTooltip = "";
   private Image myCurrentIcon;
 
-  public HgIncomingOutgoingWidget(@Nonnull HgVcs vcs, boolean isIncoming) {
-    super(vcs.getProject());
+  public HgIncomingOutgoingWidget(@Nonnull HgVcs vcs, @Nonnull StatusBarWidgetFactory factory, boolean isIncoming) {
+    super(vcs.getProject(), factory);
     myIsIncoming = isIncoming;
     myVcs = vcs;
     myEnabledIcon = myIsIncoming ? AllIcons.Ide.IncomingChangesOn : AllIcons.Ide.OutgoingChangesOn;
@@ -62,13 +60,7 @@ final class HgIncomingOutgoingWidget extends EditorBasedWidget implements Status
 
   @Override
   public StatusBarWidget copy() {
-    return new HgIncomingOutgoingWidget(myVcs, myIsIncoming);
-  }
-
-  @Nonnull
-  @Override
-  public String ID() {
-    return myIsIncoming ? INCOMING_WIDGET_ID : OUTGOING_WIDGET_ID;
+    return new HgIncomingOutgoingWidget(myVcs, myFactory, myIsIncoming);
   }
 
   @Override
@@ -137,6 +129,5 @@ final class HgIncomingOutgoingWidget extends EditorBasedWidget implements Status
       super.dispose();
     }
   }
-
 }
 
