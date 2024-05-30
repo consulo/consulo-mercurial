@@ -23,6 +23,7 @@ import consulo.application.progress.Task;
 import consulo.ide.impl.idea.dvcs.ui.LightActionGroup;
 import consulo.ide.impl.idea.dvcs.ui.NewBranchAction;
 import consulo.ide.impl.idea.openapi.vcs.changes.ui.CommitChangeListDialog;
+import consulo.platform.base.icon.PlatformIconGroup;
 import consulo.project.Project;
 import consulo.ui.ex.action.*;
 import consulo.util.collection.ArrayUtil;
@@ -150,7 +151,7 @@ public class HgBranchPopupActions {
 
     HgCloseBranchAction(@Nonnull List<HgRepository> repositories, @Nonnull HgRepository preselectedRepo) {
       super("Close " + StringUtil.pluralize("branch", repositories.size()),
-            "Close current " + StringUtil.pluralize("branch", repositories.size()), AllIcons.Actions.Delete);
+            "Close current " + StringUtil.pluralize("branch", repositories.size()), PlatformIconGroup.actionsClose());
       myRepositories = repositories;
       myPreselectedRepo = preselectedRepo;
     }
