@@ -72,7 +72,7 @@ public class HgBranchPopupActions {
   }
 
   ActionGroup createActions(@Nullable LightActionGroup toInsert, @Nonnull String repoInfo) {
-    DefaultActionGroup popupGroup = new DefaultActionGroup(null, false);
+    DefaultActionGroup popupGroup = new DefaultActionGroup();
     popupGroup.addAction(new HgNewBranchAction(myProject, Collections.singletonList(myRepository), myRepository));
     popupGroup.addAction(new HgNewBookmarkAction(Collections.singletonList(myRepository), myRepository));
     popupGroup.addAction(new HgBranchPopupActions.HgCloseBranchAction(Collections.singletonList(myRepository), myRepository));
@@ -191,9 +191,9 @@ public class HgBranchPopupActions {
 
   public static class HgNewBookmarkAction extends DumbAwareAction {
     @Nonnull
-	protected final List<HgRepository> myRepositories;
+    protected final List<HgRepository> myRepositories;
     @Nonnull
-	final HgRepository myPreselectedRepo;
+    final HgRepository myPreselectedRepo;
 
     HgNewBookmarkAction(@Nonnull List<HgRepository> repositories, @Nonnull HgRepository preselectedRepo) {
       super("New Bookmark", "Create new bookmark", AllIcons.General.Add);
@@ -231,7 +231,7 @@ public class HgBranchPopupActions {
 	Collection<Hash> myHeads = new HashSet<>();
 
     public HgShowUnnamedHeadsForCurrentBranchAction(@Nonnull HgRepository repository) {
-      super(null, true);
+      setPopup(true);
       myRepository = repository;
       myCurrentBranchName = repository.getCurrentBranch();
       getTemplatePresentation().setText(String.format("Unnamed heads for %s", myCurrentBranchName));
