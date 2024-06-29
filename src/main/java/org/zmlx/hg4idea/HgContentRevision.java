@@ -12,19 +12,20 @@
 // limitations under the License.
 package org.zmlx.hg4idea;
 
-import consulo.ide.impl.idea.openapi.vcs.changes.ByteBackedContentRevision;
 import consulo.project.Project;
 import consulo.util.io.CharsetToolkit;
 import consulo.versionControlSystem.FilePath;
 import consulo.versionControlSystem.VcsException;
+import consulo.versionControlSystem.change.ByteBackedContentRevision;
 import consulo.versionControlSystem.util.VcsUtil;
-import org.zmlx.hg4idea.util.HgUtil;
-
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+import org.zmlx.hg4idea.util.HgUtil;
+
 import java.util.Objects;
 
-public class HgContentRevision implements ByteBackedContentRevision {
+public class HgContentRevision implements ByteBackedContentRevision
+{
 
   private final Project myProject;
   @Nonnull
