@@ -57,6 +57,12 @@ public class HgIgnoredFileHolder implements VcsIgnoredFilesHolder {
   }
 
   @Override
+  public boolean containsFile(@Nonnull FilePath filePath, @Nonnull VirtualFile virtualFile) {
+    VirtualFile file = filePath.getVirtualFile();
+    return file != null && containsFile(file);
+  }
+
+  @Override
   public boolean containsFile(VirtualFile file) {
     HgRepository repositoryForFile = HgUtil.getRepositoryForFile(myProject, file);
     if (repositoryForFile == null) return false;
