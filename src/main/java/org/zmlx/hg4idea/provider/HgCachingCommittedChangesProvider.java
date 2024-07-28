@@ -31,18 +31,16 @@ import consulo.versionControlSystem.change.commited.VcsCommittedViewAuxiliary;
 import consulo.versionControlSystem.history.VcsRevisionNumber;
 import consulo.versionControlSystem.util.VcsUtil;
 import consulo.versionControlSystem.versionBrowser.ChangeBrowserSettings;
-import consulo.versionControlSystem.versionBrowser.ChangesBrowserSettingsEditor;
 import consulo.versionControlSystem.versionBrowser.CommittedChangeList;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.virtualFileSystem.status.FileStatus;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.jetbrains.annotations.Nls;
 import org.zmlx.hg4idea.*;
 import org.zmlx.hg4idea.command.HgLogCommand;
-import org.zmlx.hg4idea.ui.HgVersionFilterComponent;
 import org.zmlx.hg4idea.util.HgUtil;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import java.awt.datatransfer.StringSelection;
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -62,10 +60,12 @@ public class HgCachingCommittedChangesProvider implements CachingCommittedChange
     myVcs = vcs;
   }
 
+  @Override
   public int getFormatVersion() {
     return VERSION_WITH_REPOSITORY_BRANCHES;
   }
 
+  @Override
   public CommittedChangeList readChangeList(RepositoryLocation repositoryLocation, DataInput dataInput) throws IOException {
     HgRevisionNumber revision = HgRevisionNumber.getInstance(dataInput.readUTF(), dataInput.readUTF());
     String branch = dataInput.readUTF();
@@ -82,6 +82,7 @@ public class HgCachingCommittedChangesProvider implements CachingCommittedChange
     return new HgCommittedChangeList(myVcs, revision, branch, comment, committerName, commitDate, changes);
   }
 
+  @Override
   public void writeChangeList(DataOutput dataOutput, CommittedChangeList committedChangeList) throws IOException {
     HgCommittedChangeList changeList = (HgCommittedChangeList)committedChangeList;
     writeRevisionNumber(dataOutput, changeList.getRevisionNumber());
@@ -131,23 +132,28 @@ public class HgCachingCommittedChangesProvider implements CachingCommittedChange
     dataOutput.writeUTF(revisionNumber.getChangeset());
   }
 
+  @Override
   public boolean isMaxCountSupported() {
     return true;
   }
 
+  @Override
   public Collection<FilePath> getIncomingFiles(RepositoryLocation repositoryLocation) throws VcsException {
     return null;
   }
 
+  @Override
   public boolean refreshCacheByNumber() {
     return true;
   }
 
+  @Override
   @Nls
   public String getChangelistTitle() {
     return null;
   }
 
+  @Override
   public boolean isChangeLocallyAvailable(FilePath filePath,
                                           @Nullable VcsRevisionNumber localRevision,
                                           VcsRevisionNumber changeRevision,
@@ -155,19 +161,18 @@ public class HgCachingCommittedChangesProvider implements CachingCommittedChange
     return localRevision != null && localRevision.compareTo(changeRevision) >= 0;
   }
 
+  @Override
   public boolean refreshIncomingWithCommitted() {
     return false;
   }
 
+  @Override
   @Nonnull
   public ChangeBrowserSettings createDefaultSettings() {
     return new ChangeBrowserSettings();
   }
 
-  public ChangesBrowserSettingsEditor<ChangeBrowserSettings> createFilterUI(boolean showDateFilter) {
-    return new HgVersionFilterComponent(showDateFilter);
-  }
-
+  @Override
   @Nullable
   public RepositoryLocation getLocationFor(FilePath filePath) {
     VirtualFile repo = VcsUtil.getVcsRootFor(project, filePath);
@@ -177,10 +182,12 @@ public class HgCachingCommittedChangesProvider implements CachingCommittedChange
     return new HgRepositoryLocation(repo.getUrl(), repo);
   }
 
+  @Override
   public RepositoryLocation getLocationFor(FilePath root, String repositoryPath) {
     return getLocationFor(root);
   }
 
+  @Override
   @Nullable
   public VcsCommittedListsZipper getZipper() {
     return null;
@@ -203,6 +210,7 @@ public class HgCachingCommittedChangesProvider implements CachingCommittedChange
     }
   }
 
+  @Override
   public List<CommittedChangeList> getCommittedChanges(ChangeBrowserSettings changeBrowserSettings,
                                                        RepositoryLocation repositoryLocation,
                                                        int maxCount) throws VcsException {
@@ -267,10 +275,12 @@ public class HgCachingCommittedChangesProvider implements CachingCommittedChange
     return new Change(beforeRevision, afterRevision, aStatus);
   }
 
+  @Override
   public ChangeListColumn[] getColumns() {
     return new ChangeListColumn[]{BRANCH_COLUMN, ChangeListColumn.NUMBER, ChangeListColumn.DATE, ChangeListColumn.DESCRIPTION, ChangeListColumn.NAME};
   }
 
+  @Override
   public VcsCommittedViewAuxiliary createActions(DecoratorManager decoratorManager, RepositoryLocation repositoryLocation) {
     AnAction copyHashAction = new AnAction("Copy &Hash", "Copy hash to clipboard", AllIcons.Actions.Copy) {
       @Override
@@ -283,11 +293,13 @@ public class HgCachingCommittedChangesProvider implements CachingCommittedChange
       }
     };
     return new VcsCommittedViewAuxiliary(Collections.singletonList(copyHashAction), new Runnable() {
+      @Override
       public void run() {
       }
     }, Collections.singletonList(copyHashAction));
   }
 
+  @Override
   public int getUnlimitedCountValue() {
     return -1;
   }
@@ -370,10 +382,12 @@ public class HgCachingCommittedChangesProvider implements CachingCommittedChange
   };
 
   private static final ChangeListColumn<HgCommittedChangeList> BRANCH_COLUMN = new ChangeListColumn<HgCommittedChangeList>() {
+    @Override
     public String getTitle() {
       return HgVcsMessages.message("hg4idea.changelist.column.branch");
     }
 
+    @Override
     public Object getValue(final HgCommittedChangeList changeList) {
       final String branch = changeList.getBranch();
       return branch.isEmpty() ? "default" : branch;

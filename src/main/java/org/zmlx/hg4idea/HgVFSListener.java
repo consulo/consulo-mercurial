@@ -19,7 +19,6 @@ import consulo.application.ApplicationManager;
 import consulo.application.progress.ProgressIndicator;
 import consulo.application.progress.Task;
 import consulo.execution.ui.console.ConsoleViewContentType;
-import consulo.ide.impl.idea.openapi.vcs.changes.ChangeListManagerImpl;
 import consulo.ide.impl.idea.util.ui.VcsBackgroundTask;
 import consulo.logging.Logger;
 import consulo.project.Project;
@@ -218,24 +217,24 @@ public class HgVFSListener extends VcsVFSListener {
   }
 
   @Override
-  protected VcsDeleteType needConfirmDeletion(final VirtualFile file) {
-    return ChangeListManagerImpl.getInstanceImpl(myProject).getUnversionedFiles().contains(file)
-      ? VcsDeleteType.IGNORE
-      : VcsDeleteType.CONFIRM;
+  protected boolean shouldIgnoreDeletion(@Nonnull FileStatus status) {
+    return status == FileStatus.UNKNOWN;
+  }
+
+  @Override
+  protected boolean isRecursiveDeleteSupported() {
+    return true;
   }
 
   protected void executeDelete() {
-    final List<FilePath> filesToDelete = new ArrayList<>(myDeletedWithoutConfirmFiles);
-    final List<FilePath> filesToConfirmDeletion = new ArrayList<>(myDeletedFiles);
-    myDeletedWithoutConfirmFiles.clear();
-    myDeletedFiles.clear();
+    List<FilePath> filesToConfirmDeletion = acquireDeletedFiles();
 
     // skip files which are not under Mercurial
-    skipNotUnderHg(filesToDelete);
     skipNotUnderHg(filesToConfirmDeletion);
 
-    filesToDelete.removeAll(processAndGetVcsIgnored(filesToDelete));
-    filesToConfirmDeletion.removeAll(processAndGetVcsIgnored(filesToConfirmDeletion));
+    skipVcsIgnored(filesToConfirmDeletion);
+
+    List<FilePath> filesToDelete = new ArrayList<>();
 
     // newly added files (which were added to the repo but never committed) should be removed from the VCS,
     // but without user confirmation.
@@ -248,10 +247,9 @@ public class HgVFSListener extends VcsVFSListener {
       }
     }
 
-    new Task.ConditionalModal(myProject,
-                              HgVcsMessages.message("hg4idea.remove.progress"),
-                              false,
-                              VcsConfiguration.getInstance(myProject).getAddRemoveOption()) {
+    new Task.Backgroundable(myProject,
+        HgVcsMessages.message("hg4idea.remove.progress"),
+        false) {
       @Override
       public void run(@Nonnull ProgressIndicator indicator) {
         // confirm removal from the VCS if needed
@@ -275,12 +273,12 @@ public class HgVFSListener extends VcsVFSListener {
     }.queue();
   }
 
-  @Nonnull
-  private List<FilePath> processAndGetVcsIgnored(@Nonnull List<FilePath> filePaths) {
+  private void skipVcsIgnored(@Nonnull List<FilePath> filePaths) {
     Map<VirtualFile, Collection<FilePath>> groupFilePathsByHgRoots = HgUtil.groupFilePathsByHgRoots(myProject, filePaths);
-    return groupFilePathsByHgRoots.entrySet().stream()
-                                  .map(entry -> getIgnoreRepoHolder(entry.getKey()).removeIgnoredFiles(entry.getValue()))
-                                  .flatMap(List::stream).collect(Collectors.toList());
+    List<FilePath> ignored = groupFilePathsByHgRoots.entrySet().stream()
+        .map(entry -> getIgnoreRepoHolder(entry.getKey()).removeIgnoredFiles(entry.getValue()))
+        .flatMap(Collection::stream).toList();
+    filePaths.removeAll(ignored);
   }
 
   /**
@@ -323,7 +321,7 @@ public class HgVFSListener extends VcsVFSListener {
 
   @Override
   protected void performMoveRename(List<MovedFileInfo> movedFiles) {
-    (new VcsBackgroundTask<MovedFileInfo>(myProject,
+    (new VcsBackgroundTask<>(myProject,
                                           HgVcsMessages.message("hg4idea.move.progress"),
                                           VcsConfiguration.getInstance(myProject).getAddRemoveOption(),
                                           movedFiles) {
@@ -340,10 +338,5 @@ public class HgVFSListener extends VcsVFSListener {
       }
 
     }).queue();
-  }
-
-  @Override
-  protected boolean isDirectoryVersioningSupported() {
-    return false;
   }
 }

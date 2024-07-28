@@ -15,11 +15,11 @@
  */
 package org.zmlx.hg4idea.action.mq;
 
-import consulo.ide.impl.idea.util.ContentUtilEx;
 import consulo.project.Project;
 import consulo.project.ui.wm.ToolWindowId;
 import consulo.project.ui.wm.ToolWindowManager;
 import consulo.ui.ex.action.AnActionEvent;
+import consulo.ui.ex.content.ContentUtilEx;
 import consulo.ui.ex.toolWindow.ToolWindow;
 import consulo.util.lang.ObjectUtil;
 import jakarta.annotation.Nonnull;

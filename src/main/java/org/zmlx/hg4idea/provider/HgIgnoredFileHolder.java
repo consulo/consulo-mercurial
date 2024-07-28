@@ -18,6 +18,7 @@ package org.zmlx.hg4idea.provider;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.project.Project;
 import consulo.versionControlSystem.AbstractVcs;
+import consulo.versionControlSystem.FilePath;
 import consulo.versionControlSystem.change.FileHolder;
 import consulo.versionControlSystem.change.VcsIgnoredFilesHolder;
 import consulo.versionControlSystem.change.VcsModifiableDirtyScope;
@@ -35,8 +36,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @ExtensionImpl
-public class HgIgnoredFileHolder implements VcsIgnoredFilesHolder
-{
+public class HgIgnoredFileHolder implements VcsIgnoredFilesHolder {
   private final Project myProject;
   private final HgVcs myVcs;
   private final Map<HgRepository, HgLocalIgnoredHolder> myVcsIgnoredHolderMap;
@@ -46,6 +46,10 @@ public class HgIgnoredFileHolder implements VcsIgnoredFilesHolder
     myProject = project;
     myVcs = HgVcs.getInstance(myProject);
     myVcsIgnoredHolderMap = new HashMap<>();
+  }
+
+  @Override
+  public void addFile(FilePath filePath) {
   }
 
   @Override
