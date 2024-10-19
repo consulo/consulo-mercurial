@@ -1,1 +1,2 @@
-![Build Status](http://must-be.org/vulcan/statusImage?name=consulo-mercurial)
+[![Build Status](https://ci.consulo.io/job/consulo-mercurial/badge/icon)](https://ci.consulo.io/job/consulo-mercurial/)
+
