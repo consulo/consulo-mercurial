@@ -12,6 +12,9 @@
 // limitations under the License.
 package org.zmlx.hg4idea;
 
+import consulo.annotation.DeprecationInfo;
+import consulo.annotation.internal.MigratedExtensionsTo;
+import consulo.mercurial.localize.HgLocalize;
 import jakarta.annotation.Nullable;
 
 import consulo.application.CommonBundle;
@@ -22,6 +25,9 @@ import java.util.ResourceBundle;
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
 
+@Deprecated
+@DeprecationInfo("Use HgLocalize")
+@MigratedExtensionsTo(HgLocalize.class)
 public final class HgVcsMessages {
 
   public static String message(@Nonnull @PropertyKey(resourceBundle = BUNDLE) String key, @Nonnull @Nullable Object... params) {
