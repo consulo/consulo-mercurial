@@ -17,6 +17,8 @@
 package org.zmlx.hg4idea.provider.annotate;
 
 import consulo.ide.impl.idea.openapi.vcs.annotate.ShowAllAffectedGenericAction;
+import consulo.localize.LocalizeValue;
+import consulo.mercurial.localize.HgLocalize;
 import consulo.project.Project;
 import consulo.versionControlSystem.VcsKey;
 import consulo.versionControlSystem.annotate.FileAnnotation;
@@ -31,7 +33,6 @@ import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.HgFile;
 import org.zmlx.hg4idea.HgFileRevision;
 import org.zmlx.hg4idea.HgVcs;
-import org.zmlx.hg4idea.HgVcsMessages;
 
 import java.util.Date;
 import java.util.LinkedList;
@@ -86,6 +87,7 @@ public class HgAnnotation extends FileAnnotation {
     public void dispose() {
     }
 
+    @Nonnull
     @Override
     public LineAnnotationAspect[] getAspects() {
         return new LineAnnotationAspect[]{
@@ -95,21 +97,20 @@ public class HgAnnotation extends FileAnnotation {
         };
     }
 
+    @Nonnull
     @Override
-    @Nullable
-    public String getToolTip(int lineNumber) {
+    public LocalizeValue getToolTipValue(int lineNumber) {
         if (myLines.size() <= lineNumber || lineNumber < 0) {
-            return null;
+            return LocalizeValue.empty();
         }
         HgAnnotationLine info = myLines.get(lineNumber);
         if (info == null) {
-            return null;
+            return LocalizeValue.empty();
         }
 
         for (HgFileRevision revision : myFileRevisions) {
             if (revision.getRevisionNumber().equals(info.getVcsRevisionNumber())) {
-                return HgVcsMessages.message(
-                    "hg4idea.annotation.tool.tip",
+                return HgLocalize.hg4ideaAnnotationToolTip(
                     revision.getRevisionNumber().asString(),
                     revision.getAuthor(),
                     revision.getRevisionDate(),
@@ -118,7 +119,7 @@ public class HgAnnotation extends FileAnnotation {
             }
         }
 
-        return null;
+        return LocalizeValue.empty();
     }
 
     @Override

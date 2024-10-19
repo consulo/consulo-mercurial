@@ -1,5 +1,6 @@
 package org.zmlx.hg4idea.ui;
 
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.awt.*;
 import consulo.ui.ex.awt.event.DocumentAdapter;
 import consulo.ui.ex.awt.JBCheckBox;
@@ -45,6 +46,7 @@ public class HgBookmarkDialog extends DialogWrapper {
 
     @Override
     @Nonnull
+    @RequiredUIAccess
     public JComponent getPreferredFocusedComponent() {
         return myBookmarkName;
     }
@@ -60,7 +62,7 @@ public class HgBookmarkDialog extends DialogWrapper {
     protected JComponent createCenterPanel() {
         JPanel contentPanel = new JPanel(new GridBagLayout());
         GridBag g = new GridBag()
-            .setDefaultInsets(new Insets(0, 0, DEFAULT_VGAP, DEFAULT_HGAP))
+            .setDefaultInsets(JBUI.insets(0, 0, DEFAULT_VGAP, DEFAULT_HGAP))
             .setDefaultAnchor(GridBagConstraints.LINE_START)
             .setDefaultFill(GridBagConstraints.HORIZONTAL);
 
@@ -79,7 +81,7 @@ public class HgBookmarkDialog extends DialogWrapper {
         myActiveCheckbox = new JBCheckBox("Inactive", false);
 
         contentPanel.add(icon, g.nextLine().next().coverColumn(3).pady(DEFAULT_HGAP));
-        contentPanel.add(bookmarkLabel, g.next().fillCellNone().insets(new Insets(0, 6, DEFAULT_VGAP, DEFAULT_HGAP)));
+        contentPanel.add(bookmarkLabel, g.next().fillCellNone().insets(JBUI.insets(0, 6, DEFAULT_VGAP, DEFAULT_HGAP)));
         contentPanel.add(myBookmarkName, g.next().coverLine().setDefaultWeightX(1));
         contentPanel.add(myActiveCheckbox, g.nextLine().next().next().coverLine(2));
         return contentPanel;
@@ -94,7 +96,7 @@ public class HgBookmarkDialog extends DialogWrapper {
             setOKActionEnabled(false);
             return;
         }
-        setErrorText(null);
+        clearErrorText();
         setOKActionEnabled(true);
     }
 

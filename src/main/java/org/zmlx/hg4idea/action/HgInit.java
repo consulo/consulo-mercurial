@@ -15,9 +15,10 @@
  */
 package org.zmlx.hg4idea.action;
 
-import consulo.language.editor.CommonDataKeys;
+import consulo.mercurial.localize.HgLocalize;
 import consulo.project.Project;
 import consulo.project.ProjectManager;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnActionEvent;
 import consulo.ui.ex.action.DumbAwareAction;
 import consulo.versionControlSystem.ProjectLevelVcsManager;
@@ -25,12 +26,8 @@ import consulo.versionControlSystem.VcsNotifier;
 import consulo.versionControlSystem.util.VcsUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.virtualFileSystem.util.VirtualFileUtil;
-import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.HgVcs;
-import org.zmlx.hg4idea.HgVcsMessages;
 import org.zmlx.hg4idea.command.HgInitCommand;
-import org.zmlx.hg4idea.execution.HgCommandResult;
-import org.zmlx.hg4idea.execution.HgCommandResultHandler;
 import org.zmlx.hg4idea.ui.HgInitAlreadyUnderHgDialog;
 import org.zmlx.hg4idea.ui.HgInitDialog;
 import org.zmlx.hg4idea.util.HgErrorUtil;
@@ -46,8 +43,9 @@ public class HgInit extends DumbAwareAction {
     private Project myProject;
 
     @Override
+    @RequiredUIAccess
     public void actionPerformed(AnActionEvent e) {
-        myProject = e.getData(CommonDataKeys.PROJECT);
+        myProject = e.getData(Project.KEY);
         if (myProject == null) {
             myProject = ProjectManager.getInstance().getDefaultProject();
         }
@@ -109,26 +107,20 @@ public class HgInit extends DumbAwareAction {
     private void createRepositoryAsynchronously(final VirtualFile selectedRoot, final VirtualFile mapRoot) {
         new HgInitCommand(myProject).executeAsynchronously(
             selectedRoot,
-            new HgCommandResultHandler() {
-                @Override
-                public void process(@Nullable HgCommandResult result) {
-                    if (!HgErrorUtil.hasErrorsInCommandExecution(result)) {
-                        updateDirectoryMappings(mapRoot);
-                        VcsNotifier.getInstance(myProject).notifySuccess(
-                            HgVcsMessages.message("hg4idea.init.created.notification.title"),
-                            HgVcsMessages.message(
-                                "hg4idea.init.created.notification.description",
-                                selectedRoot.getPresentableUrl()
-                            )
-                        );
-                    }
-                    else {
-                        new HgCommandResultNotifier(myProject.isDefault() ? null : myProject).notifyError(
-                            result,
-                            HgVcsMessages.message("hg4idea.init.error.title"),
-                            HgVcsMessages.message("hg4idea.init.error.description", selectedRoot.getPresentableUrl())
-                        );
-                    }
+            result -> {
+                if (!HgErrorUtil.hasErrorsInCommandExecution(result)) {
+                    updateDirectoryMappings(mapRoot);
+                    VcsNotifier.getInstance(myProject).notifySuccess(
+                        HgLocalize.hg4ideaInitCreatedNotificationTitle().get(),
+                        HgLocalize.hg4ideaInitCreatedNotificationDescription(selectedRoot.getPresentableUrl()).get()
+                    );
+                }
+                else {
+                    new HgCommandResultNotifier(myProject.isDefault() ? null : myProject).notifyError(
+                        result,
+                        HgLocalize.hg4ideaInitErrorTitle().get(),
+                        HgLocalize.hg4ideaInitErrorDescription(selectedRoot.getPresentableUrl()).get()
+                    );
                 }
             }
         );

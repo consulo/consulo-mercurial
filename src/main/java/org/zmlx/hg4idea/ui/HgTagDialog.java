@@ -13,6 +13,7 @@
 package org.zmlx.hg4idea.ui;
 
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.awt.DialogWrapper;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.ui.ex.awt.event.DocumentAdapter;
@@ -64,6 +65,7 @@ public class HgTagDialog extends DialogWrapper {
         hgRepositorySelectorComponent.setSelectedRoot(selectedRepo);
     }
 
+    @Override
     protected JComponent createCenterPanel() {
         return contentPanel;
     }
@@ -77,11 +79,12 @@ public class HgTagDialog extends DialogWrapper {
             setOKActionEnabled(false);
             return;
         }
-        setErrorText(null);
+        clearErrorText();
         setOKActionEnabled(true);
     }
 
     @Override
+    @RequiredUIAccess
     public JComponent getPreferredFocusedComponent() {
         return tagTxt;
     }

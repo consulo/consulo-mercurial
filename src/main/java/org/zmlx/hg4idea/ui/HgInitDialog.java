@@ -18,21 +18,18 @@ package org.zmlx.hg4idea.ui;
 import consulo.configurable.ConfigurationException;
 import consulo.fileChooser.FileChooserDescriptor;
 import consulo.fileChooser.IdeaFileChooser;
+import consulo.mercurial.localize.HgLocalize;
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.awt.DialogWrapper;
 import consulo.ui.ex.awt.TextFieldWithBrowseButton;
 import consulo.versionControlSystem.util.VcsUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import jakarta.annotation.Nullable;
-import org.zmlx.hg4idea.HgVcsMessages;
 import org.zmlx.hg4idea.action.HgInit;
 import org.zmlx.hg4idea.util.HgUtil;
 
 import javax.swing.*;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * The HgInitDialog appears when user wants to create new Mercurial repository, in response to the
@@ -63,9 +60,10 @@ public class HgInitDialog extends DialogWrapper {
         myShowDialog = (myProject != null && (!myProject.isDefault()) && !HgUtil.isHgRoot(myProject.getBaseDir()));
 
         myFileDescriptor = new FileChooserDescriptor(false, true, false, false, false, false) {
+            @Override
             public void validateSelectedFiles(VirtualFile[] files) throws Exception {
                 if (HgUtil.isHgRoot(files[0])) {
-                    throw new ConfigurationException(HgVcsMessages.message("hg4idea.init.this.is.hg.root", files[0].getPresentableUrl()));
+                    throw new ConfigurationException(HgLocalize.hg4ideaInitThisIsHgRoot(files[0].getPresentableUrl()).get());
                 }
                 updateEverything();
             }
@@ -78,32 +76,24 @@ public class HgInitDialog extends DialogWrapper {
     @Override
     protected void init() {
         super.init();
-        setTitle(HgVcsMessages.message("hg4idea.init.dialog.title"));
+        setTitle(HgLocalize.hg4ideaInitDialogTitle());
         if (myProject != null && (!myProject.isDefault())) {
             mySelectedDir = myProject.getBaseDir();
         }
 
-        mySelectWhereToCreateRadioButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                myTextFieldBrowser.setEnabled(true);
-                updateEverything();
-            }
+        mySelectWhereToCreateRadioButton.addActionListener(e -> {
+            myTextFieldBrowser.setEnabled(true);
+            updateEverything();
         });
-        myCreateRepositoryForTheRadioButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                myTextFieldBrowser.setEnabled(false);
-                updateEverything();
-            }
+        myCreateRepositoryForTheRadioButton.addActionListener(e -> {
+            myTextFieldBrowser.setEnabled(false);
+            updateEverything();
         });
-        myTextFieldBrowser.getTextField().addCaretListener(new CaretListener() {
-            public void caretUpdate(CaretEvent e) {
-                updateEverything();
-            }
-        });
+        myTextFieldBrowser.getTextField().addCaretListener(e -> updateEverything());
 
         myTextFieldBrowser.addBrowseFolderListener(
-            HgVcsMessages.message("hg4idea.init.destination.directory.title"),
-            HgVcsMessages.message("hg4idea.init.destination.directory.description"),
+            HgLocalize.hg4ideaInitDestinationDirectoryTitle().get(),
+            HgLocalize.hg4ideaInitDestinationDirectoryDescription().get(),
             myProject,
             myFileDescriptor
         );
@@ -113,6 +103,7 @@ public class HgInitDialog extends DialogWrapper {
      * Show the dialog OR show a FileChooser to select target directory.
      */
     @Override
+    @RequiredUIAccess
     public void show() {
         if (myShowDialog) {
             super.show();
@@ -171,12 +162,12 @@ public class HgInitDialog extends DialogWrapper {
     }
 
     private void enableOKAction() {
-        setErrorText(null);
+        clearErrorText();
         setOKActionEnabled(true);
     }
 
     private void disableOKAction() {
-        setErrorText(HgVcsMessages.message("hg4idea.init.dialog.incorrect.path"));
+        setErrorText(HgLocalize.hg4ideaInitDialogIncorrectPath());
         setOKActionEnabled(false);
     }
 }
