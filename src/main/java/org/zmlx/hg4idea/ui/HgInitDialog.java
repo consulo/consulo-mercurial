@@ -45,136 +45,138 @@ import java.awt.event.ActionListener;
  * @see HgInit
  */
 public class HgInitDialog extends DialogWrapper {
-  private JPanel contentPane;
-  private JRadioButton myCreateRepositoryForTheRadioButton;
-  private JRadioButton mySelectWhereToCreateRadioButton;
-  private TextFieldWithBrowseButton myTextFieldBrowser;
+    private JPanel contentPane;
+    private JRadioButton myCreateRepositoryForTheRadioButton;
+    private JRadioButton mySelectWhereToCreateRadioButton;
+    private TextFieldWithBrowseButton myTextFieldBrowser;
 
-  @Nullable
-  private final Project myProject;
-  private final boolean myShowDialog; // basing on this field, show options or invoke file chooser at once
-  private final FileChooserDescriptor myFileDescriptor;
-  private VirtualFile mySelectedDir;
+    @Nullable
+    private final Project myProject;
+    private final boolean myShowDialog; // basing on this field, show options or invoke file chooser at once
+    private final FileChooserDescriptor myFileDescriptor;
+    private VirtualFile mySelectedDir;
 
-  public HgInitDialog(@Nullable Project project) {
-    super(project);
-    myProject = project;
-    // a file chooser instead of dialog will be shown immediately if there is no current project or if current project is already an hg root
-    myShowDialog = (myProject != null && (!myProject.isDefault()) && !HgUtil.isHgRoot(myProject.getBaseDir()));
+    public HgInitDialog(@Nullable Project project) {
+        super(project);
+        myProject = project;
+        // a file chooser instead of dialog will be shown immediately if there is no current project or if current project is already an hg root
+        myShowDialog = (myProject != null && (!myProject.isDefault()) && !HgUtil.isHgRoot(myProject.getBaseDir()));
 
-    myFileDescriptor = new FileChooserDescriptor(false, true, false, false, false, false) {
-      public void validateSelectedFiles(VirtualFile[] files) throws Exception {
-        if (HgUtil.isHgRoot(files[0])) {
-          throw new ConfigurationException(HgVcsMessages.message("hg4idea.init.this.is.hg.root", files[0].getPresentableUrl()));
+        myFileDescriptor = new FileChooserDescriptor(false, true, false, false, false, false) {
+            public void validateSelectedFiles(VirtualFile[] files) throws Exception {
+                if (HgUtil.isHgRoot(files[0])) {
+                    throw new ConfigurationException(HgVcsMessages.message("hg4idea.init.this.is.hg.root", files[0].getPresentableUrl()));
+                }
+                updateEverything();
+            }
+        };
+        myFileDescriptor.setHideIgnored(false);
+
+        init();
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+        setTitle(HgVcsMessages.message("hg4idea.init.dialog.title"));
+        if (myProject != null && (!myProject.isDefault())) {
+            mySelectedDir = myProject.getBaseDir();
         }
-        updateEverything();
-      }
-    };
-    myFileDescriptor.setHideIgnored(false);
 
-    init();
-  }
+        mySelectWhereToCreateRadioButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                myTextFieldBrowser.setEnabled(true);
+                updateEverything();
+            }
+        });
+        myCreateRepositoryForTheRadioButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                myTextFieldBrowser.setEnabled(false);
+                updateEverything();
+            }
+        });
+        myTextFieldBrowser.getTextField().addCaretListener(new CaretListener() {
+            public void caretUpdate(CaretEvent e) {
+                updateEverything();
+            }
+        });
 
-  @Override
-  protected void init() {
-    super.init();
-    setTitle(HgVcsMessages.message("hg4idea.init.dialog.title"));
-    if (myProject != null && (!myProject.isDefault())) {
-      mySelectedDir = myProject.getBaseDir();
+        myTextFieldBrowser.addBrowseFolderListener(
+            HgVcsMessages.message("hg4idea.init.destination.directory.title"),
+            HgVcsMessages.message("hg4idea.init.destination.directory.description"),
+            myProject,
+            myFileDescriptor
+        );
     }
 
-    mySelectWhereToCreateRadioButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        myTextFieldBrowser.setEnabled(true);
-        updateEverything();
-      }
-    });
-    myCreateRepositoryForTheRadioButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        myTextFieldBrowser.setEnabled(false);
-        updateEverything();
-      }
-    });
-    myTextFieldBrowser.getTextField().addCaretListener(new CaretListener() {
-      public void caretUpdate(CaretEvent e) {
-        updateEverything();
-      }
-    });
-
-    myTextFieldBrowser.addBrowseFolderListener(HgVcsMessages.message("hg4idea.init.destination.directory.title"),
-                                               HgVcsMessages.message("hg4idea.init.destination.directory.description"),
-                                               myProject, myFileDescriptor);
-  }
-
-  /**
-   * Show the dialog OR show a FileChooser to select target directory.
-   */
-  @Override
-  public void show() {
-    if (myShowDialog) {
-      super.show();
+    /**
+     * Show the dialog OR show a FileChooser to select target directory.
+     */
+    @Override
+    public void show() {
+        if (myShowDialog) {
+            super.show();
+        }
+        else {
+            mySelectedDir = IdeaFileChooser.chooseFile(myFileDescriptor, myProject, null);
+        }
     }
-    else {
-      mySelectedDir = IdeaFileChooser.chooseFile(myFileDescriptor, myProject, null);
+
+    @Override
+    public boolean isOK() {
+        return myShowDialog ? super.isOK() : mySelectedDir != null;
     }
-  }
 
-  @Override
-  public boolean isOK() {
-    return myShowDialog ? super.isOK() : mySelectedDir != null;
-  }
-
-  @Override
-  protected String getHelpId() {
-    return "reference.mercurial.create.mercurial.repository";
-  }
-
-  @Nullable
-  public VirtualFile getSelectedFolder() {
-    return mySelectedDir;
-  }
-
-  @Override
-  protected JComponent createCenterPanel() {
-    return contentPane;
-  }
-
-  /**
-   * Based on the selected option and entered path to the target directory,
-   * enable/disable the 'OK' button, show error text and update mySelectedDir.
-   */
-  private void updateEverything() {
-    if (myShowDialog && myCreateRepositoryForTheRadioButton.isSelected()) {
-      enableOKAction();
-      mySelectedDir = myProject.getBaseDir();
+    @Override
+    protected String getHelpId() {
+        return "reference.mercurial.create.mercurial.repository";
     }
-    else {
-      final VirtualFile vf = VcsUtil.getVirtualFile(myTextFieldBrowser.getText());
-      if (vf == null) {
-        disableOKAction();
-        mySelectedDir = null;
-        return;
-      }
-      vf.refresh(false, false);
-      if (vf.exists() && vf.isValid() && vf.isDirectory()) {
-        enableOKAction();
-        mySelectedDir = vf;
-      }
-      else {
-        disableOKAction();
-        mySelectedDir = null;
-      }
+
+    @Nullable
+    public VirtualFile getSelectedFolder() {
+        return mySelectedDir;
     }
-  }
 
-  private void enableOKAction() {
-    setErrorText(null);
-    setOKActionEnabled(true);
-  }
+    @Override
+    protected JComponent createCenterPanel() {
+        return contentPane;
+    }
 
-  private void disableOKAction() {
-    setErrorText(HgVcsMessages.message("hg4idea.init.dialog.incorrect.path"));
-    setOKActionEnabled(false);
-  }
+    /**
+     * Based on the selected option and entered path to the target directory,
+     * enable/disable the 'OK' button, show error text and update mySelectedDir.
+     */
+    private void updateEverything() {
+        if (myShowDialog && myCreateRepositoryForTheRadioButton.isSelected()) {
+            enableOKAction();
+            mySelectedDir = myProject.getBaseDir();
+        }
+        else {
+            final VirtualFile vf = VcsUtil.getVirtualFile(myTextFieldBrowser.getText());
+            if (vf == null) {
+                disableOKAction();
+                mySelectedDir = null;
+                return;
+            }
+            vf.refresh(false, false);
+            if (vf.exists() && vf.isValid() && vf.isDirectory()) {
+                enableOKAction();
+                mySelectedDir = vf;
+            }
+            else {
+                disableOKAction();
+                mySelectedDir = null;
+            }
+        }
+    }
 
+    private void enableOKAction() {
+        setErrorText(null);
+        setOKActionEnabled(true);
+    }
+
+    private void disableOKAction() {
+        setErrorText(HgVcsMessages.message("hg4idea.init.dialog.incorrect.path"));
+        setOKActionEnabled(false);
+    }
 }

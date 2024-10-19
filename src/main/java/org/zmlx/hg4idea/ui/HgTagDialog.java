@@ -28,63 +28,61 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.util.Collection;
 
-public class HgTagDialog extends DialogWrapper
-{
+public class HgTagDialog extends DialogWrapper {
+    private JPanel contentPanel;
+    private JTextField tagTxt;
+    private HgRepositorySelectorComponent hgRepositorySelectorComponent;
 
-  private JPanel contentPanel;
-  private JTextField tagTxt;
-  private HgRepositorySelectorComponent hgRepositorySelectorComponent;
+    public HgTagDialog(@Nonnull Project project, @Nonnull Collection<HgRepository> repositories, @Nullable HgRepository selectedRepo) {
+        super(project, false);
+        hgRepositorySelectorComponent.setTitle("Select repository to tag");
+        DocumentListener documentListener = new DocumentAdapter() {
+            @Override
+            protected void textChanged(DocumentEvent e) {
+                validateFields();
+            }
+        };
 
-  public HgTagDialog(@Nonnull Project project, @Nonnull Collection<HgRepository> repositories, @Nullable HgRepository selectedRepo) {
-    super(project, false);
-    hgRepositorySelectorComponent.setTitle("Select repository to tag");
-    DocumentListener documentListener = new DocumentAdapter() {
-      @Override
-      protected void textChanged(DocumentEvent e) {
-        validateFields();
-      }
-    };
+        tagTxt.getDocument().addDocumentListener(documentListener);
 
-    tagTxt.getDocument().addDocumentListener(documentListener);
+        setTitle("Tag");
+        init();
 
-    setTitle("Tag");
-    init();
-
-    setRoots(repositories, selectedRepo);
-  }
-
-  public String getTagName() {
-    return tagTxt.getText();
-  }
-
-  public VirtualFile getRepository() {
-    return hgRepositorySelectorComponent.getRepository().getRoot();
-  }
-
-  private void setRoots(@Nonnull Collection<HgRepository> repositories, @Nullable HgRepository selectedRepo) {
-    hgRepositorySelectorComponent.setRoots(repositories);
-    hgRepositorySelectorComponent.setSelectedRoot(selectedRepo);
-  }
-
-  protected JComponent createCenterPanel() {
-    return contentPanel;
-  }
-
-  private void validateFields() {
-    HgReferenceValidator validator = new HgBranchReferenceValidator(hgRepositorySelectorComponent.getRepository());
-    String name = getTagName();
-    if (!validator.checkInput(name)) {
-      String message = validator.getErrorText(name);
-      setErrorText(message == null ? "You have to specify tag name." : message);
-      setOKActionEnabled(false);
-      return;
+        setRoots(repositories, selectedRepo);
     }
-    setErrorText(null);
-    setOKActionEnabled(true);
-  }
 
-  @Override
-  public JComponent getPreferredFocusedComponent() {
-    return tagTxt;
-  }
+    public String getTagName() {
+        return tagTxt.getText();
+    }
+
+    public VirtualFile getRepository() {
+        return hgRepositorySelectorComponent.getRepository().getRoot();
+    }
+
+    private void setRoots(@Nonnull Collection<HgRepository> repositories, @Nullable HgRepository selectedRepo) {
+        hgRepositorySelectorComponent.setRoots(repositories);
+        hgRepositorySelectorComponent.setSelectedRoot(selectedRepo);
+    }
+
+    protected JComponent createCenterPanel() {
+        return contentPanel;
+    }
+
+    private void validateFields() {
+        HgReferenceValidator validator = new HgBranchReferenceValidator(hgRepositorySelectorComponent.getRepository());
+        String name = getTagName();
+        if (!validator.checkInput(name)) {
+            String message = validator.getErrorText(name);
+            setErrorText(message == null ? "You have to specify tag name." : message);
+            setOKActionEnabled(false);
+            return;
+        }
+        setErrorText(null);
+        setOKActionEnabled(true);
+    }
+
+    @Override
+    public JComponent getPreferredFocusedComponent() {
+        return tagTxt;
+    }
 }
