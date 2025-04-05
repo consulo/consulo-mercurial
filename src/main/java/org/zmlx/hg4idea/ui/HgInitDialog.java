@@ -18,6 +18,7 @@ package org.zmlx.hg4idea.ui;
 import consulo.configurable.ConfigurationException;
 import consulo.fileChooser.FileChooserDescriptor;
 import consulo.fileChooser.IdeaFileChooser;
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.ui.ex.awt.DialogWrapper;
 import consulo.ui.ex.awt.TextFieldWithBrowseButton;
@@ -168,7 +169,7 @@ public class HgInitDialog extends DialogWrapper {
   }
 
   private void enableOKAction() {
-    setErrorText(null);
+    setErrorText(LocalizeValue.of());
     setOKActionEnabled(true);
   }
 

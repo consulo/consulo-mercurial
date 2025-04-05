@@ -12,6 +12,7 @@
 // limitations under the License.
 package org.zmlx.hg4idea.ui;
 
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.ui.ex.awt.DialogWrapper;
 import consulo.virtualFileSystem.VirtualFile;
@@ -79,7 +80,7 @@ public class HgTagDialog extends DialogWrapper
       setOKActionEnabled(false);
       return;
     }
-    setErrorText(null);
+    setErrorText(LocalizeValue.of());
     setOKActionEnabled(true);
   }
 

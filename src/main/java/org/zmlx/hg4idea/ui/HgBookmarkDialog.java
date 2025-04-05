@@ -1,5 +1,6 @@
 package org.zmlx.hg4idea.ui;
 
+import consulo.localize.LocalizeValue;
 import consulo.ui.ex.awt.*;
 import consulo.ui.ex.awt.event.DocumentAdapter;
 import consulo.ui.ex.awt.JBCheckBox;
@@ -94,7 +95,7 @@ public class HgBookmarkDialog extends DialogWrapper {
       setOKActionEnabled(false);
       return;
     }
-    setErrorText(null);
+    setErrorText(LocalizeValue.of());
     setOKActionEnabled(true);
   }
 

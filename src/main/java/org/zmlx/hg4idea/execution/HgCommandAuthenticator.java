@@ -16,7 +16,6 @@ import consulo.application.Application;
 import consulo.application.ApplicationManager;
 import consulo.credentialStorage.AuthenticationData;
 import consulo.credentialStorage.PasswordSafe;
-import consulo.credentialStorage.PasswordSafeException;
 import consulo.credentialStorage.ui.AuthDialog;
 import consulo.logging.Logger;
 import consulo.project.Project;
@@ -57,21 +56,16 @@ class HgCommandAuthenticator {
     final PasswordSafe passwordSafe = PasswordSafe.getInstance();
     final String url = VirtualFileManager.extractPath(myGetPassword.getURL());
     final String key = keyForUrlAndLogin(url, myGetPassword.getUserName());
-    try {
-      PasswordSafe.getInstance()
-                  .storePassword(myProject,
-                                 HgCommandAuthenticator.class,
-                                 key,
-                                 myGetPassword.getPassword(),
-                                 myGetPassword.isRememberPassword());
-
-      final HgVcs vcs = HgVcs.getInstance(myProject);
-      if (vcs != null) {
-        vcs.getGlobalSettings().addRememberedUrl(url, myGetPassword.getUserName());
-      }
+    if (myGetPassword.isRememberPassword()) {
+        passwordSafe.storePassword(myProject,
+                HgCommandAuthenticator.class,
+                key,
+                myGetPassword.getPassword());
     }
-    catch (PasswordSafeException e) {
-      LOG.info("Couldn't store the password for key [" + key + "]", e);
+
+    final HgVcs vcs = HgVcs.getInstance(myProject);
+    if (vcs != null) {
+    vcs.getGlobalSettings().addRememberedUrl(url, myGetPassword.getUserName());
     }
   }
 
@@ -147,13 +141,8 @@ class HgCommandAuthenticator {
       if (!StringUtil.isEmptyOrSpaces(login) && myURL != null) {
         // if we've logged in with this login, search for password
         final String key = keyForUrlAndLogin(myURL, login);
-        try {
-          final PasswordSafe passwordSafe = PasswordSafe.getInstance();
-          password = passwordSafe.getPassword(myProject, HgCommandAuthenticator.class, key);
-        }
-        catch (PasswordSafeException e) {
-          LOG.info("Couldn't get password for key [" + key + "]", e);
-        }
+        final PasswordSafe passwordSafe = PasswordSafe.getInstance();
+        password = passwordSafe.getPassword(myProject, HgCommandAuthenticator.class, key);
       }
 
       // don't show dialog if we don't have to (both fields are known) except force authorization required
