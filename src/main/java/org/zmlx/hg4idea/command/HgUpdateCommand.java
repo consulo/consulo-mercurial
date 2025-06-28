@@ -17,7 +17,9 @@ import consulo.application.progress.ProgressIndicator;
 import consulo.application.progress.Task;
 import consulo.document.FileDocumentManager;
 import consulo.ide.impl.idea.openapi.vfs.VfsUtil;
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
+import consulo.project.ui.notification.NotificationService;
 import consulo.ui.ex.awt.Messages;
 import consulo.ui.ex.awt.UIUtil;
 import consulo.util.lang.StringUtil;
@@ -162,9 +164,11 @@ public class HgUpdateCommand {
       new HgCommandResultNotifier(project).notifyError(result, "", "Update failed");
     }
     else if (hasUnresolvedConflicts) {
-      new VcsNotifier(project)
-        .notifyImportantWarning("Unresolved conflicts.",
-                                HgVcsMessages.message("hg4idea.update.warning.merge.conflicts", repository.getPath()));
+      NotificationService.getInstance()
+          .newWarn(VcsNotifier.IMPORTANT_ERROR_NOTIFICATION)
+          .title(LocalizeValue.localizeTODO("Unresolved conflicts."))
+          .content(LocalizeValue.localizeTODO(HgVcsMessages.message("hg4idea.update.warning.merge.conflicts", repository.getPath())))
+          .notify(project);
     }
     getRepositoryManager(project).updateRepository(repository);
     HgErrorUtil.markDirtyAndHandleErrors(project, repository);
