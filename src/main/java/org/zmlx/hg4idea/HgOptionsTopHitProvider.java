@@ -16,16 +16,16 @@
 package org.zmlx.hg4idea;
 
 import consulo.annotation.component.ExtensionImpl;
-import consulo.ide.ServiceManager;
+import consulo.component.ComponentManager;
 import consulo.ide.impl.idea.ide.ui.OptionsTopHitProvider;
 import consulo.ide.impl.idea.ide.ui.PublicMethodBasedOptionDescription;
 import consulo.ide.impl.idea.ide.ui.search.BooleanOptionDescription;
 import consulo.project.Project;
 import consulo.versionControlSystem.ProjectLevelVcsManager;
 import consulo.versionControlSystem.VcsDescriptor;
-
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -42,9 +42,9 @@ public final class HgOptionsTopHitProvider extends OptionsTopHitProvider {
 
   @Nonnull
   @Override
-  public Collection<BooleanOptionDescription> getOptions(@Nullable Project project) {
+  public Collection<BooleanOptionDescription> getOptions(@Nullable ComponentManager project) {
     if (project != null) {
-      for (VcsDescriptor descriptor : ProjectLevelVcsManager.getInstance(project).getAllVcss()) {
+      for (VcsDescriptor descriptor : ProjectLevelVcsManager.getInstance((Project) project).getAllVcss()) {
         if ("Mercurial".equals(descriptor.getDisplayName())) {
           return Collections.unmodifiableCollection(Arrays.asList(
             option(project, "Mercurial: Check for incoming and outgoing changesets", "isCheckIncomingOutgoing", "setCheckIncomingOutgoing"),
@@ -58,11 +58,11 @@ public final class HgOptionsTopHitProvider extends OptionsTopHitProvider {
     return Collections.emptyList();
   }
 
-  private static BooleanOptionDescription option(final Project project, String option, String getter, String setter) {
+  private static BooleanOptionDescription option(final ComponentManager project, String option, String getter, String setter) {
     return new PublicMethodBasedOptionDescription(option, "vcs.Mercurial", getter, setter) {
       @Override
       public Object getInstance() {
-        return ServiceManager.getService(project, HgProjectSettings.class);
+        return project.getInstance(HgProjectSettings.class);
       }
     };
   }
