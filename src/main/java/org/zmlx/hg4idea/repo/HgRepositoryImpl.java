@@ -19,7 +19,6 @@ package org.zmlx.hg4idea.repo;
 import consulo.application.Application;
 import consulo.disposer.Disposable;
 import consulo.disposer.Disposer;
-import consulo.ide.impl.idea.openapi.vcs.changes.ChangesViewI;
 import consulo.ide.impl.idea.openapi.vcs.changes.ChangesViewManager;
 import consulo.ide.impl.idea.openapi.vfs.VfsUtilCore;
 import consulo.logging.Logger;
@@ -283,20 +282,20 @@ public class HgRepositoryImpl extends RepositoryImpl implements HgRepository {
 
     private static class MyIgnoredHolderAsyncListener implements AsyncFilesManagerListener {
         @Nonnull
-        private final ChangesViewI myChangesViewI;
+        private final ChangesViewManager myChangesViewManager;
 
         public MyIgnoredHolderAsyncListener(@Nonnull Project project) {
-            myChangesViewI = ChangesViewManager.getInstance(project);
+            myChangesViewManager = (ChangesViewManager) ChangesViewManager.getInstance(project);
         }
 
         @Override
         public void updateStarted() {
-            myChangesViewI.scheduleRefresh();
+            myChangesViewManager.scheduleRefresh();
         }
 
         @Override
         public void updateFinished() {
-            myChangesViewI.scheduleRefresh();
+            myChangesViewManager.scheduleRefresh();
         }
     }
 }
