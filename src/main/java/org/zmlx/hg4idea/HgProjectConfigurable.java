@@ -14,6 +14,8 @@ package org.zmlx.hg4idea;
 
 import consulo.configurable.ConfigurationException;
 import consulo.configurable.SearchableConfigurable;
+import consulo.localize.LocalizeValue;
+import consulo.mercurial.localize.HgLocalize;
 import consulo.project.Project;
 import jakarta.annotation.Nonnull;
 import org.jetbrains.annotations.Nls;
@@ -23,9 +25,6 @@ import org.zmlx.hg4idea.ui.HgConfigurationProjectPanel;
 import javax.swing.*;
 
 public class HgProjectConfigurable implements SearchableConfigurable {
-
-  public static final String DISPLAY_NAME = HgVcsMessages.message("hg4idea.mercurial");
-
   private final HgConfigurationProjectPanel myPanel;
   @Nonnull
   private final Project myProject;
@@ -36,8 +35,8 @@ public class HgProjectConfigurable implements SearchableConfigurable {
   }
 
   @Nls
-  public String getDisplayName() {
-    return DISPLAY_NAME;
+  public LocalizeValue getDisplayName() {
+    return HgLocalize.hg4ideaMercurial();
   }
 
   public String getHelpTopic() {

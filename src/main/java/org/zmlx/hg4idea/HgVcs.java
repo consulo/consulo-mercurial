@@ -23,7 +23,9 @@ import consulo.ide.impl.idea.openapi.vcs.CalledInAwt;
 import consulo.ide.impl.idea.openapi.vfs.VfsUtilCore;
 import consulo.ide.setting.ShowSettingsUtil;
 import consulo.language.file.FileTypeManager;
+import consulo.localize.LocalizeValue;
 import consulo.logging.Logger;
+import consulo.mercurial.localize.HgLocalize;
 import consulo.platform.Platform;
 import consulo.project.Project;
 import consulo.project.ui.notification.Notification;
@@ -73,9 +75,8 @@ public class HgVcs extends AbstractVcs<CommittedChangeList> {
 
   private static final Logger LOG = Logger.getInstance(HgVcs.class);
 
-  public static final String VCS_NAME = "hg4idea";
-  public static final String DISPLAY_NAME = "Mercurial";
-  private final static VcsKey ourKey = createKey(VCS_NAME);
+  public static final String VCS_ID = "hg4idea";
+  private final static VcsKey ourKey = createKey(VCS_ID);
   private static final int MAX_CONSOLE_OUTPUT_SIZE = 10000;
 
   private static final String ORIG_FILE_PATTERN = "*.orig";
@@ -115,7 +116,7 @@ public class HgVcs extends AbstractVcs<CommittedChangeList> {
                @Nonnull HgGlobalSettings globalSettings,
                @Nonnull HgProjectSettings projectSettings,
                ProjectLevelVcsManager vcsManager) {
-    super(project, VCS_NAME);
+    super(project, VCS_ID);
     this.globalSettings = globalSettings;
     this.projectSettings = projectSettings;
     myVcsManager = vcsManager;
@@ -133,8 +134,8 @@ public class HgVcs extends AbstractVcs<CommittedChangeList> {
     myCloseBranchExecutor = new HgCloseBranchExecutor(checkinEnvironment);
   }
 
-  public String getDisplayName() {
-    return DISPLAY_NAME;
+  public LocalizeValue getDisplayName() {
+    return HgLocalize.hg4ideaMercurial();
   }
 
   public Configurable getConfigurable() {
@@ -330,7 +331,7 @@ public class HgVcs extends AbstractVcs<CommittedChangeList> {
     if (vcsManager == null) {
       return null;
     }
-    return (HgVcs)vcsManager.findVcsByName(VCS_NAME);
+    return (HgVcs)vcsManager.findVcsByName(VCS_ID);
   }
 
   @Nonnull
@@ -395,7 +396,7 @@ public class HgVcs extends AbstractVcs<CommittedChangeList> {
       @Override
       protected void hyperlinkActivated(@Nonnull Notification notification, @Nonnull HyperlinkEvent e) {
         if (SETTINGS_LINK.equals(e.getDescription())) {
-          ShowSettingsUtil.getInstance().showSettingsDialog(myProject, getConfigurable().getDisplayName());
+          ShowSettingsUtil.getInstance().showSettingsDialog(myProject, getConfigurable().getDisplayName().get());
         }
         else if (UPDATE_LINK.equals(e.getDescription())) {
           Platform.current().openInBrowser("http://mercurial.selenic.com");

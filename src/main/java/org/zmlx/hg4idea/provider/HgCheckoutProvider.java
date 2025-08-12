@@ -72,7 +72,7 @@ public class HgCheckoutProvider implements CheckoutProvider {
                                                            "Clone from " + sourceRepositoryURL + " failed.");
         }
         else {
-          DvcsUtil.addMappingIfSubRoot(project, targetDir, HgVcs.VCS_NAME);
+          DvcsUtil.addMappingIfSubRoot(project, targetDir, HgVcs.VCS_ID);
           if (listener != null) {
             listener.directoryCheckedOut(new File(dialog.getParentDirectory(), dialog.getDirectoryName()), HgVcs.getKey());
             listener.checkoutCompleted();

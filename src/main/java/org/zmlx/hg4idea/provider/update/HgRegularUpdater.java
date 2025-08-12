@@ -333,6 +333,6 @@ public class HgRegularUpdater implements HgUpdater {
   }
 
   private static void addToGroup(UpdatedFiles updatedFiles, HgChange change, String id) {
-    updatedFiles.getGroupById(id).add(change.afterFile().getFile().getAbsolutePath(), HgVcs.VCS_NAME, null);
+    updatedFiles.getGroupById(id).add(change.afterFile().getFile().getAbsolutePath(), HgVcs.VCS_ID, null);
   }
 }

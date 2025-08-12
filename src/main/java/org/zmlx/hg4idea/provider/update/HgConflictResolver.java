@@ -80,7 +80,7 @@ public final class HgConflictResolver {
       updatedFiles.getGroupById(FileGroup.UPDATED_ID).remove(file.getAbsolutePath());
       //TODO get the correct revision to pass to the UpdatedFiles
       updatedFiles.getGroupById(unresolved ? FileGroup.MERGED_WITH_CONFLICT_ID : FileGroup.MERGED_ID)
-        .add(file.getPath(), HgVcs.VCS_NAME, null);
+        .add(file.getPath(), HgVcs.VCS_ID, null);
     }
   }
 

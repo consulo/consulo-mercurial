@@ -34,7 +34,7 @@ public class HgQuickListProvider extends DvcsQuickListContentProvider {
   @Nonnull
   @Override
   protected String getVcsName() {
-    return HgVcs.VCS_NAME;
+    return HgVcs.VCS_ID;
   }
 
   @Override

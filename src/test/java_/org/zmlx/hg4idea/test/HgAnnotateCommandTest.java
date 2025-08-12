@@ -50,7 +50,7 @@ public abstract class HgAnnotateCommandTest extends HgSingleUserTest {
 
   @BeforeClass
   private void loadEthalonAnnotations() throws IOException {
-    myPluginRoot = new File(PluginPathManager.getPluginHomePath(HgVcs.VCS_NAME));
+    myPluginRoot = new File(PluginPathManager.getPluginHomePath(HgVcs.VCS_ID));
     myAnnotateDataDir = new File(myPluginRoot, "testData/annotate");
     myOutputsDir = new File(myAnnotateDataDir, "outputs");
 

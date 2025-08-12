@@ -16,6 +16,7 @@ import consulo.application.progress.ProgressIndicator;
 import consulo.configurable.Configurable;
 import consulo.configurable.ConfigurationException;
 import consulo.ide.ServiceManager;
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.util.lang.ref.Ref;
 import consulo.versionControlSystem.FilePath;
@@ -96,8 +97,8 @@ public class HgUpdateEnvironment implements UpdateEnvironment {
     }
 
     @Nls
-    public String getDisplayName() {
-      return "Update";
+    public LocalizeValue getDisplayName() {
+      return LocalizeValue.localizeTODO("Update");
     }
 
     public String getHelpTopic() {

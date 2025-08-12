@@ -100,7 +100,7 @@ public class HgInit extends DumbAwareAction {
             mapRoot.refresh(false, false);
             final String path = mapRoot.equals(myProject.getBaseDir()) ? "" : mapRoot.getPath();
             ProjectLevelVcsManager manager = ProjectLevelVcsManager.getInstance(myProject);
-            manager.setDirectoryMappings(VcsUtil.addMapping(manager.getDirectoryMappings(), path, HgVcs.VCS_NAME));
+            manager.setDirectoryMappings(VcsUtil.addMapping(manager.getDirectoryMappings(), path, HgVcs.VCS_ID));
         }
     }
 

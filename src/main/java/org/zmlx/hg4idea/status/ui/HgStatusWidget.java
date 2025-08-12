@@ -26,7 +26,7 @@ public class HgStatusWidget extends DvcsStatusWidget<HgRepository> {
   private final HgProjectSettings myProjectSettings;
 
   public HgStatusWidget(@Nonnull HgVcs vcs, @Nonnull Project project, @Nonnull StatusBarWidgetFactory factory, @Nonnull HgProjectSettings projectSettings) {
-    super(project, factory, vcs.getShortName());
+    super(project, factory, HgVcs.VCS_ID);
     myVcs = vcs;
     myProjectSettings = projectSettings;
 

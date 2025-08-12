@@ -84,7 +84,7 @@ public abstract class HgRemoteChangesetsCommand extends HgChangesetsCommand {
                                                          public void hyperlinkUpdate(@Nonnull Notification notification,
                                                                                      @Nonnull HyperlinkEvent event) {
                                                            ShowSettingsUtil.getInstance()
-                                                             .showSettingsDialog(project, vcs.getConfigurable().getDisplayName());
+                                                             .showSettingsDialog(project, vcs.getConfigurable().getDisplayName().get());
                                                          }
                                                        });
       final HgProjectSettings projectSettings = vcs.getProjectSettings();

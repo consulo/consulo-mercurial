@@ -68,7 +68,7 @@ public abstract class HgTest extends AbstractVcsTestCase {
       myClientBinaryPath = new File(exec);
     }
     if (exec == null || !myClientBinaryPath.exists()) {
-      final File pluginRoot = new File(PluginPathManager.getPluginHomePath(HgVcs.VCS_NAME));
+      final File pluginRoot = new File(PluginPathManager.getPluginHomePath(HgVcs.VCS_ID));
       myClientBinaryPath = new File(pluginRoot, "testData/bin");
     }
 
@@ -80,7 +80,7 @@ public abstract class HgTest extends AbstractVcsTestCase {
       public void run() {
         try {
           initProject(myProjectDir, testMethod.getName());
-          activateVCS(HgVcs.VCS_NAME);
+          activateVCS(HgVcs.VCS_ID);
         } catch (Exception e) {
           e.printStackTrace();
         }
@@ -113,15 +113,15 @@ public abstract class HgTest extends AbstractVcsTestCase {
   protected abstract void tearDownRepositories() throws Exception;
 
   protected void doActionSilently(final VcsConfiguration.StandardConfirmation op) {
-    setStandardConfirmation(HgVcs.VCS_NAME, op, VcsShowConfirmationOption.Value.DO_ACTION_SILENTLY);
+    setStandardConfirmation(HgVcs.VCS_ID, op, VcsShowConfirmationOption.Value.DO_ACTION_SILENTLY);
   }
 
   protected void doNothingSilently(final VcsConfiguration.StandardConfirmation op) {
-    setStandardConfirmation(HgVcs.VCS_NAME, op, VcsShowConfirmationOption.Value.DO_NOTHING_SILENTLY);
+    setStandardConfirmation(HgVcs.VCS_ID, op, VcsShowConfirmationOption.Value.DO_NOTHING_SILENTLY);
   }
 
   protected void showConfirmation(final VcsConfiguration.StandardConfirmation op) {
-    setStandardConfirmation(HgVcs.VCS_NAME, op, VcsShowConfirmationOption.Value.SHOW_CONFIRMATION);
+    setStandardConfirmation(HgVcs.VCS_ID, op, VcsShowConfirmationOption.Value.SHOW_CONFIRMATION);
   }
 
   /**
