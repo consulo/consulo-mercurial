@@ -19,8 +19,6 @@ package org.zmlx.hg4idea.log;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.component.messagebus.MessageBusConnection;
 import consulo.disposer.Disposable;
-import consulo.ide.impl.idea.util.CollectConsumer;
-import consulo.ide.impl.idea.vcs.log.impl.LogDataImpl;
 import consulo.logging.Logger;
 import consulo.project.Project;
 import consulo.util.collection.ContainerUtil;
@@ -89,8 +87,7 @@ public class HgLogProvider implements VcsLogProvider {
   @Nonnull
   public LogData readAllHashes(@Nonnull VirtualFile root, @Nonnull final Consumer<TimedVcsCommit> commitConsumer) throws VcsException {
     Set<VcsUser> userRegistry = new HashSet<>();
-    List<TimedVcsCommit> commits = HgHistoryUtil.readAllHashes(myProject, root, new CollectConsumer<>(userRegistry),
-                                                               Collections.<String>emptyList());
+    List<TimedVcsCommit> commits = HgHistoryUtil.readAllHashes(myProject, root, userRegistry::add, Collections.<String>emptyList());
     for (TimedVcsCommit commit : commits) {
       commitConsumer.accept(commit);
     }

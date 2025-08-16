@@ -16,7 +16,6 @@
 package org.zmlx.hg4idea.push;
 
 import consulo.annotation.component.ExtensionImpl;
-import consulo.ide.impl.idea.dvcs.push.PushSettings;
 import consulo.project.Project;
 import consulo.util.lang.ObjectUtil;
 import consulo.versionControlSystem.AbstractVcs;

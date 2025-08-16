@@ -15,10 +15,10 @@
  */
 package org.zmlx.hg4idea.action;
 
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnActionEvent;
-import org.zmlx.hg4idea.repo.HgRepository;
 import consulo.versionControlSystem.distributed.repository.Repository;
-import consulo.ide.impl.idea.openapi.vcs.CalledInAwt;
+import org.zmlx.hg4idea.repo.HgRepository;
 
 public abstract class HgProcessStateAction extends HgAbstractGlobalSingleRepoAction {
   final Repository.State myState;
@@ -27,7 +27,7 @@ public abstract class HgProcessStateAction extends HgAbstractGlobalSingleRepoAct
     myState = state;
   }
 
-  @CalledInAwt
+  @RequiredUIAccess
   protected boolean isRebasing(AnActionEvent e) {
     HgRepository repository = HgActionUtil.getSelectedRepositoryFromEvent(e);
     return repository != null && repository.getState() == myState;

@@ -16,7 +16,6 @@ import consulo.application.AccessToken;
 import consulo.application.progress.ProgressIndicator;
 import consulo.application.progress.Task;
 import consulo.document.FileDocumentManager;
-import consulo.ide.impl.idea.openapi.vfs.VfsUtil;
 import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.project.ui.notification.NotificationService;
@@ -26,6 +25,7 @@ import consulo.util.lang.StringUtil;
 import consulo.versionControlSystem.VcsNotifier;
 import consulo.versionControlSystem.distributed.DvcsUtil;
 import consulo.virtualFileSystem.VirtualFile;
+import consulo.virtualFileSystem.util.VirtualFileUtil;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.HgVcsMessages;
@@ -97,7 +97,7 @@ public class HgUpdateCommand {
       DvcsUtil.workingTreeChangeFinished(project, token);
     }
 
-    VfsUtil.markDirtyAndRefresh(false, true, false, repo);
+    VirtualFileUtil.markDirtyAndRefresh(false, true, false, repo);
     return result;
   }
 

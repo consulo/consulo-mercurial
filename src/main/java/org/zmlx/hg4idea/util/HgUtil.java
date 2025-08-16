@@ -15,13 +15,9 @@ package org.zmlx.hg4idea.util;
 import consulo.application.ApplicationManager;
 import consulo.application.WriteAction;
 import consulo.ide.ServiceManager;
-import consulo.ide.impl.idea.openapi.vcs.CalledInAwt;
-import consulo.ide.impl.idea.openapi.vcs.history.FileHistoryPanelImpl;
-import consulo.ide.impl.idea.openapi.vcs.vfs.AbstractVcsVirtualFile;
-import consulo.ide.impl.idea.openapi.vcs.vfs.VcsVirtualFile;
-import consulo.ide.impl.idea.openapi.vfs.VfsUtil;
 import consulo.logging.Logger;
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.awt.Messages;
 import consulo.util.collection.ArrayUtil;
 import consulo.util.collection.ContainerUtil;
@@ -40,9 +36,11 @@ import consulo.versionControlSystem.change.VcsDirtyScopeManager;
 import consulo.versionControlSystem.distributed.DvcsUtil;
 import consulo.versionControlSystem.history.VcsFileRevisionEx;
 import consulo.versionControlSystem.util.VcsUtil;
+import consulo.versionControlSystem.virtualFileSystem.AbstractVcsVirtualFile;
 import consulo.virtualFileSystem.LocalFileSystem;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.virtualFileSystem.status.FileStatus;
+import consulo.virtualFileSystem.util.VirtualFileUtil;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.*;
@@ -109,7 +107,7 @@ public abstract class HgUtil {
 
   public static void markDirectoryDirty(final Project project, final VirtualFile file)
     throws InvocationTargetException, InterruptedException {
-    VfsUtil.markDirtyAndRefresh(true, true, false, file);
+    VirtualFileUtil.markDirtyAndRefresh(true, true, false, file);
     VcsDirtyScopeManager.getInstance(project).dirDirtyRecursively(file);
   }
 
@@ -396,7 +394,7 @@ public abstract class HgUtil {
    * Convert {@link VcsVirtualFile} to the {@link LocalFileSystem local} Virtual File.
    * <p>
    * TODO
-   * It is a workaround for the following problem: VcsVirtualFiles returned from the {@link FileHistoryPanelImpl} contain the current path
+   * It is a workaround for the following problem: VcsVirtualFiles returned from the FileHistoryPanelImpl contain the current path
    * of the file, not the path that was in certain revision. This has to be fixed by making {@link HgFileRevision} implement
    * {@link VcsFileRevisionEx}.
    */
@@ -501,7 +499,7 @@ public abstract class HgUtil {
   }
 
   @Nullable
-  @CalledInAwt
+  @RequiredUIAccess
   public static HgRepository getCurrentRepository(@Nonnull Project project) {
     if (project.isDisposed()) return null;
     return DvcsUtil.guessRepositoryForFile(project, getRepositoryManager(project),

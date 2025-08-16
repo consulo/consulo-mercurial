@@ -15,9 +15,9 @@
  */
 package org.zmlx.hg4idea.action;
 
-import consulo.ide.impl.idea.openapi.vcs.CalledInAwt;
 import consulo.language.editor.CommonDataKeys;
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnActionEvent;
 import consulo.util.collection.ContainerUtil;
 import consulo.virtualFileSystem.VirtualFile;
@@ -39,7 +39,7 @@ public class HgActionUtil {
   }
 
   @Nullable
-  @CalledInAwt
+  @RequiredUIAccess
   public static HgRepository getSelectedRepositoryFromEvent(AnActionEvent e) {
     final Project project = e.getData(Project.KEY);
     if (project == null) {

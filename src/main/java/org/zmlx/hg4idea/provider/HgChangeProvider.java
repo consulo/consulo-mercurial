@@ -14,7 +14,6 @@ package org.zmlx.hg4idea.provider;
 
 import consulo.application.progress.ProgressIndicator;
 import consulo.document.FileDocumentManager;
-import consulo.ide.impl.idea.openapi.vfs.VfsUtil;
 import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.ui.style.StandardColors;
@@ -29,6 +28,9 @@ import consulo.versionControlSystem.util.VcsUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.virtualFileSystem.status.FileStatus;
 import consulo.virtualFileSystem.status.FileStatusFactory;
+import consulo.virtualFileSystem.util.VirtualFileUtil;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.*;
 import org.zmlx.hg4idea.command.HgResolveCommand;
 import org.zmlx.hg4idea.command.HgResolveStatusEnum;
@@ -37,8 +39,6 @@ import org.zmlx.hg4idea.command.HgWorkingCopyRevisionsCommand;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.util.HgUtil;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import java.io.File;
 import java.util.*;
 
@@ -109,7 +109,7 @@ public class HgChangeProvider implements ChangeProvider
   @Nullable
   private HgChange findChange(@Nonnull HgRepository hgRepo, @Nonnull HgNameWithHashInfo info) {
     File file = new File(hgRepo.getRoot().getPath(), info.getName());
-    VirtualFile virtualSubrepoFile = VfsUtil.findFileByIoFile(file, false);
+    VirtualFile virtualSubrepoFile = VirtualFileUtil.findFileByIoFile(file, false);
     HgRepository subrepo = HgUtil.getRepositoryForFile(myProject, virtualSubrepoFile);
     if (subrepo != null && !info.getHash().asString().equals(subrepo.getCurrentRevision())) {
       return new HgChange(new HgFile(hgRepo.getRoot(), VcsUtil.getFilePath(virtualSubrepoFile)), HgFileStatusEnum.MODIFIED);

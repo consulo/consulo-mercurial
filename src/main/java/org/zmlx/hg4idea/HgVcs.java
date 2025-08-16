@@ -19,8 +19,6 @@ import consulo.configurable.Configurable;
 import consulo.disposer.Disposer;
 import consulo.execution.ui.console.ConsoleViewContentType;
 import consulo.ide.ServiceManager;
-import consulo.ide.impl.idea.openapi.vcs.CalledInAwt;
-import consulo.ide.impl.idea.openapi.vfs.VfsUtilCore;
 import consulo.ide.setting.ShowSettingsUtil;
 import consulo.language.file.FileTypeManager;
 import consulo.localize.LocalizeValue;
@@ -30,6 +28,7 @@ import consulo.platform.Platform;
 import consulo.project.Project;
 import consulo.project.ui.notification.Notification;
 import consulo.project.ui.notification.event.NotificationListener;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.versionControlSystem.*;
 import consulo.versionControlSystem.annotate.AnnotationProvider;
 import consulo.versionControlSystem.change.ChangeProvider;
@@ -44,6 +43,7 @@ import consulo.versionControlSystem.root.VcsRootDetector;
 import consulo.versionControlSystem.update.UpdateEnvironment;
 import consulo.versionControlSystem.versionBrowser.CommittedChangeList;
 import consulo.virtualFileSystem.VirtualFile;
+import consulo.virtualFileSystem.util.VirtualFileUtil;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.provider.*;
@@ -231,7 +231,7 @@ public class HgVcs extends AbstractVcs<CommittedChangeList> {
         final S sParent = in.get(j);
         final VirtualFile parent = convertor.apply(sParent);
         // if the parent is an ancestor of the child and that they share common root, the child is removed
-        if (VfsUtilCore.isAncestor(parent, child, false) && VfsUtilCore.isAncestor(childRoot,
+        if (VirtualFileUtil.isAncestor(parent, child, false) && VirtualFileUtil.isAncestor(childRoot,
                                                                                    parent,
                                                                                    false)) {
           in.remove(i);
@@ -375,7 +375,7 @@ public class HgVcs extends AbstractVcs<CommittedChangeList> {
   }
 
   @Override
-  @CalledInAwt
+  @RequiredUIAccess
   public void enableIntegration() {
     myProject.getApplication().executeOnPooledThread(() -> {
       Collection<VcsRoot> roots = ServiceManager.getService(myProject, VcsRootDetector.class).detect();

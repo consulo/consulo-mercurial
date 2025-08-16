@@ -21,12 +21,10 @@ import consulo.application.progress.ProgressIndicator;
 import consulo.application.progress.ProgressManager;
 import consulo.application.progress.Task;
 import consulo.dataContext.DataProvider;
-import consulo.ide.impl.idea.openapi.vcs.CalledInAny;
-import consulo.ide.impl.idea.openapi.vcs.CalledInAwt;
-import consulo.ide.impl.idea.openapi.vfs.VfsUtil;
 import consulo.language.editor.CommonDataKeys;
 import consulo.logging.Logger;
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.*;
 import consulo.ui.ex.awt.Messages;
 import consulo.ui.ex.awt.PopupHandler;
@@ -38,9 +36,9 @@ import consulo.util.dataholder.Key;
 import consulo.util.io.FileUtil;
 import consulo.util.lang.StringUtil;
 import consulo.virtualFileSystem.VirtualFile;
+import consulo.virtualFileSystem.util.VirtualFileUtil;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
-import org.jetbrains.annotations.NonNls;
 import org.zmlx.hg4idea.HgStatusUpdater;
 import org.zmlx.hg4idea.command.mq.HgQDeleteCommand;
 import org.zmlx.hg4idea.command.mq.HgQRenameCommand;
@@ -135,7 +133,6 @@ public class HgMqUnAppliedPatchesPanel extends JPanel implements DataProvider, H
     return toolbar.getComponent();
   }
 
-  @CalledInAwt
   public void updatePatchSeriesInBackground(@Nullable final Runnable runAfterUpdate) {
     final String newContent = myNeedToUpdateFileContent ? getContentFromModel() : null;
     myNeedToUpdateFileContent = false;
@@ -164,7 +161,7 @@ public class HgMqUnAppliedPatchesPanel extends JPanel implements DataProvider, H
   }
 
   @Nonnull
-  @CalledInAwt
+  @RequiredUIAccess
   private String getContentFromModel() {
     StringBuilder content = new StringBuilder();
     String separator = "\n";
@@ -177,7 +174,7 @@ public class HgMqUnAppliedPatchesPanel extends JPanel implements DataProvider, H
     return content.toString();
   }
 
-  @CalledInAwt
+  @RequiredUIAccess
   private String getPatchName(int i) {
     return myPatchTable.getModel().getPatchName(i);
   }
@@ -203,17 +200,17 @@ public class HgMqUnAppliedPatchesPanel extends JPanel implements DataProvider, H
   private VirtualFile getSelectedPatchFile() {
     if (myMqPatchDir == null || myPatchTable.getSelectedRowCount() != 1) return null;
     String patchName = getPatchName(myPatchTable.getSelectedRow());
-    return VfsUtil.findFileByIoFile(new File(myMqPatchDir.getPath(), patchName), true);
+    return VirtualFileUtil.findFileByIoFile(new File(myMqPatchDir.getPath(), patchName), true);
   }
 
   @Nonnull
-  @CalledInAwt
+  @RequiredUIAccess
   public List<String> getSelectedPatchNames() {
     return getPatchNames(myPatchTable.getSelectedRows());
   }
 
+  @RequiredUIAccess
   @Nonnull
-  @CalledInAny
   private List<String> getPatchNames(int[] rows) {
     return ContainerUtil.map(Ints.asList(rows), integer -> getPatchName(integer));
   }
@@ -229,7 +226,7 @@ public class HgMqUnAppliedPatchesPanel extends JPanel implements DataProvider, H
 
   @Nullable
   @Override
-  public Object getData(@NonNls Key<?> dataId) {
+  public Object getData(Key<?> dataId) {
     if (MQ_PATCHES == dataId) {
       return this;
     }

@@ -12,7 +12,6 @@
 // limitations under the License.
 package org.zmlx.hg4idea.provider;
 
-import consulo.ide.impl.idea.openapi.vcs.VcsActions;
 import consulo.ide.impl.idea.openapi.vcs.annotate.ShowAllAffectedGenericAction;
 import consulo.project.Project;
 import consulo.ui.ex.action.ActionManager;
@@ -23,10 +22,13 @@ import consulo.util.io.FileUtil;
 import consulo.versionControlSystem.FilePath;
 import consulo.versionControlSystem.VcsConfiguration;
 import consulo.versionControlSystem.VcsException;
+import consulo.versionControlSystem.action.VcsActions;
 import consulo.versionControlSystem.change.ChangeListManager;
 import consulo.versionControlSystem.history.*;
 import consulo.versionControlSystem.util.VcsUtil;
 import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.HgFile;
 import org.zmlx.hg4idea.HgFileRevision;
 import org.zmlx.hg4idea.HgRevisionNumber;
@@ -40,8 +42,6 @@ import org.zmlx.hg4idea.util.HgChangesetUtil;
 import org.zmlx.hg4idea.util.HgUtil;
 import org.zmlx.hg4idea.util.HgVersion;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collections;

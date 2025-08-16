@@ -12,20 +12,18 @@
 // limitations under the License.
 package org.zmlx.hg4idea.provider.annotate;
 
-import consulo.ide.impl.idea.openapi.vfs.VfsUtilCore;
 import consulo.project.Project;
 import consulo.versionControlSystem.FilePath;
 import consulo.versionControlSystem.VcsException;
+import consulo.versionControlSystem.annotate.AnnotationProviderEx;
 import consulo.versionControlSystem.annotate.FileAnnotation;
 import consulo.versionControlSystem.change.ChangeListManager;
 import consulo.versionControlSystem.history.VcsFileRevision;
 import consulo.versionControlSystem.history.VcsRevisionNumber;
 import consulo.versionControlSystem.util.VcsUtil;
 import consulo.virtualFileSystem.VirtualFile;
-import consulo.versionControlSystem.annotate.AnnotationProviderEx;
-
+import consulo.virtualFileSystem.util.VirtualFileUtil;
 import jakarta.annotation.Nonnull;
-
 import org.zmlx.hg4idea.HgFile;
 import org.zmlx.hg4idea.HgFileRevision;
 import org.zmlx.hg4idea.HgRevisionNumber;
@@ -57,7 +55,7 @@ public class HgAnnotationProvider implements AnnotationProviderEx {
       throw new VcsException("vcs root is null for " + file);
     }
     HgRevisionNumber revisionNumber = revision != null ? (HgRevisionNumber)revision.getRevisionNumber() : null;
-    final HgFile hgFile = new HgFile(vcsRoot, VfsUtilCore.virtualToIoFile(file));
+    final HgFile hgFile = new HgFile(vcsRoot, VirtualFileUtil.virtualToIoFile(file));
     HgFile fileToAnnotate = revision instanceof HgFileRevision
                             ? HgUtil.getFileNameInTargetRevision(myProject, revisionNumber, hgFile)
                             : new HgFile(vcsRoot,

@@ -13,16 +13,16 @@
 package org.zmlx.hg4idea;
 
 import com.google.common.base.MoreObjects;
-import consulo.ide.impl.idea.openapi.vfs.VfsUtilCore;
 import consulo.project.Project;
 import consulo.util.io.FileUtil;
 import consulo.versionControlSystem.FilePath;
 import consulo.versionControlSystem.util.VcsUtil;
 import consulo.virtualFileSystem.VirtualFile;
-import org.zmlx.hg4idea.util.HgUtil;
-
+import consulo.virtualFileSystem.util.VirtualFileUtil;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+import org.zmlx.hg4idea.util.HgUtil;
+
 import java.io.File;
 import java.util.Objects;
 
@@ -59,7 +59,7 @@ public class HgFile {
   public String getRelativePath() {
     if (relativePath == null) {
       //For configuration like "d:/.hg" File.getParent method has minimal prefix length, so vcsRoot will be "d:", getParent will be "d:/".
-      relativePath = FileUtil.getRelativePath(VfsUtilCore.virtualToIoFile(vcsRoot), file);
+      relativePath = FileUtil.getRelativePath(VirtualFileUtil.virtualToIoFile(vcsRoot), file);
     }
     return relativePath;
   }
