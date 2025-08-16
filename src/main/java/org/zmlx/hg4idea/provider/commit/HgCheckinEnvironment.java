@@ -16,9 +16,7 @@ import consulo.application.Application;
 import consulo.application.ApplicationManager;
 import consulo.application.progress.ProgressIndicator;
 import consulo.application.progress.Task;
-import consulo.ide.impl.idea.dvcs.AmendComponent;
 import consulo.ide.impl.idea.dvcs.push.ui.VcsPushDialog;
-import consulo.ide.impl.idea.util.FunctionUtil;
 import consulo.project.Project;
 import consulo.ui.ex.awt.GridBag;
 import consulo.ui.ex.awt.JBUI;
@@ -31,6 +29,7 @@ import consulo.versionControlSystem.VcsException;
 import consulo.versionControlSystem.change.*;
 import consulo.versionControlSystem.checkin.CheckinEnvironment;
 import consulo.versionControlSystem.checkin.CheckinProjectPanel;
+import consulo.versionControlSystem.distributed.ui.AmendComponent;
 import consulo.versionControlSystem.ui.RefreshableOnComponent;
 import consulo.versionControlSystem.util.VcsUtil;
 import consulo.virtualFileSystem.VirtualFile;
@@ -213,7 +212,7 @@ public class HgCheckinEnvironment implements CheckinEnvironment {
   }
 
   public List<VcsException> commit(List<Change> changes, String preparedComment) {
-    return commit(changes, preparedComment, FunctionUtil.nullConstant(), null);
+    return commit(changes, preparedComment, o -> null, null);
   }
 
   public List<VcsException> scheduleMissingFileForDeletion(List<FilePath> files) {

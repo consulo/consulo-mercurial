@@ -17,10 +17,10 @@ package org.zmlx.hg4idea.ui;
 
 import consulo.application.Application;
 import consulo.ide.ServiceManager;
-import consulo.ide.impl.idea.dvcs.ui.CloneDvcsDialog;
 import consulo.mercurial.localize.HgLocalize;
 import consulo.project.Project;
 import consulo.versionControlSystem.distributed.DvcsRememberedInputs;
+import consulo.versionControlSystem.distributed.ui.awt.CloneDvcsDialog;
 import jakarta.annotation.Nonnull;
 import org.zmlx.hg4idea.HgRememberedInputs;
 import org.zmlx.hg4idea.command.HgIdentifyCommand;
@@ -33,7 +33,7 @@ import org.zmlx.hg4idea.util.HgUtil;
 public class HgCloneDialog extends CloneDvcsDialog {
 
   public HgCloneDialog(@Nonnull Project project) {
-    super(project, HgLocalize.hg4ideaMercurial().get(), HgUtil.DOT_HG);
+    super(project, HgLocalize.hg4ideaMercurial(), HgUtil.DOT_HG);
   }
 
   @Override

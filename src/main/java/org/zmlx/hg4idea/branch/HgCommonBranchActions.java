@@ -16,14 +16,13 @@
 package org.zmlx.hg4idea.branch;
 
 import consulo.document.FileDocumentManager;
-import consulo.ide.impl.idea.dvcs.ui.BranchActionGroup;
 import consulo.project.Project;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
+import consulo.versionControlSystem.distributed.action.BranchActionGroup;
 import consulo.versionControlSystem.update.UpdatedFiles;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
-
 import org.zmlx.hg4idea.command.HgMergeCommand;
 import org.zmlx.hg4idea.command.HgUpdateCommand;
 import org.zmlx.hg4idea.repo.HgRepository;

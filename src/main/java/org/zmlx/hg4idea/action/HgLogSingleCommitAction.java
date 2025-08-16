@@ -16,30 +16,27 @@
 
 package org.zmlx.hg4idea.action;
 
-import consulo.ide.ServiceManager;
-import consulo.ide.impl.idea.dvcs.ui.VcsLogSingleCommitAction;
 import consulo.project.Project;
+import consulo.versionControlSystem.distributed.action.VcsLogSingleCommitAction;
 import consulo.versionControlSystem.distributed.repository.AbstractRepositoryManager;
 import consulo.virtualFileSystem.VirtualFile;
-
-import jakarta.annotation.Nullable;
 import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.repo.HgRepositoryManager;
 
-public abstract class HgLogSingleCommitAction extends VcsLogSingleCommitAction<HgRepository>
-{
+public abstract class HgLogSingleCommitAction extends VcsLogSingleCommitAction<HgRepository> {
 
-  @Nonnull
-  @Override
-  protected AbstractRepositoryManager<HgRepository> getRepositoryManager(@Nonnull Project project) {
-    return ServiceManager.getService(project, HgRepositoryManager.class);
-  }
+    @Nonnull
+    @Override
+    protected AbstractRepositoryManager<HgRepository> getRepositoryManager(@Nonnull Project project) {
+        return project.getInstance(HgRepositoryManager.class);
+    }
 
-  @Nullable
-  @Override
-  protected HgRepository getRepositoryForRoot(@Nonnull Project project, @Nonnull VirtualFile root) {
-    return getRepositoryManager(project).getRepositoryForRoot(root);
-  }
+    @Nullable
+    @Override
+    protected HgRepository getRepositoryForRoot(@Nonnull Project project, @Nonnull VirtualFile root) {
+        return getRepositoryManager(project).getRepositoryForRoot(root);
+    }
 
 }
