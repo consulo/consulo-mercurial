@@ -11,5 +11,4 @@ open module consulo.mercurial {
   requires java.desktop;
   requires forms.rt;
   requires consulo.ide.impl;
-
 }

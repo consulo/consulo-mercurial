@@ -17,10 +17,10 @@ package org.zmlx.hg4idea;
 
 import consulo.annotation.component.ExtensionImpl;
 import consulo.component.ComponentManager;
-import consulo.ide.impl.idea.ide.ui.PublicMethodBasedOptionDescription;
 import consulo.project.Project;
 import consulo.ui.ex.action.BooleanOptionDescription;
 import consulo.ui.ex.action.OptionsTopHitProvider;
+import consulo.ui.ex.action.PublicMethodBasedOptionDescription;
 import consulo.versionControlSystem.ProjectLevelVcsManager;
 import consulo.versionControlSystem.VcsDescriptor;
 import jakarta.annotation.Nonnull;
@@ -29,41 +29,54 @@ import jakarta.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 /**
  * @author Sergey.Malenkov
  */
 @ExtensionImpl
 public final class HgOptionsTopHitProvider extends OptionsTopHitProvider {
-  @Override
-  public String getId() {
-    return "vcs";
-  }
-
-  @Nonnull
-  @Override
-  public Collection<BooleanOptionDescription> getOptions(@Nullable ComponentManager project) {
-    if (project != null) {
-      for (VcsDescriptor descriptor : ProjectLevelVcsManager.getInstance((Project) project).getAllVcss()) {
-        if ("Mercurial".equals(descriptor.getDisplayName())) {
-          return Collections.unmodifiableCollection(Arrays.asList(
-            option(project, "Mercurial: Check for incoming and outgoing changesets", "isCheckIncomingOutgoing", "setCheckIncomingOutgoing"),
-            option(project,
-                   "Mercurial: Ignore whitespace differences in annotations",
-                   "isWhitespacesIgnoredInAnnotations",
-                   "setIgnoreWhitespacesInAnnotations")));
-        }
-      }
+    @Override
+    public String getId() {
+        return "vcs";
     }
-    return Collections.emptyList();
-  }
 
-  private static BooleanOptionDescription option(final ComponentManager project, String option, String getter, String setter) {
-    return new PublicMethodBasedOptionDescription(option, "vcs.Mercurial", getter, setter) {
-      @Override
-      public Object getInstance() {
-        return project.getInstance(HgProjectSettings.class);
-      }
-    };
-  }
+    @Nonnull
+    @Override
+    public Collection<BooleanOptionDescription> getOptions(@Nullable ComponentManager project) {
+        if (project != null) {
+            for (VcsDescriptor descriptor : ProjectLevelVcsManager.getInstance((Project) project).getAllVcss()) {
+                if (HgVcs.VCS_ID.equals(descriptor.getId())) {
+                    return Collections.unmodifiableCollection(Arrays.asList(
+                        option(project,
+                            "Mercurial: Check for incoming and outgoing changesets",
+                            HgProjectSettings::isCheckIncomingOutgoing,
+                            HgProjectSettings::setCheckIncomingOutgoing
+                        ),
+
+                        option(project,
+                            "Mercurial: Ignore whitespace differences in annotations",
+                            HgProjectSettings::isWhitespacesIgnoredInAnnotations,
+                            HgProjectSettings::setIgnoreWhitespacesInAnnotations)
+                    ));
+                }
+            }
+        }
+        return List.of();
+    }
+
+    private static BooleanOptionDescription option(ComponentManager project,
+                                                   String option,
+                                                   Function<HgProjectSettings, Boolean> getter,
+                                                   BiConsumer<HgProjectSettings, Boolean> setter) {
+        return new PublicMethodBasedOptionDescription<>(
+            option,
+            "vcs.Mercurial",
+            () -> project.getInstance(HgProjectSettings.class),
+            getter,
+            setter
+        );
+    }
 }
