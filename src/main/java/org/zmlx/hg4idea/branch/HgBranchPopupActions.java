@@ -30,7 +30,7 @@ import consulo.util.lang.StringUtil;
 import consulo.versionControlSystem.VcsBundle;
 import consulo.versionControlSystem.change.*;
 import consulo.versionControlSystem.distributed.DvcsUtil;
-import consulo.versionControlSystem.distributed.action.NewBranchAction;
+import consulo.versionControlSystem.distributed.branch.NewBranchAction;
 import consulo.versionControlSystem.distributed.repository.Repository;
 import consulo.versionControlSystem.log.Hash;
 import consulo.versionControlSystem.log.base.HashImpl;

@@ -19,7 +19,7 @@ import consulo.document.FileDocumentManager;
 import consulo.project.Project;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
-import consulo.versionControlSystem.distributed.action.BranchActionGroup;
+import consulo.versionControlSystem.distributed.branch.BranchActionGroup;
 import consulo.versionControlSystem.update.UpdatedFiles;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;

@@ -22,7 +22,7 @@ import consulo.ui.ex.action.ActionGroup;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.popup.ListPopup;
 import consulo.versionControlSystem.distributed.DvcsUtil;
-import consulo.versionControlSystem.distributed.action.RootAction;
+import consulo.versionControlSystem.distributed.branch.RootAction;
 import consulo.versionControlSystem.distributed.repository.AbstractRepositoryManager;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
