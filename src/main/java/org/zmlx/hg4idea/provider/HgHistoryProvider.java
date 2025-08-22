@@ -12,12 +12,10 @@
 // limitations under the License.
 package org.zmlx.hg4idea.provider;
 
-import consulo.ide.impl.idea.openapi.vcs.annotate.ShowAllAffectedGenericAction;
 import consulo.project.Project;
 import consulo.ui.ex.action.ActionManager;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.awt.ColumnInfo;
-import consulo.util.collection.ContainerUtil;
 import consulo.util.io.FileUtil;
 import consulo.versionControlSystem.FilePath;
 import consulo.versionControlSystem.VcsConfiguration;
@@ -47,147 +45,174 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class HgHistoryProvider implements VcsHistoryProvider
-{
+public class HgHistoryProvider implements VcsHistoryProvider {
+    private final Project myProject;
 
-  private final Project myProject;
-
-  public HgHistoryProvider(Project project) {
-    myProject = project;
-  }
-
-  public VcsDependentHistoryComponents getUICustomization(VcsHistorySession session,
-														  JComponent forShortcutRegistration) {
-    return VcsDependentHistoryComponents.createOnlyColumns(ColumnInfo.EMPTY_ARRAY);
-  }
-
-  public AnAction[] getAdditionalActions(Runnable runnable) {
-    return new AnAction[]{
-			ShowAllAffectedGenericAction.getInstance(),
-      ActionManager.getInstance().getAction(VcsActions.ACTION_COPY_REVISION_NUMBER)};
-  }
-
-  public boolean isDateOmittable() {
-    return false;
-  }
-
-  public String getHelpId() {
-    return null;
-  }
-
-  public VcsHistorySession createSessionFor(FilePath filePath) throws VcsException {
-    final VirtualFile vcsRoot = VcsUtil.getVcsRootFor(myProject, filePath);
-    if (vcsRoot == null) {
-      return null;
+    public HgHistoryProvider(Project project) {
+        myProject = project;
     }
-    final List<VcsFileRevision> revisions = new ArrayList<>();
-    revisions.addAll(getHistory(filePath, vcsRoot, myProject));
-    return createAppendableSession(vcsRoot, revisions, null);
-  }
 
-  public void reportAppendableHistory(FilePath filePath, final VcsAppendableHistorySessionPartner partner) throws VcsException {
-    final VirtualFile vcsRoot = HgUtil.getHgRootOrThrow(myProject, filePath);
-
-    final List<HgFileRevision> history = getHistory(filePath, vcsRoot, myProject);
-    if (history.size() == 0) return;
-
-    final VcsAbstractHistorySession emptySession = createAppendableSession(vcsRoot, Collections.emptyList(), null);
-    partner.reportCreatedEmptySession(emptySession);
-
-    for (HgFileRevision hgFileRevision : history) {
-      partner.acceptRevision(hgFileRevision);
+    @Override
+    public VcsDependentHistoryComponents getUICustomization(
+        VcsHistorySession session,
+        JComponent forShortcutRegistration
+    ) {
+        return VcsDependentHistoryComponents.createOnlyColumns(ColumnInfo.EMPTY_ARRAY);
     }
-    partner.finished();
-  }
 
-  private VcsAbstractHistorySession createAppendableSession(final VirtualFile vcsRoot, List<VcsFileRevision> revisions, @Nullable VcsRevisionNumber number) {
-    return new VcsAbstractHistorySession(revisions, number) {
-      @Nullable
-      protected VcsRevisionNumber calcCurrentRevisionNumber() {
-        return new HgWorkingCopyRevisionsCommand(myProject).firstParent(vcsRoot);
-      }
+    @Override
+    public AnAction[] getAdditionalActions(Runnable runnable) {
+        ActionManager actionManager = ActionManager.getInstance();
+        return new AnAction[]{
+            actionManager.getAction(VcsActions.ACTION_SHOW_ALL_AFFECTED),
+            actionManager.getAction(VcsActions.ACTION_COPY_REVISION_NUMBER)
+        };
+    }
 
-      public HistoryAsTreeProvider getHistoryAsTreeProvider() {
+    @Override
+    public boolean isDateOmittable() {
+        return false;
+    }
+
+    @Override
+    public String getHelpId() {
         return null;
-      }
-
-      @Override
-      public VcsHistorySession copy() {
-        return createAppendableSession(vcsRoot, getRevisionList(), getCurrentRevisionNumber());
-      }
-    };
-  }
-
-  public static List<HgFileRevision> getHistory(@Nonnull FilePath filePath,
-                                                @Nonnull VirtualFile vcsRoot,
-                                                @Nonnull Project project) {
-    VcsConfiguration vcsConfiguration = VcsConfiguration.getInstance(project);
-    return getHistory(filePath, vcsRoot, project, null, vcsConfiguration.LIMIT_HISTORY ? vcsConfiguration.MAXIMUM_HISTORY_ROWS : -1);
-  }
-
-  public static List<HgFileRevision> getHistory(@Nonnull FilePath filePath,
-                                                @Nonnull VirtualFile vcsRoot,
-                                                @Nonnull Project project,
-                                                @Nullable HgRevisionNumber revisionNumber, int limit) {
- /*  The standard way to get history following renames is to call hg log --follow. However:
-  1. It is broken in case of uncommitted rename (i.e. if the file is currently renamed in the working dir):
-    in this case we use a special python template "follow(path)" which handles this case.
-  2. We don't use this python "follow(path)" function for all cases, because it is fully supported only since hg 2.6,
-   and it is a bit slower and possibly less reliable than plain --follow parameter.
-  3. It doesn't work with "-r": in this case --follow is simply ignored (hg commit 24208:8b4b9ee6001a).
-   As a workaround we could use the same follow(path) python, but this function requires current name of the file,
-    which is unknown in case of "-r", and identifying it would be very slow.
-
-    As a result we don't follow renames in annotate called from diff or from an old revision, which we can survive.
-*/
-    FilePath originalFilePath = HgUtil.getOriginalFileName(filePath, ChangeListManager.getInstance(project));
-    if (revisionNumber == null && !filePath.isDirectory() && !filePath.equals(originalFilePath)) {
-      // uncommitted renames detected
-      return getHistoryForUncommittedRenamed(originalFilePath, vcsRoot, project, limit);
     }
-    final HgLogCommand logCommand = new HgLogCommand(project);
-    logCommand.setFollowCopies(!filePath.isDirectory());
-    logCommand.setIncludeRemoved(true);
-    List<String> args = new ArrayList<>();
-    if (revisionNumber != null) {
-      args.add("--rev");
-      args.add("reverse(0::" + revisionNumber.getChangeset() + ")");
+
+    @Override
+    public VcsHistorySession createSessionFor(FilePath filePath) throws VcsException {
+        final VirtualFile vcsRoot = VcsUtil.getVcsRootFor(myProject, filePath);
+        if (vcsRoot == null) {
+            return null;
+        }
+        final List<VcsFileRevision> revisions = new ArrayList<>();
+        revisions.addAll(getHistory(filePath, vcsRoot, myProject));
+        return createAppendableSession(vcsRoot, revisions, null);
     }
-    return logCommand.execute(new HgFile(vcsRoot, filePath), limit, false, args);
-  }
 
-  /**
-   * Workaround for getting follow file history in case of uncommitted move/rename change
-   */
-  private static List<HgFileRevision> getHistoryForUncommittedRenamed(@Nonnull FilePath originalHgFilePath,
-                                                                      @Nonnull VirtualFile vcsRoot,
-                                                                      @Nonnull Project project, int limit) {
-    HgFile originalHgFile = new HgFile(vcsRoot, originalHgFilePath);
-    final HgLogCommand logCommand = new HgLogCommand(project);
-    logCommand.setIncludeRemoved(true);
-    final HgVersion version = logCommand.getVersion();
-    String[] templates = HgBaseLogParser.constructFullTemplateArgument(false, version);
-    String template = HgChangesetUtil.makeTemplate(templates);
-    List<String> argsForCmd = ContainerUtil.newArrayList();
-    String relativePath = originalHgFile.getRelativePath();
-    argsForCmd.add("--rev");
-    argsForCmd
-      .add(String.format("reverse(follow(%s))", relativePath != null ? "'" + FileUtil.toSystemIndependentName(relativePath) + "'" : ""));
-    HgCommandResult result = logCommand.execute(vcsRoot, template, limit, relativePath != null ? null : originalHgFile, argsForCmd);
-    return HgHistoryUtil.getCommitRecords(project, result, new HgFileRevisionLogParser(project, originalHgFile, version));
-  }
+    @Override
+    public void reportAppendableHistory(FilePath filePath, final VcsAppendableHistorySessionPartner partner) throws VcsException {
+        final VirtualFile vcsRoot = HgUtil.getHgRootOrThrow(myProject, filePath);
 
-  public boolean supportsHistoryForDirectories() {
-    return true;
-  }
+        final List<HgFileRevision> history = getHistory(filePath, vcsRoot, myProject);
+        if (history.size() == 0) {
+            return;
+        }
 
-  @Override
-  public DiffFromHistoryHandler getHistoryDiffHandler() {
-    return new HgDiffFromHistoryHandler(myProject);
-  }
+        final VcsAbstractHistorySession emptySession = createAppendableSession(vcsRoot, Collections.emptyList(), null);
+        partner.reportCreatedEmptySession(emptySession);
 
-  @Override
-  public boolean canShowHistoryFor(@Nonnull VirtualFile file) {
-    return true;
-  }
+        for (HgFileRevision hgFileRevision : history) {
+            partner.acceptRevision(hgFileRevision);
+        }
+        partner.finished();
+    }
+
+    private VcsAbstractHistorySession createAppendableSession(
+        final VirtualFile vcsRoot,
+        List<VcsFileRevision> revisions,
+        @Nullable VcsRevisionNumber number
+    ) {
+        return new VcsAbstractHistorySession(revisions, number) {
+            @Nullable
+            @Override
+            protected VcsRevisionNumber calcCurrentRevisionNumber() {
+                return new HgWorkingCopyRevisionsCommand(myProject).firstParent(vcsRoot);
+            }
+
+            @Override
+            public HistoryAsTreeProvider getHistoryAsTreeProvider() {
+                return null;
+            }
+
+            @Override
+            public VcsHistorySession copy() {
+                return createAppendableSession(vcsRoot, getRevisionList(), getCurrentRevisionNumber());
+            }
+        };
+    }
+
+    public static List<HgFileRevision> getHistory(
+        @Nonnull FilePath filePath,
+        @Nonnull VirtualFile vcsRoot,
+        @Nonnull Project project
+    ) {
+        VcsConfiguration vcsConfiguration = VcsConfiguration.getInstance(project);
+        return getHistory(filePath, vcsRoot, project, null, vcsConfiguration.LIMIT_HISTORY ? vcsConfiguration.MAXIMUM_HISTORY_ROWS : -1);
+    }
+
+    public static List<HgFileRevision> getHistory(
+        @Nonnull FilePath filePath,
+        @Nonnull VirtualFile vcsRoot,
+        @Nonnull Project project,
+        @Nullable HgRevisionNumber revisionNumber, int limit
+    ) {
+        /*
+         * The standard way to get history following renames is to call hg log --follow. However:
+         * 1. It is broken in case of uncommitted rename (i.e. if the file is currently renamed in the working dir):
+         * in this case we use a special python template "follow(path)" which handles this case.
+         * 2. We don't use this python "follow(path)" function for all cases, because it is fully supported only since hg 2.6,
+         * and it is a bit slower and possibly less reliable than plain --follow parameter.
+         * 3. It doesn't work with "-r": in this case --follow is simply ignored (hg commit 24208:8b4b9ee6001a).
+         * As a workaround we could use the same follow(path) python, but this function requires current name of the file,
+         * which is unknown in case of "-r", and identifying it would be very slow.
+         *
+         * As a result we don't follow renames in annotate called from diff or from an old revision, which we can survive.
+         */
+        FilePath originalFilePath = HgUtil.getOriginalFileName(filePath, ChangeListManager.getInstance(project));
+        if (revisionNumber == null && !filePath.isDirectory() && !filePath.equals(originalFilePath)) {
+            // uncommitted renames detected
+            return getHistoryForUncommittedRenamed(originalFilePath, vcsRoot, project, limit);
+        }
+        final HgLogCommand logCommand = new HgLogCommand(project);
+        logCommand.setFollowCopies(!filePath.isDirectory());
+        logCommand.setIncludeRemoved(true);
+        List<String> args = new ArrayList<>();
+        if (revisionNumber != null) {
+            args.add("--rev");
+            args.add("reverse(0::" + revisionNumber.getChangeset() + ")");
+        }
+        return logCommand.execute(new HgFile(vcsRoot, filePath), limit, false, args);
+    }
+
+    /**
+     * Workaround for getting follow file history in case of uncommitted move/rename change
+     */
+    private static List<HgFileRevision> getHistoryForUncommittedRenamed(
+        @Nonnull FilePath originalHgFilePath,
+        @Nonnull VirtualFile vcsRoot,
+        @Nonnull Project project, int limit
+    ) {
+        HgFile originalHgFile = new HgFile(vcsRoot, originalHgFilePath);
+        final HgLogCommand logCommand = new HgLogCommand(project);
+        logCommand.setIncludeRemoved(true);
+        final HgVersion version = logCommand.getVersion();
+        String[] templates = HgBaseLogParser.constructFullTemplateArgument(false, version);
+        String template = HgChangesetUtil.makeTemplate(templates);
+        List<String> argsForCmd = new ArrayList<>();
+        String relativePath = originalHgFile.getRelativePath();
+        argsForCmd.add("--rev");
+        argsForCmd
+            .add(String.format(
+                "reverse(follow(%s))",
+                relativePath != null ? "'" + FileUtil.toSystemIndependentName(relativePath) + "'" : ""
+            ));
+        HgCommandResult result = logCommand.execute(vcsRoot, template, limit, relativePath != null ? null : originalHgFile, argsForCmd);
+        return HgHistoryUtil.getCommitRecords(project, result, new HgFileRevisionLogParser(project, originalHgFile, version));
+    }
+
+    @Override
+    public boolean supportsHistoryForDirectories() {
+        return true;
+    }
+
+    @Override
+    public DiffFromHistoryHandler getHistoryDiffHandler() {
+        return new HgDiffFromHistoryHandler(myProject);
+    }
+
+    @Override
+    public boolean canShowHistoryFor(@Nonnull VirtualFile file) {
+        return true;
+    }
 }
