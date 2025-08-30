@@ -19,7 +19,7 @@ import consulo.document.event.DocumentAdapter;
 import consulo.document.event.DocumentEvent;
 import consulo.ide.impl.idea.dvcs.push.ui.PushTargetTextField;
 import consulo.ide.impl.idea.dvcs.push.ui.VcsEditableTextComponent;
-import consulo.ide.impl.idea.util.textCompletion.TextFieldWithCompletion;
+import consulo.language.editor.ui.awt.TextFieldWithCompletion;
 import consulo.ui.ex.SimpleTextAttributes;
 import consulo.ui.ex.awt.ValidationInfo;
 import consulo.ui.ex.awt.tree.ColoredTreeCellRenderer;
@@ -28,11 +28,11 @@ import consulo.versionControlSystem.distributed.DvcsUtil;
 import consulo.versionControlSystem.distributed.push.PushTargetEditorListener;
 import consulo.versionControlSystem.distributed.push.PushTargetPanel;
 import consulo.versionControlSystem.distributed.push.VcsError;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.util.HgUtil;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import java.awt.*;
 import java.util.List;
 
