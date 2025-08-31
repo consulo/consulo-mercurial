@@ -30,7 +30,7 @@ public abstract class HgLogSingleCommitAction extends VcsLogSingleCommitAction<H
     @Nonnull
     @Override
     protected AbstractRepositoryManager<HgRepository> getRepositoryManager(@Nonnull Project project) {
-        return project.getInstance(HgRepositoryManager.class);
+        return HgRepositoryManager.getInstance(project);
     }
 
     @Nullable

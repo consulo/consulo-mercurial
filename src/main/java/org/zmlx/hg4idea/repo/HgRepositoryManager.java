@@ -1,27 +1,23 @@
 package org.zmlx.hg4idea.repo;
 
-import consulo.annotation.component.ComponentScope;
-import consulo.annotation.component.ServiceAPI;
-import consulo.annotation.component.ServiceImpl;
+import consulo.annotation.component.ExtensionImpl;
 import consulo.project.Project;
 import consulo.versionControlSystem.distributed.branch.DvcsSyncSettings;
 import consulo.versionControlSystem.distributed.repository.AbstractRepositoryManager;
+import consulo.versionControlSystem.distributed.repository.RepositoryManager;
 import consulo.versionControlSystem.distributed.repository.VcsRepositoryManager;
 import jakarta.annotation.Nonnull;
 import jakarta.inject.Inject;
-import jakarta.inject.Singleton;
 import org.zmlx.hg4idea.HgProjectSettings;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.branch.HgMultiRootBranchConfig;
 
 import java.util.List;
 
-@Singleton
-@ServiceAPI(ComponentScope.PROJECT)
-@ServiceImpl
+@ExtensionImpl
 public class HgRepositoryManager extends AbstractRepositoryManager<HgRepository> {
     public static HgRepositoryManager getInstance(@Nonnull Project project) {
-        return project.getInstance(HgRepositoryManager.class);
+        return (HgRepositoryManager) RepositoryManager.<HgRepository>getInstance(project, HgVcs.getKey());
     }
 
     @Inject

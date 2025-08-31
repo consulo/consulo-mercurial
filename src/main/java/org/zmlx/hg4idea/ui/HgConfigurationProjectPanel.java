@@ -12,7 +12,6 @@
 // limitations under the License.
 package org.zmlx.hg4idea.ui;
 
-import consulo.ide.ServiceManager;
 import consulo.project.Project;
 import consulo.ui.ex.awt.JBCheckBox;
 import consulo.ui.ex.awt.Messages;
@@ -64,7 +63,7 @@ public class HgConfigurationProjectPanel {
       }
     });
     if (!project.isDefault()) {
-      final HgRepositoryManager repositoryManager = ServiceManager.getService(project, HgRepositoryManager.class);
+      final HgRepositoryManager repositoryManager = HgRepositoryManager.getInstance(project);
       mySyncControl.setVisible(repositoryManager != null && repositoryManager.moreThanOneRoot());
     }
     else {

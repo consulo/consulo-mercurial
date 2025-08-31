@@ -48,9 +48,8 @@ public class HgTaskHandler extends DvcsTaskHandler<HgRepository> {
   private HgReferenceValidator myNameValidator;
 
   @Inject
-  public HgTaskHandler(@Nonnull HgRepositoryManager repositoryManager,
-                       @Nonnull Project project) {
-    super(repositoryManager, project, "bookmark");
+  public HgTaskHandler(@Nonnull Project project) {
+    super(HgRepositoryManager.getInstance(project), project, "bookmark");
     myNameValidator = HgReferenceValidator.getInstance();
   }
 

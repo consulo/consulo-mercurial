@@ -29,10 +29,9 @@ import java.util.EventListener;
  * moreover, when long duration update starts we should also trigger some action;
  * </p>
  */
-public interface AsyncFilesManagerListener extends EventListener
-{
+public interface AsyncFilesManagerListener extends EventListener {
 
-	void updateStarted();
+    void updateStarted();
 
-	void updateFinished();
+    void updateFinished();
 }

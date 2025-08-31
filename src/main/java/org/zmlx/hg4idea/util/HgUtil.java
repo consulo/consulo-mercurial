@@ -495,7 +495,7 @@ public abstract class HgUtil {
 
   @Nonnull
   public static HgRepositoryManager getRepositoryManager(@Nonnull Project project) {
-    return ServiceManager.getService(project, HgRepositoryManager.class);
+    return HgRepositoryManager.getInstance(project);
   }
 
   @Nullable
