@@ -7,7 +7,6 @@ import consulo.project.ui.wm.StatusBar;
 import consulo.project.ui.wm.StatusBarWidget;
 import consulo.project.ui.wm.StatusBarWidgetFactory;
 import jakarta.annotation.Nonnull;
-import org.jetbrains.annotations.Nls;
 import org.zmlx.hg4idea.HgProjectSettings;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.HgVcsMessages;
@@ -18,7 +17,6 @@ import java.util.Objects;
 @ExtensionImpl(id = "hgWidget", order = "after codeStyleWidget, before readOnlyWidget")
 public class HgStatusWidgetFactory implements StatusBarWidgetFactory {
   @Override
-  @Nls
   @Nonnull
   public String getDisplayName() {
     return HgVcsMessages.message("hg4idea.status.bar.widget.name");

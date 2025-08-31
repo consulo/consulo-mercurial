@@ -12,32 +12,33 @@ import org.zmlx.hg4idea.HgVcsMessages;
 import java.util.Objects;
 
 abstract class HgIncomingOutgoingWidgetFactory implements StatusBarWidgetFactory {
-  private final boolean myIsIncoming;
+    private final boolean myIsIncoming;
 
-  HgIncomingOutgoingWidgetFactory(boolean isIncoming) {
-    myIsIncoming = isIncoming;
-  }
+    HgIncomingOutgoingWidgetFactory(boolean isIncoming) {
+        myIsIncoming = isIncoming;
+    }
 
-  @Override
-  public boolean isAvailable(@Nonnull Project project) {
-    return HgProjectSettings.getInstance(project).isCheckIncomingOutgoing();
-  }
+    @Override
+    public boolean isAvailable(@Nonnull Project project) {
+        HgVcs hgVcs = HgVcs.getInstance(project);
+        return hgVcs != null && HgProjectSettings.getInstance(project).isCheckIncomingOutgoing();
+    }
 
-  @Override
-  @Nonnull
-  public StatusBarWidget createWidget(@Nonnull Project project) {
-    HgVcs hgVcs = Objects.requireNonNull(HgVcs.getInstance(project));
-    return new HgIncomingOutgoingWidget(hgVcs, this, myIsIncoming);
-  }
+    @Override
+    @Nonnull
+    public StatusBarWidget createWidget(@Nonnull Project project) {
+        HgVcs hgVcs = Objects.requireNonNull(HgVcs.getInstance(project));
+        return new HgIncomingOutgoingWidget(hgVcs, this, myIsIncoming);
+    }
 
-  @Override
-  public boolean canBeEnabledOn(@Nonnull StatusBar statusBar) {
-    return true;
-  }
+    @Override
+    public boolean canBeEnabledOn(@Nonnull StatusBar statusBar) {
+        return true;
+    }
 
-  @Override
-  @Nonnull
-  public String getDisplayName() {
-    return myIsIncoming ? HgVcsMessages.message("hg4idea.status.bar.incoming.widget.name")  : HgVcsMessages.message("hg4idea.status.bar.outgoing.widget.name");
-  }
+    @Override
+    @Nonnull
+    public String getDisplayName() {
+        return myIsIncoming ? HgVcsMessages.message("hg4idea.status.bar.incoming.widget.name") : HgVcsMessages.message("hg4idea.status.bar.outgoing.widget.name");
+    }
 }
