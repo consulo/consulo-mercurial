@@ -75,7 +75,7 @@ public class HgVcs extends AbstractVcs<CommittedChangeList> {
 
   private static final Logger LOG = Logger.getInstance(HgVcs.class);
 
-  public static final String VCS_ID = "hg4idea";
+  public static final String VCS_ID = "Mercurial";
   private final static VcsKey ourKey = createKey(VCS_ID);
   private static final int MAX_CONSOLE_OUTPUT_SIZE = 10000;
 

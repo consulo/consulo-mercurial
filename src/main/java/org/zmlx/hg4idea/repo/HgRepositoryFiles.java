@@ -43,7 +43,7 @@ public class HgRepositoryFiles {
   private static final String CURRENT_BOOKMARK = "bookmarks.current";
   private static final String MQDIR = "patches";
   private static final String CONFIG_HGRC = "hgrc";
-  private static final String HGIGNORE = ".hgignore";
+  public static final String HGIGNORE = ".hgignore";
 
 
   @Nonnull
