@@ -15,12 +15,12 @@
  */
 package org.zmlx.hg4idea.provider;
 
-import consulo.ide.impl.idea.openapi.vcs.history.BaseDiffFromHistoryHandler;
 import consulo.logging.Logger;
 import consulo.project.Project;
 import consulo.versionControlSystem.FilePath;
 import consulo.versionControlSystem.VcsException;
 import consulo.versionControlSystem.change.Change;
+import consulo.versionControlSystem.history.BaseDiffFromHistoryHandler;
 import consulo.versionControlSystem.history.DiffFromHistoryHandler;
 import consulo.versionControlSystem.history.VcsFileRevision;
 import consulo.versionControlSystem.util.VcsUtil;

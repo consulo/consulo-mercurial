@@ -16,10 +16,10 @@
  */
 package org.zmlx.hg4idea.provider.annotate;
 
-import consulo.ide.impl.idea.openapi.vcs.annotate.ShowAllAffectedGenericAction;
 import consulo.localize.LocalizeValue;
 import consulo.mercurial.localize.HgLocalize;
 import consulo.project.Project;
+import consulo.versionControlSystem.AbstractVcsHelper;
 import consulo.versionControlSystem.VcsKey;
 import consulo.versionControlSystem.annotate.FileAnnotation;
 import consulo.versionControlSystem.annotate.LineAnnotationAspect;
@@ -205,7 +205,7 @@ public class HgAnnotation extends FileAnnotation {
                 HgAnnotationLine line = myLines.get(lineNum);
                 VirtualFile file = myFile.toFilePath().getVirtualFile();
                 if (line != null && file != null) {
-                    ShowAllAffectedGenericAction.showSubmittedFiles(myProject, line.getVcsRevisionNumber(), file, HgVcs.getKey());
+                    AbstractVcsHelper.getInstance(myProject).showSubmittedFiles(line.getVcsRevisionNumber(), file, HgVcs.getKey());
                 }
             }
         }

@@ -20,13 +20,13 @@ import consulo.application.Application;
 import consulo.application.ApplicationManager;
 import consulo.application.progress.ProgressIndicator;
 import consulo.application.progress.Task;
-import consulo.ide.impl.idea.openapi.vcs.changes.ui.CommitChangeListDialog;
 import consulo.platform.base.icon.PlatformIconGroup;
 import consulo.project.Project;
 import consulo.ui.ex.action.*;
 import consulo.util.collection.ArrayUtil;
 import consulo.util.collection.ContainerUtil;
 import consulo.util.lang.StringUtil;
+import consulo.versionControlSystem.AbstractVcsHelper;
 import consulo.versionControlSystem.VcsBundle;
 import consulo.versionControlSystem.change.*;
 import consulo.versionControlSystem.distributed.DvcsUtil;
@@ -175,7 +175,7 @@ public class HgBranchPopupActions {
                     ChangesUtil.getFilePath(change))));
             HgCloseBranchExecutor closeBranchExecutor = vcs.getCloseBranchExecutor();
             closeBranchExecutor.setRepositories(myRepositories);
-            CommitChangeListDialog.commitChanges(project, changesForRepositories, activeChangeList,
+            AbstractVcsHelper.getInstance(project).commitChanges(project, changesForRepositories, activeChangeList,
                 Collections.singletonList(closeBranchExecutor),
                 false, vcs, "Close Branch", null, false);
         }

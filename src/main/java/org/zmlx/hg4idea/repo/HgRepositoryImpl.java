@@ -19,13 +19,13 @@ package org.zmlx.hg4idea.repo;
 import consulo.application.Application;
 import consulo.disposer.Disposable;
 import consulo.disposer.Disposer;
-import consulo.ide.impl.idea.openapi.vcs.changes.ChangesViewManager;
 import consulo.logging.Logger;
 import consulo.project.Project;
 import consulo.util.collection.ContainerUtil;
 import consulo.util.lang.StringUtil;
 import consulo.util.lang.function.Condition;
 import consulo.versionControlSystem.AbstractVcs;
+import consulo.versionControlSystem.change.ChangesViewManager;
 import consulo.versionControlSystem.distributed.repository.RepositoryImpl;
 import consulo.versionControlSystem.log.Hash;
 import consulo.virtualFileSystem.VirtualFile;
@@ -285,7 +285,7 @@ public class HgRepositoryImpl extends RepositoryImpl implements HgRepository {
         private final ChangesViewManager myChangesViewManager;
 
         public MyIgnoredHolderAsyncListener(@Nonnull Project project) {
-            myChangesViewManager = (ChangesViewManager) ChangesViewManager.getInstance(project);
+            myChangesViewManager = project.getInstance(ChangesViewManager.class);
         }
 
         @Override

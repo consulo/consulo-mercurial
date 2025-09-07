@@ -21,7 +21,7 @@ import consulo.execution.ui.console.ConsoleViewContentType;
 import consulo.logging.Logger;
 import consulo.project.Project;
 import consulo.util.lang.StringUtil;
-import consulo.versionControlSystem.util.VcsImplUtil;
+import consulo.versionControlSystem.util.VcsUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
@@ -251,6 +251,6 @@ public class HgCommandExecutor {
     String message = HgVcsMessages.message("hg4idea.command.executable.error", vcs.getGlobalSettings().getHgExecutable()) +
       "\nOriginal Error:\n" +
       e.getMessage();
-    VcsImplUtil.showErrorMessage(myProject, message, HgVcsMessages.message("hg4idea.error"));
+    VcsUtil.showErrorMessage(myProject, message, HgVcsMessages.message("hg4idea.error"));
   }
 }

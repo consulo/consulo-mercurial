@@ -40,8 +40,6 @@ import org.zmlx.hg4idea.util.HgUtil;
 
 import java.util.*;
 
-import static consulo.ide.impl.idea.openapi.vcs.history.VcsDiffUtil.createChangesWithCurrentContentForFile;
-
 public class HgCompareWithBranchAction extends DvcsCompareWithBranchAction<HgRepository> {
   @Override
   protected boolean noBranchesToCompare(@Nonnull HgRepository repository) {
@@ -128,7 +126,7 @@ public class HgCompareWithBranchAction extends DvcsCompareWithBranchAction<HgRep
       throw new VcsException(fileDoesntExistInBranchError(file, branchToCompare));
     }
 
-    return changes.isEmpty() && !filePath.isDirectory() ? createChangesWithCurrentContentForFile(filePath, HgContentRevision
+    return changes.isEmpty() && !filePath.isDirectory() ? VcsUtil.createChangesWithCurrentContentForFile(filePath, HgContentRevision
       .create(project, hgFile, compareWithRevisionNumber)) : changes;
   }
 
