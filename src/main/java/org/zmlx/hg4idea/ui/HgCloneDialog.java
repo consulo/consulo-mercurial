@@ -16,7 +16,6 @@
 package org.zmlx.hg4idea.ui;
 
 import consulo.application.Application;
-import consulo.ide.ServiceManager;
 import consulo.mercurial.localize.HgLocalize;
 import consulo.project.Project;
 import consulo.versionControlSystem.distributed.DvcsRememberedInputs;
@@ -49,7 +48,7 @@ public class HgCloneDialog extends CloneDvcsDialog {
   @Nonnull
   @Override
   protected DvcsRememberedInputs getRememberedInputs() {
-    return ServiceManager.getService(HgRememberedInputs.class);
+    return Application.get().getInstance(HgRememberedInputs.class);
   }
 
   @Nonnull

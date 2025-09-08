@@ -16,13 +16,13 @@
 package org.zmlx.hg4idea.action;
 
 import com.google.common.collect.Iterables;
-import consulo.ide.impl.idea.dvcs.actions.DvcsCompareWithBranchAction;
 import consulo.project.Project;
 import consulo.util.collection.ContainerUtil;
 import consulo.util.lang.ObjectUtil;
 import consulo.versionControlSystem.FilePath;
 import consulo.versionControlSystem.VcsException;
 import consulo.versionControlSystem.change.Change;
+import consulo.versionControlSystem.distributed.action.DvcsCompareWithBranchAction;
 import consulo.versionControlSystem.log.Hash;
 import consulo.versionControlSystem.log.base.HashImpl;
 import consulo.versionControlSystem.util.VcsUtil;

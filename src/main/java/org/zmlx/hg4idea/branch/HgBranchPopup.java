@@ -15,13 +15,13 @@
  */
 package org.zmlx.hg4idea.branch;
 
-import consulo.ide.impl.idea.dvcs.branch.DvcsBranchPopup;
 import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.ui.ex.action.ActionGroup;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.popup.ListPopup;
 import consulo.versionControlSystem.distributed.DvcsUtil;
+import consulo.versionControlSystem.distributed.branch.DvcsBranchPopup;
 import consulo.versionControlSystem.distributed.branch.RootAction;
 import consulo.versionControlSystem.distributed.repository.AbstractRepositoryManager;
 import jakarta.annotation.Nonnull;
@@ -31,7 +31,6 @@ import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.repo.HgRepositoryManager;
 import org.zmlx.hg4idea.util.HgUtil;
 
-import javax.swing.*;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -68,12 +67,6 @@ public class HgBranchPopup extends DvcsBranchPopup<HgRepository> {
                           @Nonnull HgMultiRootBranchConfig hgMultiRootBranchConfig, @Nonnull HgProjectSettings vcsSettings,
                           @Nonnull Predicate<AnAction> preselectActionCondition) {
         super(currentRepository, repositoryManager, hgMultiRootBranchConfig, vcsSettings, preselectActionCondition, DIMENSION_SERVICE_KEY);
-    }
-
-    protected void setCurrentBranchInfo() {
-        String branchText = "Current branch : ";
-        //always display heavy branch name for additional info //
-        myPopup.setAdText(branchText + myCurrentRepository.getCurrentBranch(), SwingConstants.CENTER);
     }
 
     @Override
