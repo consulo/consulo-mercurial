@@ -15,8 +15,8 @@
  */
 package org.zmlx.hg4idea.ui;
 
-import consulo.ide.impl.idea.openapi.ui.TitlePanel;
 import consulo.project.Project;
+import consulo.ui.ex.awt.BorderedTitlePanel;
 import consulo.ui.ex.awt.DialogWrapper;
 import org.zmlx.hg4idea.HgVcsMessages;
 
@@ -31,7 +31,7 @@ public class HgInitAlreadyUnderHgDialog extends DialogWrapper {
   private JPanel contentPane;
   private JRadioButton myCreateNewRepoButton;
   private JRadioButton myUseParentRepoButton;
-  private TitlePanel myTitlePanel;
+  private BorderedTitlePanel myTitlePanel;
   private String myParentRoot;
   private String mySelectedRoot;
 
@@ -76,8 +76,8 @@ public class HgInitAlreadyUnderHgDialog extends DialogWrapper {
   }
 
   private void createUIComponents() {
-    myTitlePanel = new TitlePanel(HgVcsMessages.message("hg4idea.init.already.under.hg.title"),
-                                  HgVcsMessages.message("hg4idea.init.already.under.hg.description", mySelectedRoot, myParentRoot));
+    myTitlePanel = new BorderedTitlePanel(HgVcsMessages.message("hg4idea.init.already.under.hg.title"),
+                                         HgVcsMessages.message("hg4idea.init.already.under.hg.description", mySelectedRoot, myParentRoot));
   }
 
 }
