@@ -13,10 +13,12 @@
 package org.zmlx.hg4idea.provider.commit;
 
 import consulo.application.Application;
-import consulo.application.ApplicationManager;
 import consulo.application.progress.ProgressIndicator;
 import consulo.application.progress.Task;
+import consulo.localize.LocalizeValue;
+import consulo.mercurial.localize.HgLocalize;
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.awt.GridBag;
 import consulo.ui.ex.awt.JBUI;
 import consulo.ui.ex.awt.Messages;
@@ -35,7 +37,10 @@ import consulo.versionControlSystem.util.VcsUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
-import org.zmlx.hg4idea.*;
+import org.zmlx.hg4idea.HgChange;
+import org.zmlx.hg4idea.HgFile;
+import org.zmlx.hg4idea.HgRevisionNumber;
+import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.action.HgActionUtil;
 import org.zmlx.hg4idea.command.*;
 import org.zmlx.hg4idea.command.mq.HgQNewCommand;
@@ -59,7 +64,7 @@ import static consulo.util.lang.ObjectUtil.assertNotNull;
 import static org.zmlx.hg4idea.util.HgUtil.getRepositoryManager;
 
 public class HgCheckinEnvironment implements CheckinEnvironment {
-
+    @Nonnull
     private final Project myProject;
     private boolean myNextCommitIsPushed;
     private boolean myNextCommitAmend; // If true, the next commit is amended
@@ -69,12 +74,15 @@ public class HgCheckinEnvironment implements CheckinEnvironment {
     @Nullable
     private Collection<HgRepository> myRepos;
 
-    public HgCheckinEnvironment(Project project) {
+    public HgCheckinEnvironment(@Nonnull Project project) {
         myProject = project;
     }
 
-    public RefreshableOnComponent createAdditionalOptionsPanel(CheckinProjectPanel panel,
-                                                               PairConsumer<Object, Object> additionalDataConsumer) {
+    @Override
+    public RefreshableOnComponent createAdditionalOptionsPanel(
+        CheckinProjectPanel panel,
+        PairConsumer<Object, Object> additionalDataConsumer
+    ) {
         reset();
         return new HgCommitAdditionalComponent(myProject, panel);
     }
@@ -87,32 +95,40 @@ public class HgCheckinEnvironment implements CheckinEnvironment {
         myRepos = null;
     }
 
+    @Override
     public String getDefaultMessageFor(FilePath[] filesToCheckin) {
         return null;
     }
 
+    @Override
     public String getHelpId() {
         return null;
     }
 
-    public String getCheckinOperationName() {
-        return HgVcsMessages.message("hg4idea.commit");
+    @Nonnull
+    @Override
+    public LocalizeValue getCheckinOperationName() {
+        return HgLocalize.hg4ideaCommit();
     }
 
-    public List<VcsException> commit(List<Change> changes,
-                                     String preparedComment,
-                                     @Nonnull Function<Object, Object> parametersHolder,
-                                     Set<String> feedback) {
+    @Override
+    @RequiredUIAccess
+    public List<VcsException> commit(
+        List<Change> changes,
+        String preparedComment,
+        @Nonnull Function<Object, Object> parametersHolder,
+        Set<String> feedback
+    ) {
         List<VcsException> exceptions = new LinkedList<>();
         Map<HgRepository, Set<HgFile>> repositoriesMap = getFilesByRepository(changes);
         addRepositoriesWithoutChanges(repositoriesMap);
         for (Map.Entry<HgRepository, Set<HgFile>> entry : repositoriesMap.entrySet()) {
-
             HgRepository repo = entry.getKey();
             Set<HgFile> selectedFiles = entry.getValue();
             HgCommitTypeCommand command = myMqNewPatch ? new HgQNewCommand(myProject, repo, preparedComment, myNextCommitAmend) :
                 new HgCommitCommand(myProject, repo, preparedComment, myNextCommitAmend, myCloseBranch,
-                    myShouldCommitSubrepos && !selectedFiles.isEmpty());
+                    myShouldCommitSubrepos && !selectedFiles.isEmpty()
+                );
 
             if (isMergeCommit(repo.getRoot())) {
                 //partial commits are not allowed during merges
@@ -125,7 +141,7 @@ public class HgCheckinEnvironment implements CheckinEnvironment {
 
 
                 if (partial) {
-                    final StringBuilder filesNotIncludedString = new StringBuilder();
+                    StringBuilder filesNotIncludedString = new StringBuilder();
                     for (HgFile hgFile : changedFilesNotInCommit) {
                         filesNotIncludedString.append("<li>");
                         filesNotIncludedString.append(hgFile.getRelativePath());
@@ -160,13 +176,15 @@ public class HgCheckinEnvironment implements CheckinEnvironment {
 
         // push if needed
         if (myNextCommitIsPushed && exceptions.isEmpty()) {
-            final List<HgRepository> preselectedRepositories = new ArrayList<>(repositoriesMap.keySet());
-            Application application = Application.get();
-            application.invokeLater(() -> {
+            List<HgRepository> preselectedRepositories = new ArrayList<>(repositoriesMap.keySet());
+            Application application = myProject.getApplication();
+            application.invokeLater(
+                () -> {
                     DistributedVersionControlHelper helper = application.getInstance(DistributedVersionControlHelper.class);
                     helper.createPushDialog(myProject, preselectedRepositories, HgUtil.getCurrentRepository(myProject)).show();
                 },
-                application.getDefaultModalityState());
+                application.getDefaultModalityState()
+            );
         }
 
         return exceptions;
@@ -198,26 +216,25 @@ public class HgCheckinEnvironment implements CheckinEnvironment {
         return filesNotIncluded;
     }
 
-    private boolean mayCommitEverything(final String filesNotIncludedString) {
-        final int[] choice = new int[1];
-        Runnable runnable = new Runnable() {
-            public void run() {
-                choice[0] = Messages.showOkCancelDialog(
-                    myProject,
-                    HgVcsMessages.message("hg4idea.commit.partial.merge.message", filesNotIncludedString),
-                    HgVcsMessages.message("hg4idea.commit.partial.merge.title"),
-                    null
-                );
-            }
-        };
-        ApplicationManager.getApplication().invokeAndWait(runnable);
+    @RequiredUIAccess
+    private boolean mayCommitEverything(String filesNotIncludedString) {
+        int[] choice = new int[1];
+        myProject.getApplication().invokeAndWait(() -> choice[0] = Messages.showOkCancelDialog(
+            myProject,
+            HgLocalize.hg4ideaCommitPartialMergeMessage(filesNotIncludedString).get(),
+            HgLocalize.hg4ideaCommitPartialMergeTitle().get(),
+            null
+        ));
         return choice[0] == Messages.OK;
     }
 
+    @Override
+    @RequiredUIAccess
     public List<VcsException> commit(List<Change> changes, String preparedComment) {
         return commit(changes, preparedComment, o -> null, null);
     }
 
+    @Override
     public List<VcsException> scheduleMissingFileForDeletion(List<FilePath> files) {
         final List<HgFile> filesWithRoots = new ArrayList<>();
         for (FilePath filePath : files) {
@@ -227,7 +244,7 @@ public class HgCheckinEnvironment implements CheckinEnvironment {
             }
             filesWithRoots.add(new HgFile(vcsRoot, filePath));
         }
-        new Task.Backgroundable(myProject, "Removing Files...") {
+        new Task.Backgroundable(myProject, LocalizeValue.localizeTODO("Removing Files...")) {
             @Override
             public void run(@Nonnull ProgressIndicator indicator) {
                 new HgRemoveCommand((Project) myProject).executeInCurrentThread(filesWithRoots);
@@ -236,11 +253,13 @@ public class HgCheckinEnvironment implements CheckinEnvironment {
         return null;
     }
 
-    public List<VcsException> scheduleUnversionedFilesForAddition(final List<VirtualFile> files) {
+    @Override
+    public List<VcsException> scheduleUnversionedFilesForAddition(List<VirtualFile> files) {
         new HgAddCommand(myProject).addWithProgress(files);
         return null;
     }
 
+    @Override
     public boolean keepChangeListAfterCommit(ChangeList changeList) {
         return false;
     }
@@ -379,10 +398,12 @@ public class HgCheckinEnvironment implements CheckinEnvironment {
         }
 
         private class MyAmendComponent extends AmendComponent {
-            public MyAmendComponent(@Nonnull Project project,
-                                    @Nonnull HgRepositoryManager repoManager,
-                                    @Nonnull CheckinProjectPanel panel,
-                                    @Nonnull String title) {
+            public MyAmendComponent(
+                @Nonnull Project project,
+                @Nonnull HgRepositoryManager repoManager,
+                @Nonnull CheckinProjectPanel panel,
+                @Nonnull String title
+            ) {
                 super(project, repoManager, panel, title);
             }
 

@@ -15,31 +15,30 @@
  */
 package org.zmlx.hg4idea.provider.commit;
 
-import jakarta.annotation.Nonnull;
-
+import consulo.localize.LocalizeValue;
 import consulo.versionControlSystem.change.CommitExecutor;
 import consulo.versionControlSystem.change.CommitSession;
-import org.jetbrains.annotations.Nls;
+import jakarta.annotation.Nonnull;
 
 public class HgMQNewExecutor implements CommitExecutor {
-  //todo:should be moved to create patch dialog as an EP -> create patch with...  MQ
-  @Nonnull
-  private final HgCheckinEnvironment myCheckinEnvironment;
+    //todo:should be moved to create patch dialog as an EP -> create patch with...  MQ
+    @Nonnull
+    private final HgCheckinEnvironment myCheckinEnvironment;
 
-  public HgMQNewExecutor(@Nonnull HgCheckinEnvironment checkinEnvironment) {
-    myCheckinEnvironment = checkinEnvironment;
-  }
+    public HgMQNewExecutor(@Nonnull HgCheckinEnvironment checkinEnvironment) {
+        myCheckinEnvironment = checkinEnvironment;
+    }
 
-  @Nls
-  @Override
-  public String getActionText() {
-    return "Create M&Q Patch";
-  }
+    @Nonnull
+    @Override
+    public LocalizeValue getActionText() {
+        return LocalizeValue.localizeTODO("Create M&Q Patch");
+    }
 
-  @Nonnull
-  @Override
-  public CommitSession createCommitSession() {
-    myCheckinEnvironment.setMqNew();
-    return CommitSession.VCS_COMMIT;
-  }
+    @Nonnull
+    @Override
+    public CommitSession createCommitSession() {
+        myCheckinEnvironment.setMqNew();
+        return CommitSession.VCS_COMMIT;
+    }
 }

@@ -15,45 +15,41 @@
  */
 package org.zmlx.hg4idea.provider.commit;
 
+import consulo.localize.LocalizeValue;
 import consulo.versionControlSystem.change.CommitExecutorBase;
 import consulo.versionControlSystem.change.CommitSession;
 import jakarta.annotation.Nonnull;
-import org.jetbrains.annotations.Nls;
 import org.zmlx.hg4idea.repo.HgRepository;
 
 import java.util.Collection;
 
 public class HgCloseBranchExecutor extends CommitExecutorBase {
+    @Nonnull
+    private final HgCheckinEnvironment myCheckinEnvironment;
 
-  @Nonnull
-  private final HgCheckinEnvironment myCheckinEnvironment;
-  @Nonnull
-  private static final String CLOSE_BRANCH_TITLE = "Commit And Close";
+    public HgCloseBranchExecutor(@Nonnull HgCheckinEnvironment environment) {
+        myCheckinEnvironment = environment;
+    }
 
+    @Override
+    public boolean areChangesRequired() {
+        return false;
+    }
 
-  public HgCloseBranchExecutor(@Nonnull HgCheckinEnvironment environment) {
-    myCheckinEnvironment = environment;
-  }
+    @Nonnull
+    @Override
+    public LocalizeValue getActionText() {
+        return LocalizeValue.localizeTODO("Commit And Close");
+    }
 
-  @Override
-  public boolean areChangesRequired() {
-    return false;
-  }
+    @Nonnull
+    @Override
+    public CommitSession createCommitSession() {
+        myCheckinEnvironment.setCloseBranch(true);
+        return CommitSession.VCS_COMMIT;
+    }
 
-  @Nls
-  @Override
-  public String getActionText() {
-    return CLOSE_BRANCH_TITLE;
-  }
-
-  @Nonnull
-  @Override
-  public CommitSession createCommitSession() {
-    myCheckinEnvironment.setCloseBranch(true);
-    return CommitSession.VCS_COMMIT;
-  }
-
-  public void setRepositories(@Nonnull Collection<HgRepository> repositories) {
-    myCheckinEnvironment.setRepos(repositories);
-  }
+    public void setRepositories(@Nonnull Collection<HgRepository> repositories) {
+        myCheckinEnvironment.setRepos(repositories);
+    }
 }
