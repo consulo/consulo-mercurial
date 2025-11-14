@@ -15,30 +15,31 @@
  */
 package org.zmlx.hg4idea.provider.commit;
 
-import jakarta.annotation.Nonnull;
-
+import consulo.localize.LocalizeValue;
 import consulo.versionControlSystem.change.CommitExecutor;
 import consulo.versionControlSystem.change.CommitSession;
-import org.jetbrains.annotations.Nls;
+import jakarta.annotation.Nonnull;
 
 /**
  * @author Kirill Likhodedov
  */
 public class HgCommitAndPushExecutor implements CommitExecutor {
-  private final HgCheckinEnvironment myCheckinEnvironment;
+    private final HgCheckinEnvironment myCheckinEnvironment;
 
-  public HgCommitAndPushExecutor(HgCheckinEnvironment checkinEnvironment) {
-    myCheckinEnvironment = checkinEnvironment;
-  }
+    public HgCommitAndPushExecutor(HgCheckinEnvironment checkinEnvironment) {
+        myCheckinEnvironment = checkinEnvironment;
+    }
 
-  @Nls
-  public String getActionText() {
-    return "Commit and &Push...";
-  }
+    @Nonnull
+    @Override
+    public LocalizeValue getActionText() {
+        return LocalizeValue.localizeTODO("Commit and &Push...");
+    }
 
-  @Nonnull
-  public CommitSession createCommitSession() {
-    myCheckinEnvironment.setNextCommitIsPushed();
-    return CommitSession.VCS_COMMIT;
-  }
+    @Nonnull
+    @Override
+    public CommitSession createCommitSession() {
+        myCheckinEnvironment.setNextCommitIsPushed();
+        return CommitSession.VCS_COMMIT;
+    }
 }
