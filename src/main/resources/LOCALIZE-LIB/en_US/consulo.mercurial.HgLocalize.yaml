@@ -65,6 +65,14 @@ hg4idea.annotation.tool.tip:
         Date: {2}
 
         {3}
+hg4idea.branch.bookmarks:
+    text: Bookmarks
+hg4idea.branch.bookmarks.in.repo:
+    text: Bookmarks in {0}
+hg4idea.branch.branches.in.repo.separator:
+    text: Branches in {0}
+hg4idea.branch.branches.separator:
+    text: Branches
 hg4idea.branches.error.description:
     text: Couldn't collect information about branches and tags
 hg4idea.changelist.column.branch:

@@ -52,26 +52,30 @@ public class HgBranchPopup extends DvcsBranchPopup<HgRepository> {
      * @param currentRepository Current repository, which means the repository of the currently open or selected file.
      */
     public static HgBranchPopup getInstance(@Nonnull Project project, @Nonnull HgRepository currentRepository) {
-
         HgRepositoryManager manager = HgUtil.getRepositoryManager(project);
         HgProjectSettings hgProjectSettings = project.getInstance(HgProjectSettings.class);
         HgMultiRootBranchConfig hgMultiRootBranchConfig = new HgMultiRootBranchConfig(manager.getRepositories());
 
         Predicate<AnAction> preselectActionCondition = action -> false;
         return new HgBranchPopup(currentRepository, manager, hgMultiRootBranchConfig, hgProjectSettings,
-            preselectActionCondition);
+            preselectActionCondition
+        );
     }
 
-    private HgBranchPopup(@Nonnull HgRepository currentRepository,
-                          @Nonnull HgRepositoryManager repositoryManager,
-                          @Nonnull HgMultiRootBranchConfig hgMultiRootBranchConfig, @Nonnull HgProjectSettings vcsSettings,
-                          @Nonnull Predicate<AnAction> preselectActionCondition) {
+    private HgBranchPopup(
+        @Nonnull HgRepository currentRepository,
+        @Nonnull HgRepositoryManager repositoryManager,
+        @Nonnull HgMultiRootBranchConfig hgMultiRootBranchConfig, @Nonnull HgProjectSettings vcsSettings,
+        @Nonnull Predicate<AnAction> preselectActionCondition
+    ) {
         super(currentRepository, repositoryManager, hgMultiRootBranchConfig, vcsSettings, preselectActionCondition, DIMENSION_SERVICE_KEY);
     }
 
     @Override
-    protected void fillWithCommonRepositoryActions(@Nonnull ActionGroup.Builder popupGroup,
-                                                   @Nonnull AbstractRepositoryManager<HgRepository> repositoryManager) {
+    protected void fillWithCommonRepositoryActions(
+        @Nonnull ActionGroup.Builder popupGroup,
+        @Nonnull AbstractRepositoryManager<HgRepository> repositoryManager
+    ) {
         List<HgRepository> allRepositories = repositoryManager.getRepositories();
         popupGroup.add(new HgBranchPopupActions.HgNewBranchAction(myProject, allRepositories, myCurrentRepository));
         popupGroup.add(new HgBranchPopupActions.HgNewBookmarkAction(allRepositories, myCurrentRepository));
@@ -101,17 +105,22 @@ public class HgBranchPopup extends DvcsBranchPopup<HgRepository> {
         ActionGroup.Builder popupGroup = ActionGroup.newImmutableBuilder();
         popupGroup.addSeparator(LocalizeValue.localizeTODO("Repositories"));
         for (HgRepository repository : DvcsUtil.sortRepositories(myRepositoryManager.getRepositories())) {
-            popupGroup.add(new RootAction<>(repository, highlightCurrentRepo() ? myCurrentRepository : null,
+            popupGroup.add(new RootAction<>(
+                repository,
+                highlightCurrentRepo() ? myCurrentRepository : null,
                 new HgBranchPopupActions(repository.getProject(), repository).createActions(),
-                HgUtil.getDisplayableBranchOrBookmarkText(repository)));
+                HgUtil.getDisplayableBranchOrBookmarkText(repository)
+            ));
         }
         return popupGroup.build();
     }
 
     @Override
-    protected void fillPopupWithCurrentRepositoryActions(@Nonnull ActionGroup.Builder popupGroup,
-                                                         @Nullable ActionGroup actions) {
-        popupGroup.addAll(new HgBranchPopupActions(myProject, myCurrentRepository).createActions(actions, myRepoTitleInfo));
+    protected void fillPopupWithCurrentRepositoryActions(@Nonnull ActionGroup.Builder popupGroup, @Nullable ActionGroup actions) {
+        popupGroup.addAll(
+            new HgBranchPopupActions(myProject, myCurrentRepository)
+                .createActions(actions, myIsInSpecificRepository ? myCurrentRepository : null)
+        );
     }
 }
 
