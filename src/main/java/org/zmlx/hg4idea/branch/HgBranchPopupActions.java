@@ -15,27 +15,28 @@
  */
 package org.zmlx.hg4idea.branch;
 
-import consulo.application.AllIcons;
 import consulo.application.Application;
-import consulo.application.ApplicationManager;
 import consulo.application.progress.ProgressIndicator;
 import consulo.application.progress.Task;
+import consulo.mercurial.localize.HgLocalize;
 import consulo.platform.base.icon.PlatformIconGroup;
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.*;
 import consulo.util.collection.ArrayUtil;
 import consulo.util.collection.ContainerUtil;
 import consulo.util.lang.StringUtil;
 import consulo.versionControlSystem.AbstractVcsHelper;
-import consulo.versionControlSystem.VcsBundle;
 import consulo.versionControlSystem.change.*;
 import consulo.versionControlSystem.distributed.DvcsUtil;
 import consulo.versionControlSystem.distributed.branch.NewBranchAction;
 import consulo.versionControlSystem.distributed.repository.Repository;
+import consulo.versionControlSystem.localize.VcsLocalize;
 import consulo.versionControlSystem.log.Hash;
 import consulo.versionControlSystem.log.base.HashImpl;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+import org.zmlx.hg4idea.HgNameWithHashInfo;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.action.HgCommandResultNotifier;
 import org.zmlx.hg4idea.command.HgBookmarkCommand;
@@ -55,7 +56,6 @@ import static org.zmlx.hg4idea.util.HgUtil.getNewBranchNameFromUser;
 import static org.zmlx.hg4idea.util.HgUtil.getSortedNamesWithoutHashes;
 
 public class HgBranchPopupActions {
-
     @Nonnull
     private final Project myProject;
     @Nonnull
@@ -67,31 +67,39 @@ public class HgBranchPopupActions {
     }
 
     ActionGroup createActions() {
-        return createActions(null, "");
+        return createActions(null, null);
     }
 
-    ActionGroup createActions(@Nullable ActionGroup toInsert, @Nonnull String repoInfo) {
+    ActionGroup createActions(@Nullable ActionGroup toInsert, @Nullable HgRepository specificRepository) {
         DefaultActionGroup popupGroup = new DefaultActionGroup();
         popupGroup.addAction(new HgNewBranchAction(myProject, Collections.singletonList(myRepository), myRepository));
         popupGroup.addAction(new HgNewBookmarkAction(Collections.singletonList(myRepository), myRepository));
-        popupGroup.addAction(new HgBranchPopupActions.HgCloseBranchAction(Collections.singletonList(myRepository), myRepository));
+        popupGroup.addAction(new HgCloseBranchAction(Collections.singletonList(myRepository), myRepository));
         popupGroup.addAction(new HgShowUnnamedHeadsForCurrentBranchAction(myRepository));
         if (toInsert != null) {
             popupGroup.addAll(toInsert);
         }
 
-        popupGroup.addSeparator("Bookmarks" + repoInfo);
+        popupGroup.addSeparator(
+            specificRepository == null
+                ? HgLocalize.hg4ideaBranchBookmarks().get()
+                : HgLocalize.hg4ideaBranchBookmarksInRepo(DvcsUtil.getShortRepositoryName(specificRepository)).get()
+        );
         List<String> bookmarkNames = getSortedNamesWithoutHashes(myRepository.getBookmarks());
         String currentBookmark = myRepository.getCurrentBookmark();
         for (String bookmark : bookmarkNames) {
             AnAction bookmarkAction = new BookmarkActions(myProject, Collections.singletonList(myRepository), bookmark);
             if (bookmark.equals(currentBookmark)) {
-                bookmarkAction.getTemplatePresentation().setIcon(AllIcons.Actions.Checked);
+                bookmarkAction.getTemplatePresentation().setIcon(PlatformIconGroup.actionsChecked());
             }
             popupGroup.add(bookmarkAction);
         }
 
-        popupGroup.addSeparator("Branches" + repoInfo);
+        popupGroup.addSeparator(
+            specificRepository == null
+                ? HgLocalize.hg4ideaBranchBranchesSeparator().get()
+                : HgLocalize.hg4ideaBranchBranchesInRepoSeparator(DvcsUtil.getShortRepositoryName(specificRepository)).get()
+        );
         List<String> branchNamesList = new ArrayList<>(myRepository.getOpenedBranches());//only opened branches have to be shown
         Collections.sort(branchNamesList);
         for (String branch : branchNamesList) {
@@ -106,13 +114,18 @@ public class HgBranchPopupActions {
         @Nonnull
         final HgRepository myPreselectedRepo;
 
-        public HgNewBranchAction(@Nonnull Project project, @Nonnull List<HgRepository> repositories, @Nonnull HgRepository preselectedRepo) {
+        public HgNewBranchAction(
+            @Nonnull Project project,
+            @Nonnull List<HgRepository> repositories,
+            @Nonnull HgRepository preselectedRepo
+        ) {
             super(project, repositories);
             myPreselectedRepo = preselectedRepo;
         }
 
         @Override
-        public void actionPerformed(AnActionEvent e) {
+        @RequiredUIAccess
+        public void actionPerformed(@Nonnull AnActionEvent e) {
             final String name = getNewBranchNameFromUser(myPreselectedRepo, "Create New Branch");
             if (name == null) {
                 return;
@@ -125,8 +138,8 @@ public class HgBranchPopupActions {
             }.queue();
         }
 
-        public void createNewBranchInCurrentThread(@Nonnull final String name) {
-            for (final HgRepository repository : myRepositories) {
+        public void createNewBranchInCurrentThread(@Nonnull String name) {
+            for (HgRepository repository : myRepositories) {
                 try {
                     HgCommandResult result = new HgBranchCreateCommand(myProject, repository.getRoot(), name).executeInCurrentThread();
                     repository.update();
@@ -149,42 +162,62 @@ public class HgBranchPopupActions {
         final HgRepository myPreselectedRepo;
 
         HgCloseBranchAction(@Nonnull List<HgRepository> repositories, @Nonnull HgRepository preselectedRepo) {
-            super("Close " + StringUtil.pluralize("branch", repositories.size()),
-                "Close current " + StringUtil.pluralize("branch", repositories.size()), PlatformIconGroup.actionsClose());
+            super(
+                "Close " + StringUtil.pluralize("branch", repositories.size()),
+                "Close current " + StringUtil.pluralize("branch", repositories.size()),
+                PlatformIconGroup.actionsClose()
+            );
             myRepositories = repositories;
             myPreselectedRepo = preselectedRepo;
         }
 
         @Override
-        public void actionPerformed(AnActionEvent e) {
-            final Project project = myPreselectedRepo.getProject();
-            ApplicationManager.getApplication().saveAll();
-            ChangeListManager.getInstance(project)
-                .invokeAfterUpdate(() -> commitAndCloseBranch(project), InvokeAfterUpdateMode.SYNCHRONOUS_CANCELLABLE, VcsBundle
-                        .message("waiting.changelists.update.for.show.commit.dialog.message"),
-                    Application.get().getCurrentModalityState());
+        @RequiredUIAccess
+        public void actionPerformed(@Nonnull AnActionEvent e) {
+            Project project = myPreselectedRepo.getProject();
+            Application application = project.getApplication();
+            application.saveAll();
+            ChangeListManager.getInstance(project).invokeAfterUpdate(
+                () -> commitAndCloseBranch(project),
+                InvokeAfterUpdateMode.SYNCHRONOUS_CANCELLABLE,
+                VcsLocalize.waitingChangelistsUpdateForShowCommitDialogMessage().get(),
+                application.getCurrentModalityState()
+            );
         }
 
-        private void commitAndCloseBranch(@Nonnull final Project project) {
-            final LocalChangeList activeChangeList = ChangeListManager.getInstance(project).getDefaultChangeList();
+        @RequiredUIAccess
+        private void commitAndCloseBranch(@Nonnull Project project) {
+            LocalChangeList activeChangeList = ChangeListManager.getInstance(project).getDefaultChangeList();
             HgVcs vcs = HgVcs.getInstance(project);
             assert vcs != null;
-            final HgRepositoryManager repositoryManager = HgUtil.getRepositoryManager(project);
-            List<Change> changesForRepositories = ContainerUtil.filter(activeChangeList.getChanges(),
+            HgRepositoryManager repositoryManager = HgUtil.getRepositoryManager(project);
+            List<Change> changesForRepositories = ContainerUtil.filter(
+                activeChangeList.getChanges(),
                 change -> myRepositories.contains(repositoryManager.getRepositoryForFile(
-                    ChangesUtil.getFilePath(change))));
+                    ChangesUtil.getFilePath(change)))
+            );
             HgCloseBranchExecutor closeBranchExecutor = vcs.getCloseBranchExecutor();
             closeBranchExecutor.setRepositories(myRepositories);
-            AbstractVcsHelper.getInstance(project).commitChanges(project, changesForRepositories, activeChangeList,
+            AbstractVcsHelper.getInstance(project).commitChanges(
+                project,
+                changesForRepositories,
+                activeChangeList,
                 Collections.singletonList(closeBranchExecutor),
-                false, vcs, "Close Branch", null, false);
+                false,
+                vcs,
+                "Close Branch",
+                null,
+                false
+            );
         }
 
         @Override
         public void update(AnActionEvent e) {
-            e.getPresentation().setEnabledAndVisible(ContainerUtil.and(myRepositories,
+            e.getPresentation().setEnabledAndVisible(ContainerUtil.and(
+                myRepositories,
                 repository -> repository.getOpenedBranches()
-                    .contains(repository.getCurrentBranch())));
+                    .contains(repository.getCurrentBranch())
+            ));
         }
     }
 
@@ -195,13 +228,13 @@ public class HgBranchPopupActions {
         final HgRepository myPreselectedRepo;
 
         HgNewBookmarkAction(@Nonnull List<HgRepository> repositories, @Nonnull HgRepository preselectedRepo) {
-            super("New Bookmark", "Create new bookmark", AllIcons.General.Add);
+            super("New Bookmark", "Create new bookmark", PlatformIconGroup.generalAdd());
             myRepositories = repositories;
             myPreselectedRepo = preselectedRepo;
         }
 
         @Override
-        public void update(AnActionEvent e) {
+        public void update(@Nonnull AnActionEvent e) {
             if (DvcsUtil.anyRepositoryIsFresh(myRepositories)) {
                 e.getPresentation().setEnabled(false);
                 e.getPresentation().setDescription("Bookmark creation is not possible before the first commit.");
@@ -209,11 +242,11 @@ public class HgBranchPopupActions {
         }
 
         @Override
-        public void actionPerformed(AnActionEvent e) {
-
-            final HgBookmarkDialog bookmarkDialog = new HgBookmarkDialog(myPreselectedRepo);
+        @RequiredUIAccess
+        public void actionPerformed(@Nonnull AnActionEvent e) {
+            HgBookmarkDialog bookmarkDialog = new HgBookmarkDialog(myPreselectedRepo);
             if (bookmarkDialog.showAndGet()) {
-                final String name = bookmarkDialog.getName();
+                String name = bookmarkDialog.getName();
                 if (!StringUtil.isEmptyOrSpaces(name)) {
                     HgBookmarkCommand.createBookmarkAsynchronously(myRepositories, name, bookmarkDialog.isActive());
                 }
@@ -246,7 +279,7 @@ public class HgBranchPopupActions {
                 return Collections.emptySet();
             }
             else {
-                Collection<Hash> bookmarkHashes = ContainerUtil.map(myRepository.getBookmarks(), info -> info.getHash());
+                Collection<Hash> bookmarkHashes = ContainerUtil.map(myRepository.getBookmarks(), HgNameWithHashInfo::getHash);
                 branchWithHashes.removeAll(bookmarkHashes);
                 branchWithHashes.remove(HashImpl.build(currentHead));
             }
@@ -258,14 +291,17 @@ public class HgBranchPopupActions {
         public AnAction[] getChildren(@Nullable AnActionEvent e) {
             List<AnAction> branchHeadActions = new ArrayList<>();
             for (Hash hash : myHeads) {
-                branchHeadActions
-                    .add(new HgCommonBranchActions(myRepository.getProject(), Collections.singletonList(myRepository), hash.toShortString()));
+                branchHeadActions.add(new HgCommonBranchActions(
+                    myRepository.getProject(),
+                    Collections.singletonList(myRepository),
+                    hash.toShortString()
+                ));
             }
             return branchHeadActions.toArray(new AnAction[branchHeadActions.size()]);
         }
 
         @Override
-        public void update(final AnActionEvent e) {
+        public void update(@Nonnull AnActionEvent e) {
             if (myRepository.isFresh() || myHeads.isEmpty()) {
                 e.getPresentation().setEnabledAndVisible(false);
             }
@@ -279,7 +315,6 @@ public class HgBranchPopupActions {
      * Actions available for  bookmarks.
      */
     static class BookmarkActions extends HgCommonBranchActions {
-
         BookmarkActions(@Nonnull Project project, @Nonnull List<HgRepository> repositories, @Nonnull String branchName) {
             super(project, repositories, branchName);
         }
@@ -291,13 +326,13 @@ public class HgBranchPopupActions {
         }
 
         private static class DeleteBookmarkAction extends HgBranchAbstractAction {
-
             DeleteBookmarkAction(@Nonnull Project project, @Nonnull List<HgRepository> repositories, @Nonnull String branchName) {
                 super(project, "Delete", repositories, branchName);
             }
 
             @Override
-            public void actionPerformed(AnActionEvent e) {
+            @RequiredUIAccess
+            public void actionPerformed(@Nonnull AnActionEvent e) {
                 new Task.Backgroundable(myProject, "Deleting Bookmarks....") {
                     @Override
                     public void run(@Nonnull ProgressIndicator progressIndicator) {

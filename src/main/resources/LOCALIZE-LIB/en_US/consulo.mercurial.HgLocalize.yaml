@@ -1,297 +1,305 @@
-group.MercurialFileGroup.text:
-  text: Mercurial Init
-group.hg4idea.file.menu.text:
-  text: Mercurial
-action.hg4idea.tag.text:
-  text: Tag Repository...
-action.hg4idea.tag.description:
-  text: Create a tag for current revision
-action.hg4idea.updateTo.text:
-  text: Update to...
-action.hg4idea.updateTo.description:
-  text: Update the repository's working directory to the specified changeset.
-action.hg4idea.push.text:
-  text: Push...
-action.hg4idea.push.description:
-  text: Push outgoing commits
-action.hg4idea.pull.text:
-  text: Pull...
-action.hg4idea.pull.description:
-  text: Pull incoming commits
-action.hg4idea.resolve.mark.text:
-  text: Mark as Resolved
-action.hg4idea.resolve.mark.description:
-  text: Mark as resolved, remove conflict marker
-action.hg4idea.run.conflict.resolver.text:
-  text: Run Conflict Resolver
-action.hg4idea.run.conflict.resolver.description:
-  text: Resolve existing conflicts
-action.hg4idea.merge.files.text:
-  text: Merge...
-action.hg4idea.merge.files.description:
-  text: Merge existing files
-action.hg4idea.mq.rebase.text:
-  text: Rebase MQ Patch(es)
-action.hg4idea.mq.rebase.description:
-  text: Update and rebase patches
-hg4idea.mercurial:
-  text: Mercurial
-hg4idea.error:
-  text: Error
-hg4idea.revert:
-  text: '&Revert'
-hg4idea.commit:
-  text: Commit
-hg4idea.add.title:
-  text: Add files to Mercurial
-hg4idea.add.single.title:
-  text: Add file to Mercurial
-hg4idea.add.body:
-  text: |-
-    Do you want to add the following file to Mercurial?
-    {0}
-
-    If you say NO, you can still add it later manually.
-hg4idea.add.progress:
-  text: Adding files to Mercurial
-hg4idea.clone.title:
-  text: Clone Mercurial Repository
-hg4idea.clone.button.clone:
-  text: Clone
-hg4idea.clone.button.test:
-  text: '&Test Repository'
-hg4idea.clone.progress:
-  text: Cloning source repository {0}
-hg4idea.clone.error.destination.directory.exists:
-  text: The path {0} exists. Mercurial cannot clone to existing directory.
-hg4idea.clone.error.repository.url:
-  text: Repository URL is a malformed URL or non-existent directory.
-hg4idea.clone.error.test.failed:
-  text: Repository test has failed.
-hg4idea.clone.error.parent.directory.missing:
-  text: The parent path {0} must exist.
-hg4idea.clone.error.repository.url.is.not.directory:
-  text: Repository URL is not a directory.
-hg4idea.clone.repository.url:
-  text: Mercurial &Repository URL
-hg4idea.clone.parent.directory:
-  text: '&Parent Directory'
-hg4idea.clone.parent.directory.title:
-  text: Parent Directory
-hg4idea.clone.parent.directory.description:
-  text: Select a parent directory destination directory for clone
-hg4idea.clone.directory.name:
-  text: Directory &Name
-hg4idea.clone.test.progress:
-  text: Testing repository {0}
-hg4idea.clone.test.success.message:
-  text: <html>Connection to repository <tt>{0}</tt> has been successful.</html>
-hg4idea.clone.test.success:
-  text: Connection Successful
-hg4idea.configuration.title:
-  text: Mercurial Configuration
-hg4idea.configuration.executable.title:
-  text: Mercurial executable
-hg4idea.configuration.description:
-  text: Specify the full path to hg executable
-hg4idea.configuration.executable.error:
-  text: '"{0}" doesn''t appear to be a valid hg executable'
-hg4idea.configuration.test.label:
-  text: Test
-hg4idea.configuration.test:
-  text: '&Test'
-hg4idea.unable.to.run.hg:
-  text: 'Unable to run hg: {0}'
-hg4idea.run.success.title:
-  text: Hg Executed Successfully
-hg4idea.run.failed.title:
-  text: Hg Execution Failed
-hg4idea.configuration.ignore.whitespace.in.annotate:
-  text: Ignore &whitespace differences in annotations
-hg4idea.command.executable.error:
-  text: Error executing "{0}". Make sure you have setup the right executable in Mercurial configuration
-hg4idea.commit.success:
-  text: Repository "{0}" committed
-hg4idea.commit.partial.merge.message:
-  text: <html>Partial commits are not allowed during merge, and following files are not included:<ul>{0}</ul>Perform commit with all files included ?</html>
-hg4idea.commit.partial.merge.title:
-  text: Partial Merge Commit
-hg4idea.commit.error.messageEmpty:
-  text: Please provide a commit message
-hg4idea.executable.notification.title:
-  text: Can't start Mercurial
-hg4idea.executable.notification.description:
-  text: Probably the path to hg executable is not valid.
-hg4idea.init.dialog.title:
-  text: Create Mercurial repository
-hg4idea.init.dialog.incorrect.path:
-  text: The specified path is incorrect
-hg4idea.init.dialog.option.create.repository.for.whole.project:
-  text: '&Create repository for the whole project'
-hg4idea.init.dialog.option.select.folder:
-  text: '&Select where to create repository'
-hg4idea.init.destination.directory.description:
-  text: Select directory where the new Mercurial repository will be created.
-hg4idea.init.destination.directory.title:
-  text: Select directory for hg init
-hg4idea.init.this.is.hg.root:
-  text: The selected folder {0} is already a Mercurial root
-hg4idea.init.already.under.hg.description:
-  text: '<html>The selected directory <b><code>{0}</code></b> is already under Mercurial: <b><code>{1}</code></b><br/>Would you like to create new repository in the selected folder or use the parent one?</html>'
-hg4idea.init.already.under.hg.title:
-  text: This directory is already under hg
-hg4idea.init.already.under.hg.dialog.title:
-  text: Directory is under hg
-hg4idea.init.already.under.hg.option.use.parent:
-  text: Use parent repository, but keep working in this project.
-hg4idea.init.already.under.hg.option.create.repo.here:
-  text: Create new repository here.
-hg4idea.init.created.notification.title:
-  text: Mercurial repository created
-hg4idea.init.created.notification.description:
-  text: Repository was created in {0}
-hg4idea.init.error.title:
-  text: Error creating Mercurial repository
-hg4idea.init.error.description:
-  text: Couldn''t create a Mercurial repository in {0}
-hg4idea.move.progress:
-  text: Moving files in the VCS...
-hg4idea.push.dialog.title:
-  text: Push
-hg4idea.push.branch:
-  text: '&Branch:'
-hg4idea.push.force:
-  text: '&Force push'
-hg4idea.remove.single.title:
-  text: Remove file from Mercurial
-hg4idea.remove.single.body:
-  text: |-
-    Do you want to remove the following file from Mercurial?
-    {0}
-
-    If you say NO, you can still remove it later manually.
-hg4idea.remove.multiple.title:
-  text: Remove files from Mercurial
-hg4idea.remove.progress:
-  text: Removing files from the VCS...
-hg4idea.update.error.uncommittedMerge:
-  text: outstanding uncommitted merge in repository {0}, not updating or merging
-hg4idea.update.error.localchanges:
-  text: outstanding uncommitted changes in repository {0}, not merging with pulled head
-hg4idea.update.error.merge.multipleLocalHeads:
-  text: More than one local head in repository {0}, not merging
-hg4idea.update.error.merge.multipleRemoteHeads:
-  text: Pulled in {0} remote heads in repository {1}, not merging
-hg4idea.update.warning.merge.conflicts:
-  text: Merged with conflicts in repository {0}. Inspect the conflicts, and commit the merge when you are done
-hg4idea.update.warning.multipleHeadsBeforeUpdate:
-  text: Multiple heads in this branch in repository {0} before the update (use "hg heads ." and "hg merge" to merge)
-hg4idea.update.progress.updating.to.pulled.head:
-  text: Updating to pulled head
-hg4idea.update.progress.merging:
-  text: Merging with pulled head
-hg4idea.progress.updatingworkingdir:
-  text: Updating local working directory
-hg4idea.progress.integrating:
-  text: Integrating {0} ...
-hg4idea.progress.merging:
-  text: Performing merge...
-hg4idea.progress.updating:
-  text: Updating {0} ...
-hg4idea.progress.updatingTo:
-  text: Updating to {0}...
-hg4idea.progress.countingHeads:
-  text: Checking number of heads...
-hg4idea.progress.pull.with.rebase:
-  text: Rebasing patches
-hg4idea.progress.pull.with.update:
-  text: Updating repository
-hg4idea.progress.rebase:
-  text: Rebasing repository
-hg4idea.progress.bookmark:
-  text: Creating Bookmark {0}...
-hg4idea.mq.progress.goto:
-  text: Goto {0}...
-hg4idea.mq.progress.pop:
-  text: Pop all applied patches...
-hg4idea.error.invalidTarget:
-  text: Invalid integration target
-hg4idea.progress.checking.ignored:
-  text: Checking for ignoring files
-hg4idea.warning.no.default.update.path:
-  text: Skipped "{0}". No default update path.
-hg4idea.merge.please.commit:
-  text: Merged heads, please commit repository "{0}"
-hg4idea.error.invalidExecutable:
-  text: '"{0}" is not a valid mercurial executable'
-hg4idea.integrate.other.head:
-  text: 'Other head: {0}'
-hg4idea.error.log.command.execution:
-  text: Error during log command execution
-hg4idea.branches.error.description:
-  text: Couldn't collect information about branches and tags
-hg4idea.error.debugancestor.command.execution:
-  text: Error during debugancestor command execution
-hg4idea.error.debugancestor.command.description:
-  text: Couldn't collect information about ancestor
-hg4idea.dialog.login.password.required:
-  text: Login and password required
-hg4idea.dialog.login.description:
-  text: Login to {0}
-hg4idea.exception.file.not.under.hg:
-  text: The file {0} is not under Mercurial.
-hg4idea.changelist.column.branch:
-  text: Branch
-hg4idea.annotation.tool.tip:
-  text: |-
-    commit {0}
-    Author: {1}
-    Date: {2}
-
-    {3}
-hg4idea.push.asNewBranch:
-  text: push as &new remote branch
-hg4idea.push.bookmark:
-  text: Book&mark
-exportable.HgGlobalSettings.presentable.name:
-  text: Mercurial
-configurable.UpdateConfigurable.display.name:
-  text: Update
-checkbox.export.active.bookmarks:
-  text: Export active bookmarks
-action.DumbAware.HgCommittedChangesProvider.text.copy.hash:
-  text: Copy &Hash
 action.DumbAware.HgCommittedChangesProvider.description.copy.hash.to.clipboard:
-  text: Copy hash to clipboard
-hg4idea.file.status.copied:
-  text: Copied
-hg4idea.file.status.renamed:
-  text: Renamed
-hg4idea.status.bar.widget.name:
-  text: Mercurial Branch
-hg4idea.status.bar.incoming.widget.name:
-  text: Mercurial Incoming
-hg4idea.status.bar.outgoing.widget.name:
-  text: Mercurial Outgoing
+    text: Copy hash to clipboard
+action.DumbAware.HgCommittedChangesProvider.text.copy.hash:
+    text: Copy &Hash
+action.hg4idea.merge.files.description:
+    text: Merge existing files
+action.hg4idea.merge.files.text:
+    text: Merge...
+action.hg4idea.mq.rebase.description:
+    text: Update and rebase patches
+action.hg4idea.mq.rebase.text:
+    text: Rebase MQ Patch(es)
+action.hg4idea.pull.description:
+    text: Pull incoming commits
+action.hg4idea.pull.text:
+    text: Pull...
+action.hg4idea.push.description:
+    text: Push outgoing commits
+action.hg4idea.push.text:
+    text: Push...
+action.hg4idea.resolve.mark.description:
+    text: Mark as resolved, remove conflict marker
+action.hg4idea.resolve.mark.text:
+    text: Mark as Resolved
+action.hg4idea.run.conflict.resolver.description:
+    text: Resolve existing conflicts
+action.hg4idea.run.conflict.resolver.text:
+    text: Run Conflict Resolver
+action.hg4idea.tag.description:
+    text: Create a tag for current revision
+action.hg4idea.tag.text:
+    text: Tag Repository...
+action.hg4idea.updateTo.description:
+    text: Update the repository's working directory to the specified changeset.
+action.hg4idea.updateTo.text:
+    text: Update to...
+checkbox.export.active.bookmarks:
+    text: Export active bookmarks
+configurable.UpdateConfigurable.display.name:
+    text: Update
+exportable.HgGlobalSettings.presentable.name:
+    text: Mercurial
 graft:
-  text: Graft
-hg4idea.status.bar.widget.text.graft:
-  text: Grafting {0}
-hg4idea.status.bar.widget.text.merge:
-  text: Merging {0}
-hg4idea.status.bar.widget.text.rebase:
-  text: Rebasing {0}
-hg4idea.changesets.error:
-  text: Checking for incoming/outgoing changes disabled
-hg4idea.changesets.error.msg:
-  text: Authentication is required to check incoming/outgoing changes in {0}<br/>You may enable checking for changes <a href=''#''>in the Settings</a>.
-hg4idea.changesets.in:
-  text: In
-hg4idea.changesets.out:
-  text: Out
+    text: Graft
+group.MercurialFileGroup.text:
+    text: Mercurial Init
+group.hg4idea.file.menu.text:
+    text: Mercurial
+hg4idea.add.body:
+    text: |-
+        Do you want to add the following file to Mercurial?
+        {0}
+
+        If you say NO, you can still add it later manually.
+hg4idea.add.progress:
+    text: Adding files to Mercurial
+hg4idea.add.single.title:
+    text: Add file to Mercurial
+hg4idea.add.title:
+    text: Add files to Mercurial
+hg4idea.annotation.tool.tip:
+    text: |-
+        commit {0}
+        Author: {1}
+        Date: {2}
+
+        {3}
+hg4idea.branch.bookmarks:
+    text: Bookmarks
+hg4idea.branch.bookmarks.in.repo:
+    text: Bookmarks in {0}
+hg4idea.branch.branches.in.repo.separator:
+    text: Branches in {0}
+hg4idea.branch.branches.separator:
+    text: Branches
+hg4idea.branches.error.description:
+    text: Couldn't collect information about branches and tags
+hg4idea.changelist.column.branch:
+    text: Branch
 hg4idea.changesets.checking.progress:
-  text: Checking Incoming and Outgoing Changes
+    text: Checking Incoming and Outgoing Changes
+hg4idea.changesets.error:
+    text: Checking for incoming/outgoing changes disabled
+hg4idea.changesets.error.msg:
+    text: Authentication is required to check incoming/outgoing changes in {0}<br/>You may enable checking for changes <a href=''#''>in the Settings</a>.
+hg4idea.changesets.in:
+    text: In
+hg4idea.changesets.out:
+    text: Out
+hg4idea.clone.button.clone:
+    text: Clone
+hg4idea.clone.button.test:
+    text: '&Test Repository'
+hg4idea.clone.directory.name:
+    text: Directory &Name
+hg4idea.clone.error.destination.directory.exists:
+    text: The path {0} exists. Mercurial cannot clone to existing directory.
+hg4idea.clone.error.parent.directory.missing:
+    text: The parent path {0} must exist.
+hg4idea.clone.error.repository.url:
+    text: Repository URL is a malformed URL or non-existent directory.
+hg4idea.clone.error.repository.url.is.not.directory:
+    text: Repository URL is not a directory.
+hg4idea.clone.error.test.failed:
+    text: Repository test has failed.
+hg4idea.clone.parent.directory:
+    text: '&Parent Directory'
+hg4idea.clone.parent.directory.description:
+    text: Select a parent directory destination directory for clone
+hg4idea.clone.parent.directory.title:
+    text: Parent Directory
+hg4idea.clone.progress:
+    text: Cloning source repository {0}
+hg4idea.clone.repository.url:
+    text: Mercurial &Repository URL
+hg4idea.clone.test.progress:
+    text: Testing repository {0}
+hg4idea.clone.test.success:
+    text: Connection Successful
+hg4idea.clone.test.success.message:
+    text: <html>Connection to repository <tt>{0}</tt> has been successful.</html>
+hg4idea.clone.title:
+    text: Clone Mercurial Repository
+hg4idea.command.executable.error:
+    text: Error executing "{0}". Make sure you have setup the right executable in Mercurial configuration
+hg4idea.commit:
+    text: Commit
+hg4idea.commit.error.messageEmpty:
+    text: Please provide a commit message
+hg4idea.commit.partial.merge.message:
+    text: <html>Partial commits are not allowed during merge, and following files are not included:<ul>{0}</ul>Perform commit with all files included ?</html>
+hg4idea.commit.partial.merge.title:
+    text: Partial Merge Commit
+hg4idea.commit.success:
+    text: Repository "{0}" committed
+hg4idea.configuration.description:
+    text: Specify the full path to hg executable
+hg4idea.configuration.executable.error:
+    text: '"{0}" doesn''t appear to be a valid hg executable'
+hg4idea.configuration.executable.title:
+    text: Mercurial executable
+hg4idea.configuration.ignore.whitespace.in.annotate:
+    text: Ignore &whitespace differences in annotations
+hg4idea.configuration.test:
+    text: '&Test'
+hg4idea.configuration.test.label:
+    text: Test
+hg4idea.configuration.title:
+    text: Mercurial Configuration
+hg4idea.dialog.login.description:
+    text: Login to {0}
+hg4idea.dialog.login.password.required:
+    text: Login and password required
+hg4idea.error:
+    text: Error
+hg4idea.error.debugancestor.command.description:
+    text: Couldn't collect information about ancestor
+hg4idea.error.debugancestor.command.execution:
+    text: Error during debugancestor command execution
+hg4idea.error.invalidExecutable:
+    text: '"{0}" is not a valid mercurial executable'
+hg4idea.error.invalidTarget:
+    text: Invalid integration target
+hg4idea.error.log.command.execution:
+    text: Error during log command execution
+hg4idea.exception.file.not.under.hg:
+    text: The file {0} is not under Mercurial.
+hg4idea.executable.notification.description:
+    text: Probably the path to hg executable is not valid.
+hg4idea.executable.notification.title:
+    text: Can't start Mercurial
+hg4idea.file.status.copied:
+    text: Copied
+hg4idea.file.status.renamed:
+    text: Renamed
+hg4idea.init.already.under.hg.description:
+    text: '<html>The selected directory <b><code>{0}</code></b> is already under Mercurial: <b><code>{1}</code></b><br/>Would you like to create new repository in the selected folder or use the parent one?</html>'
+hg4idea.init.already.under.hg.dialog.title:
+    text: Directory is under hg
+hg4idea.init.already.under.hg.option.create.repo.here:
+    text: Create new repository here.
+hg4idea.init.already.under.hg.option.use.parent:
+    text: Use parent repository, but keep working in this project.
+hg4idea.init.already.under.hg.title:
+    text: This directory is already under hg
+hg4idea.init.created.notification.description:
+    text: Repository was created in {0}
+hg4idea.init.created.notification.title:
+    text: Mercurial repository created
+hg4idea.init.destination.directory.description:
+    text: Select directory where the new Mercurial repository will be created.
+hg4idea.init.destination.directory.title:
+    text: Select directory for hg init
+hg4idea.init.dialog.incorrect.path:
+    text: The specified path is incorrect
+hg4idea.init.dialog.option.create.repository.for.whole.project:
+    text: '&Create repository for the whole project'
+hg4idea.init.dialog.option.select.folder:
+    text: '&Select where to create repository'
+hg4idea.init.dialog.title:
+    text: Create Mercurial repository
+hg4idea.init.error.description:
+    text: Couldn''t create a Mercurial repository in {0}
+hg4idea.init.error.title:
+    text: Error creating Mercurial repository
+hg4idea.init.this.is.hg.root:
+    text: The selected folder {0} is already a Mercurial root
+hg4idea.integrate.other.head:
+    text: 'Other head: {0}'
+hg4idea.mercurial:
+    text: Mercurial
+hg4idea.merge.please.commit:
+    text: Merged heads, please commit repository "{0}"
+hg4idea.move.progress:
+    text: Moving files in the VCS...
+hg4idea.mq.progress.goto:
+    text: Goto {0}...
+hg4idea.mq.progress.pop:
+    text: Pop all applied patches...
+hg4idea.progress.bookmark:
+    text: Creating Bookmark {0}...
+hg4idea.progress.checking.ignored:
+    text: Checking for ignoring files
+hg4idea.progress.countingHeads:
+    text: Checking number of heads...
+hg4idea.progress.integrating:
+    text: Integrating {0} ...
+hg4idea.progress.merging:
+    text: Performing merge...
+hg4idea.progress.pull.with.rebase:
+    text: Rebasing patches
+hg4idea.progress.pull.with.update:
+    text: Updating repository
+hg4idea.progress.rebase:
+    text: Rebasing repository
+hg4idea.progress.updating:
+    text: Updating {0} ...
+hg4idea.progress.updatingTo:
+    text: Updating to {0}...
+hg4idea.progress.updatingworkingdir:
+    text: Updating local working directory
+hg4idea.push.asNewBranch:
+    text: push as &new remote branch
+hg4idea.push.bookmark:
+    text: Book&mark
+hg4idea.push.branch:
+    text: '&Branch:'
+hg4idea.push.dialog.title:
+    text: Push
+hg4idea.push.force:
+    text: '&Force push'
+hg4idea.remove.multiple.title:
+    text: Remove files from Mercurial
+hg4idea.remove.progress:
+    text: Removing files from the VCS...
+hg4idea.remove.single.body:
+    text: |-
+        Do you want to remove the following file from Mercurial?
+        {0}
+
+        If you say NO, you can still remove it later manually.
+hg4idea.remove.single.title:
+    text: Remove file from Mercurial
+hg4idea.revert:
+    text: '&Revert'
+hg4idea.run.failed.title:
+    text: Hg Execution Failed
+hg4idea.run.success.title:
+    text: Hg Executed Successfully
+hg4idea.status.bar.incoming.widget.name:
+    text: Mercurial Incoming
+hg4idea.status.bar.outgoing.widget.name:
+    text: Mercurial Outgoing
+hg4idea.status.bar.widget.name:
+    text: Mercurial Branch
+hg4idea.status.bar.widget.text.graft:
+    text: Grafting {0}
+hg4idea.status.bar.widget.text.merge:
+    text: Merging {0}
+hg4idea.status.bar.widget.text.rebase:
+    text: Rebasing {0}
+hg4idea.unable.to.run.hg:
+    text: 'Unable to run hg: {0}'
+hg4idea.update.error.localchanges:
+    text: outstanding uncommitted changes in repository {0}, not merging with pulled head
+hg4idea.update.error.merge.multipleLocalHeads:
+    text: More than one local head in repository {0}, not merging
+hg4idea.update.error.merge.multipleRemoteHeads:
+    text: Pulled in {0} remote heads in repository {1}, not merging
+hg4idea.update.error.uncommittedMerge:
+    text: outstanding uncommitted merge in repository {0}, not updating or merging
+hg4idea.update.progress.merging:
+    text: Merging with pulled head
+hg4idea.update.progress.updating.to.pulled.head:
+    text: Updating to pulled head
+hg4idea.update.warning.merge.conflicts:
+    text: Merged with conflicts in repository {0}. Inspect the conflicts, and commit the merge when you are done
+hg4idea.update.warning.multipleHeadsBeforeUpdate:
+    text: Multiple heads in this branch in repository {0} before the update (use "hg heads ." and "hg merge" to merge)
+hg4idea.warning.no.default.update.path:
+    text: Skipped "{0}". No default update path.
 hg4idea.widget.tooltip.title.status.changesets:
-  text: '{0} changesets'
+    text: '{0} changesets'
 no.changes.available:
-  text: No changes available
+    text: No changes available
