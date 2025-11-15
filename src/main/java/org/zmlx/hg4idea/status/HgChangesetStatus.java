@@ -12,53 +12,48 @@
 // limitations under the License.
 package org.zmlx.hg4idea.status;
 
-import consulo.application.ApplicationManager;
-
+import consulo.application.Application;
 
 public class HgChangesetStatus {
+    private final String myName;
+    private int numChanges;
+    private String toolTip;
 
-  private final String myName;
-  private int numChanges;
-  private String toolTip;
+    public HgChangesetStatus(String name) {
+        myName = name;
+    }
 
-  public HgChangesetStatus(String name) {
-    myName = name;
-  }
+    public void setChanges(int count, ChangesetWriter formatter) {
+        Application.get().invokeLater(() -> {
+            if (count == 0) {
+                numChanges = 0;
+                toolTip = "";
+                return;
+            }
 
-  public void setChanges(final int count, final ChangesetWriter formatter) {
-    ApplicationManager.getApplication().invokeLater(new Runnable() {
-      public void run() {
-        if (count == 0) {
-          numChanges = 0;
-          toolTip = "";
-          return;
-        }
+            numChanges = count;
+            toolTip = formatter.asString();
+        });
+    }
 
-        numChanges = count;
-        toolTip = formatter.asString();
-      }
-    });
-  }
-
-  public String getStatusName() {
-    return myName;
-  }
+    public String getStatusName() {
+        return myName;
+    }
 
 
-  public int getNumChanges() {
-    return numChanges;
-  }
+    public int getNumChanges() {
+        return numChanges;
+    }
 
 
-  public String getToolTip() {
-    return toolTip;
-  }
+    public String getToolTip() {
+        return toolTip;
+    }
 
+    public interface ChangesetWriter {
+        String asString();
+    }
 
-  public interface ChangesetWriter {
-    String asString();
-  }
-
-  public void dispose() {
-  }
+    public void dispose() {
+    }
 }
