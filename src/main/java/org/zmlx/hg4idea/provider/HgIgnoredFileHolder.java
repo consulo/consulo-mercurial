@@ -19,11 +19,10 @@ import consulo.project.Project;
 import consulo.versionControlSystem.AbstractVcs;
 import consulo.versionControlSystem.FilePath;
 import consulo.versionControlSystem.change.FileHolder;
-import consulo.versionControlSystem.change.VcsIgnoredFilesHolder;
+import consulo.versionControlSystem.change.VcsManagedFilesHolder;
 import consulo.versionControlSystem.change.VcsModifiableDirtyScope;
+import consulo.versionControlSystem.util.VcsUtil;
 import consulo.virtualFileSystem.VirtualFile;
-import jakarta.annotation.Nonnull;
-import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.util.HgUtil;
 
@@ -33,14 +32,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class HgIgnoredFileHolder implements VcsIgnoredFilesHolder {
+public class HgIgnoredFileHolder implements VcsManagedFilesHolder {
   private final Project myProject;
-  private final HgVcs myVcs;
   private final Map<HgRepository, HgLocalIgnoredHolder> myVcsIgnoredHolderMap;
 
   public HgIgnoredFileHolder(Project project) {
     myProject = project;
-    myVcs = HgVcs.getInstance(myProject);
     myVcsIgnoredHolderMap = new HashMap<>();
   }
 
@@ -49,17 +46,9 @@ public class HgIgnoredFileHolder implements VcsIgnoredFilesHolder {
   }
 
   @Override
-  public void addFile(VirtualFile file) {
-  }
-
-  @Override
-  public boolean containsFile(@Nonnull FilePath filePath, @Nonnull VirtualFile virtualFile) {
+  public boolean containsFile(FilePath filePath, VirtualFile vcsRoot) {
     VirtualFile file = filePath.getVirtualFile();
-    return file != null && containsFile(file);
-  }
-
-  @Override
-  public boolean containsFile(VirtualFile file) {
+    if (file == null) return false;
     HgRepository repositoryForFile = HgUtil.getRepositoryForFile(myProject, file);
     if (repositoryForFile == null) return false;
     HgLocalIgnoredHolder localIgnoredHolder = myVcsIgnoredHolderMap.get(repositoryForFile);
@@ -67,9 +56,12 @@ public class HgIgnoredFileHolder implements VcsIgnoredFilesHolder {
   }
 
   @Override
-  public Collection<VirtualFile> values() {
-    return myVcsIgnoredHolderMap.values().stream().map(HgLocalIgnoredHolder::getIgnoredFiles).flatMap(Set::stream)
-                                .collect(Collectors.toSet());
+  public Collection<FilePath> values() {
+    return myVcsIgnoredHolderMap.values().stream()
+      .map(HgLocalIgnoredHolder::getIgnoredFiles)
+      .flatMap(Set::stream)
+      .map(VcsUtil::getFilePath)
+      .collect(Collectors.toSet());
   }
 
   @Override
@@ -104,11 +96,5 @@ public class HgIgnoredFileHolder implements VcsIgnoredFilesHolder {
   @Override
   public boolean isInUpdatingMode() {
     return myVcsIgnoredHolderMap.values().stream().anyMatch(HgLocalIgnoredHolder::isInUpdateMode);
-  }
-
-  @Nonnull
-  @Override
-  public AbstractVcs getVcs() {
-    return myVcs;
   }
 }

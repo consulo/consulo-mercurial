@@ -2,10 +2,9 @@ package org.zmlx.hg4idea.provider;
 
 import consulo.annotation.component.ExtensionImpl;
 import consulo.project.Project;
-import consulo.versionControlSystem.VcsKey;
-import consulo.versionControlSystem.change.VcsIgnoredFilesHolder;
-import consulo.versionControlSystem.change.VcsIgnoredFilesHolderProvider;
-import jakarta.annotation.Nonnull;
+import consulo.versionControlSystem.AbstractVcs;
+import consulo.versionControlSystem.change.VcsManagedFilesHolder;
+import consulo.versionControlSystem.change.VcsManagedIgnoredFilesHolderProvider;
 import jakarta.inject.Inject;
 import org.zmlx.hg4idea.HgVcs;
 
@@ -14,7 +13,7 @@ import org.zmlx.hg4idea.HgVcs;
  * @since 2025-08-31
  */
 @ExtensionImpl
-public class HgIgnoredFileHolderProvder implements VcsIgnoredFilesHolderProvider {
+public class HgIgnoredFileHolderProvder implements VcsManagedIgnoredFilesHolderProvider {
     private final Project myProject;
 
     @Inject
@@ -22,15 +21,13 @@ public class HgIgnoredFileHolderProvder implements VcsIgnoredFilesHolderProvider
         myProject = project;
     }
 
-    @Nonnull
     @Override
-    public VcsKey getVcsKey() {
-        return HgVcs.getKey();
+    public AbstractVcs getVcs() {
+        return HgVcs.getInstance(myProject);
     }
 
-    @Nonnull
     @Override
-    public VcsIgnoredFilesHolder create() {
+    public VcsManagedFilesHolder createHolder() {
         return new HgIgnoredFileHolder(myProject);
     }
 }
