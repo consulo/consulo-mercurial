@@ -14,9 +14,12 @@ package org.zmlx.hg4idea;
 
 import consulo.configurable.ConfigurationException;
 import consulo.configurable.SearchableConfigurable;
+import consulo.disposer.Disposable;
 import consulo.localize.LocalizeValue;
 import consulo.mercurial.localize.HgLocalize;
 import consulo.project.Project;
+import consulo.ui.Component;
+import consulo.ui.ex.awtUnsafe.TargetAWT;
 import jakarta.annotation.Nonnull;
 import org.jetbrains.annotations.Nls;
 import org.zmlx.hg4idea.status.ui.HgWidgetUpdater;
@@ -43,8 +46,8 @@ public class HgProjectConfigurable implements SearchableConfigurable {
     return "project.propVCSSupport.VCSs.Mercurial";
   }
 
-  public JComponent createComponent() {
-    return myPanel.getPanel();
+  public Component createUIComponent(Disposable parentDisposable) {
+    return TargetAWT.wrap(myPanel.getPanel());
   }
 
   public boolean isModified() {

@@ -15,9 +15,12 @@ package org.zmlx.hg4idea.provider.update;
 import consulo.application.progress.ProgressIndicator;
 import consulo.configurable.Configurable;
 import consulo.configurable.ConfigurationException;
+import consulo.disposer.Disposable;
 import consulo.ide.ServiceManager;
 import consulo.localize.LocalizeValue;
 import consulo.project.Project;
+import consulo.ui.Component;
+import consulo.ui.ex.awtUnsafe.TargetAWT;
 import consulo.util.lang.ref.Ref;
 import consulo.versionControlSystem.FilePath;
 import consulo.versionControlSystem.ProjectLevelVcsManager;
@@ -105,9 +108,9 @@ public class HgUpdateEnvironment implements UpdateEnvironment {
       return "reference.VersionControl.Mercurial.UpdateProject";
     }
 
-    public JComponent createComponent() {
+    public Component createUIComponent(Disposable parentDisposable) {
       updateDialog = new HgUpdateDialog();
-      return updateDialog.getContentPanel();
+      return TargetAWT.wrap(updateDialog.getContentPanel());
     }
 
     public boolean isModified() {
