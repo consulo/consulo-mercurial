@@ -19,8 +19,8 @@ import consulo.document.FileDocumentManager;
 import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.project.ui.notification.NotificationService;
-import consulo.ui.ex.awt.Messages;
-import consulo.ui.ex.awt.UIUtil;
+import consulo.ui.MessageBoxBuilder;
+import consulo.ui.MessageButtonRole;
 import consulo.util.lang.StringUtil;
 import consulo.versionControlSystem.VcsNotifier;
 import consulo.versionControlSystem.distributed.DvcsUtil;
@@ -38,7 +38,6 @@ import org.zmlx.hg4idea.util.HgErrorUtil;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.zmlx.hg4idea.util.HgErrorUtil.hasUncommittedChangesConflict;
 import static org.zmlx.hg4idea.util.HgUtil.getRepositoryManager;
@@ -85,9 +84,9 @@ public class HgUpdateCommand {
       result =
         executor.executeInCurrentThread(repo, "update", arguments);
       if (!clean && hasUncommittedChangesConflict(result)) {
-        final String message = "<html>Your uncommitted changes couldn't be merged into the requested changeset.<br>" +
+        final String message = "Your uncommitted changes couldn't be merged into the requested changeset.<br>" +
                                "Would you like to perform force update and discard them?";
-        if (showDiscardChangesConfirmation(project, message) == Messages.OK) {
+        if (confirmDiscardChanges(project, message)) {
           arguments.add("-C");
           result = executor.executeInCurrentThread(repo, "update", arguments);
         }
@@ -101,16 +100,21 @@ public class HgUpdateCommand {
     return result;
   }
 
-  public static int showDiscardChangesConfirmation(@Nonnull final Project project, @Nonnull final String confirmationMessage) {
-    final AtomicInteger exitCode = new AtomicInteger();
-    UIUtil.invokeAndWaitIfNeeded(new Runnable() {
-      @Override
-      public void run() {
-        exitCode.set(Messages.showOkCancelDialog(project, confirmationMessage, "Uncommitted Changes Problem",
-                                                 "&Discard Changes", "&Cancel", Messages.getWarningIcon()));
-      }
-    });
-    return exitCode.get();
+  /**
+   * Asks from a background thread whether uncommitted changes may be discarded.
+   */
+  public static boolean confirmDiscardChanges(@Nonnull Project project, @Nonnull String confirmationMessage) {
+    Boolean discard = DvcsUtil.showAndWait(project, () -> MessageBoxBuilder.<Boolean>create()
+      .asWarning()
+      .richText()
+      .title(LocalizeValue.localizeTODO("Uncommitted Changes Problem"))
+      .text(LocalizeValue.localizeTODO(confirmationMessage))
+      .button(MessageButtonRole.OK, LocalizeValue.localizeTODO("&Discard Changes"), Boolean.TRUE)
+      .asDefaultButton()
+      .button(MessageButtonRole.CANCEL, Boolean.FALSE)
+      .asExitButton()
+      .showAsync(project));
+    return Boolean.TRUE.equals(discard);
   }
 
   public static void updateTo(@Nonnull final String targetRevision, @Nonnull List<HgRepository> repos, @Nullable final Runnable callInAwtLater) {

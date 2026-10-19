@@ -15,27 +15,32 @@
  */
 package org.zmlx.hg4idea.push;
 
-import consulo.ui.ex.awt.JBCheckBox;
+import consulo.localize.LocalizeValue;
+import consulo.ui.CheckBox;
+import consulo.ui.Component;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.versionControlSystem.distributed.push.VcsPushOptionsPanel;
-
+import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
-import java.awt.*;
+public class HgPushOptionsPanel extends VcsPushOptionsPanel {
+    @Nonnull
+    private final CheckBox myPushBookmarkCheckBox;
 
-public class HgPushOptionsPanel extends VcsPushOptionsPanel
-{
+    @RequiredUIAccess
+    public HgPushOptionsPanel() {
+        myPushBookmarkCheckBox = CheckBox.create(LocalizeValue.localizeTODO("Export Active Bookmarks"));
+    }
 
-  private final JBCheckBox myPushBookmarkCheckBox;
+    @Nonnull
+    @Override
+    public Component getComponent() {
+        return myPushBookmarkCheckBox;
+    }
 
-  public HgPushOptionsPanel() {
-    setLayout(new BorderLayout());
-    myPushBookmarkCheckBox = new JBCheckBox("Export Active Bookmarks");
-    add(myPushBookmarkCheckBox, BorderLayout.WEST);
-  }
-
-  @Override
-  @Nullable
-  public HgVcsPushOptionValue getValue() {
-    return myPushBookmarkCheckBox.isSelected() ? HgVcsPushOptionValue.Current : null;
-  }
+    @Override
+    @Nullable
+    public HgVcsPushOptionValue getValue() {
+        return myPushBookmarkCheckBox.getValueOrError() ? HgVcsPushOptionValue.Current : null;
+    }
 }

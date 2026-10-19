@@ -15,13 +15,11 @@
  */
 package org.zmlx.hg4idea.execution;
 
-import consulo.logging.Logger;
-import consulo.ui.ex.awt.Messages;
+import consulo.localize.LocalizeValue;
+import consulo.project.Project;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
-import java.awt.*;
-import java.lang.reflect.InvocationTargetException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,14 +27,16 @@ import java.util.regex.Pattern;
  * @author Nadya Zabrodina
  */
 public class HgDeleteModifyPromptHandler implements HgPromptHandler {
-
-  private static final Logger LOG = Logger.getInstance("#org.zmlx.hg4idea.execution.HgDeleteModifyPromptHandler");
-
   private static final Pattern LOCAL_DELETE_REMOTE_MODIFIED_CONFLICT_MESSAGE_PATTERN = Pattern.compile(
     "remote\\schanged(.+)which\\slocal\\sdeleted\\s.+");
   private static final Pattern REMOTE_DELETE_LOCAL_MODIFIED_CONFLICT_MESSAGE_PATTERN = Pattern.compile(
     "\\slocal\\schanged(.+)which\\sremote\\sdeleted\\s.+");
 
+  private final Project myProject;
+
+  public HgDeleteModifyPromptHandler(@Nonnull Project project) {
+    myProject = project;
+  }
 
   public HgPromptChoice promptUser(@Nonnull final String message,
                                    @Nonnull final HgPromptChoice[] choices,
@@ -59,27 +59,7 @@ public class HgDeleteModifyPromptHandler implements HgPromptHandler {
     else {
       modifiedMessage = message;
     }
-    final int[] chosen = new int[]{-1};
-    try {
-      EventQueue.invokeAndWait
-        (new Runnable() {
-          public void run() {
-            String[] choicePresentationArray = new String[choices.length];
-            for (int i = 0; i < choices.length; ++i) {
-              choicePresentationArray[i] = choices[i].toString();
-            }
-            chosen[0] = Messages
-              .showDialog(modifiedMessage, "Delete-Modify Conflict",
-                          choicePresentationArray, defaultChoice.getChosenIndex(),
-                          Messages.getQuestionIcon());
-          }
-        });
-    }
-    catch (InterruptedException | InvocationTargetException e) {
-      LOG.error(e);
-      return defaultChoice;
-    }
-    return chosen[0] >= 0 ? choices[chosen[0]] : HgPromptChoice.ABORT;
+    return HgPromptChoice.ask(myProject, LocalizeValue.localizeTODO("Delete-Modify Conflict"), modifiedMessage, choices, defaultChoice);
   }
 
   public boolean shouldHandle(@Nullable String message) {

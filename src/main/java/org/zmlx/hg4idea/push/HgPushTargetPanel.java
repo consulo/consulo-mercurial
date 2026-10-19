@@ -15,60 +15,104 @@
  */
 package org.zmlx.hg4idea.push;
 
-import consulo.document.event.DocumentAdapter;
-import consulo.document.event.DocumentEvent;
-import consulo.language.editor.ui.awt.TextFieldWithCompletion;
+import consulo.language.editor.ui.EditorBox;
+import consulo.language.editor.ui.EditorBoxBuilderFactory;
+import consulo.localize.LocalizeValue;
+import consulo.project.Project;
+import consulo.ui.Component;
+import consulo.ui.Length;
+import consulo.ui.TextItemPresentation;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.SimpleTextAttributes;
-import consulo.ui.ex.awt.ValidationInfo;
-import consulo.ui.ex.awt.tree.ColoredTreeCellRenderer;
+import consulo.ui.ex.util.TextAttributeUtil;
 import consulo.util.lang.StringUtil;
 import consulo.versionControlSystem.distributed.DvcsUtil;
+import consulo.versionControlSystem.distributed.push.PushTargetCompletionProvider;
 import consulo.versionControlSystem.distributed.push.PushTargetEditorListener;
 import consulo.versionControlSystem.distributed.push.PushTargetPanel;
 import consulo.versionControlSystem.distributed.push.VcsError;
-import consulo.versionControlSystem.distributed.ui.awt.PushTargetTextField;
-import consulo.versionControlSystem.distributed.ui.awt.VcsEditableTextComponent;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.util.HgUtil;
 
-import java.awt.*;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class HgPushTargetPanel extends PushTargetPanel<HgTarget> {
     private final static String ENTER_REMOTE = "Enter Remote";
     private final HgRepository myRepository;
     private final String myBranchName;
-    private final TextFieldWithCompletion myDestTargetPanel;
-    private final VcsEditableTextComponent myTargetRenderedComponent;
+    private final List<PushTargetEditorListener> myListeners = new CopyOnWriteArrayList<>();
+
+    @Nonnull
+    private String myTargetText;
+    @Nonnull
+    private String myEditedText;
+    @Nullable
+    private EditorBox myDestTargetPanel;
 
     public HgPushTargetPanel(@Nonnull HgRepository repository, @Nullable HgTarget defaultTarget) {
-        setLayout(new BorderLayout());
-        setOpaque(false);
         myRepository = repository;
         myBranchName = myRepository.getCurrentBranchName();
-        final List<String> targetVariants = HgUtil.getTargetNames(repository);
         String defaultText = defaultTarget != null ? defaultTarget.getPresentation() : "";
-        myTargetRenderedComponent = new VcsEditableTextComponent("<a href=''>" + defaultText + "</a>", null);
-        myDestTargetPanel = new PushTargetTextField(repository.getProject(), targetVariants, defaultText);
-        add(myDestTargetPanel, BorderLayout.CENTER);
+        myTargetText = defaultText;
+        myEditedText = defaultText;
+    }
+
+    @Nonnull
+    @RequiredUIAccess
+    @Override
+    public Component getComponent() {
+        EditorBox destTargetPanel = myDestTargetPanel;
+        if (destTargetPanel == null) {
+            Project project = myRepository.getProject();
+            destTargetPanel = project.getApplication().getInstance(EditorBoxBuilderFactory.class)
+                .create(project)
+                .text(myEditedText)
+                .completion(new PushTargetCompletionProvider(HgUtil.getTargetNames(myRepository)))
+                .build();
+            destTargetPanel.setWidth(Length.ofFont(30));
+            destTargetPanel.addValueListener(event -> {
+                String value = event.getValue();
+                myEditedText = value == null ? "" : value;
+                for (PushTargetEditorListener listener : myListeners) {
+                    listener.onTargetInEditModeChanged(myEditedText);
+                }
+            });
+            myDestTargetPanel = destTargetPanel;
+        }
+        return destTargetPanel;
+    }
+
+    @RequiredUIAccess
+    @Override
+    public void editingStarted() {
+        EditorBox destTargetPanel = myDestTargetPanel;
+        if (destTargetPanel != null) {
+            destTargetPanel.setValue(myEditedText, false);
+            destTargetPanel.focus();
+        }
     }
 
     @Override
-    public void render(@Nonnull ColoredTreeCellRenderer renderer, boolean isSelected, boolean isActive, @Nullable String forceRenderedText) {
+    public void render(@Nonnull TextItemPresentation presentation, boolean isSelected, boolean isActive, @Nullable String forceRenderedText) {
         if (forceRenderedText != null) {
-            myDestTargetPanel.setText(forceRenderedText);
-            renderer.append(forceRenderedText);
+            myEditedText = forceRenderedText;
+            presentation.append(forceRenderedText);
             return;
         }
-        String targetText = myDestTargetPanel.getText();
-        if (StringUtil.isEmptyOrSpaces(targetText)) {
-            renderer.append(ENTER_REMOTE, SimpleTextAttributes.GRAY_ITALIC_ATTRIBUTES, myTargetRenderedComponent);
+        if (StringUtil.isEmptyOrSpaces(myTargetText)) {
+            presentation.append(ENTER_REMOTE, TextAttributeUtil.toTextAttribute(SimpleTextAttributes.GRAY_ITALIC_ATTRIBUTES));
+            return;
         }
-        myTargetRenderedComponent.setSelected(isSelected);
-        myTargetRenderedComponent.setTransparent(!isActive);
-        myTargetRenderedComponent.render(renderer);
+        SimpleTextAttributes attributes = isActive ? SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES : SimpleTextAttributes.GRAYED_ATTRIBUTES;
+        presentation.append(myTargetText, TextAttributeUtil.toTextAttribute(attributes));
+    }
+
+    @Override
+    public boolean isEditable() {
+        return true;
     }
 
     @Override
@@ -79,25 +123,33 @@ public class HgPushTargetPanel extends PushTargetPanel<HgTarget> {
 
     @Nonnull
     private HgTarget createValidPushTarget() {
-        return new HgTarget(myDestTargetPanel.getText(), myBranchName);
+        return new HgTarget(myEditedText, myBranchName);
     }
 
+    @RequiredUIAccess
     @Override
     public void fireOnCancel() {
-        myDestTargetPanel.setText(myTargetRenderedComponent.getText());
+        myEditedText = myTargetText;
+        EditorBox destTargetPanel = myDestTargetPanel;
+        if (destTargetPanel != null) {
+            destTargetPanel.setValue(myTargetText, false);
+        }
     }
 
+    @RequiredUIAccess
     @Override
     public void fireOnChange() {
-        myTargetRenderedComponent.updateLinkText(myDestTargetPanel.getText());
+        myTargetText = myEditedText;
     }
 
-    @Nullable
-    public ValidationInfo verify() {
-        if (StringUtil.isEmptyOrSpaces(myDestTargetPanel.getText())) {
-            return new ValidationInfo(VcsError.createEmptyTargetError(DvcsUtil.getShortRepositoryName(myRepository)).getText(), this);
+    @Nonnull
+    @RequiredUIAccess
+    @Override
+    public LocalizeValue verify() {
+        if (StringUtil.isEmptyOrSpaces(myEditedText)) {
+            return VcsError.createEmptyTargetError(DvcsUtil.getShortRepositoryName(myRepository)).getText();
         }
-        return null;
+        return LocalizeValue.empty();
     }
 
     @Override
@@ -106,13 +158,17 @@ public class HgPushTargetPanel extends PushTargetPanel<HgTarget> {
     }
 
     @Override
-    public void addTargetEditorListener(@Nonnull final PushTargetEditorListener listener) {
-        myDestTargetPanel.addDocumentListener(new DocumentAdapter() {
-            @Override
-            public void documentChanged(DocumentEvent e) {
-                super.documentChanged(e);
-                listener.onTargetInEditModeChanged(myDestTargetPanel.getText());
-            }
-        });
+    public void addTargetEditorListener(@Nonnull PushTargetEditorListener listener) {
+        myListeners.add(listener);
+    }
+
+    @RequiredUIAccess
+    @Override
+    public void forceUpdateEditableUiModel(@Nonnull String forcedText) {
+        myEditedText = forcedText;
+        EditorBox destTargetPanel = myDestTargetPanel;
+        if (destTargetPanel != null) {
+            destTargetPanel.setValue(forcedText, false);
+        }
     }
 }

@@ -18,19 +18,20 @@ import consulo.application.progress.Task;
 import consulo.localize.LocalizeValue;
 import consulo.mercurial.localize.HgLocalize;
 import consulo.project.Project;
+import consulo.ui.CheckBox;
+import consulo.ui.Component;
+import consulo.ui.MessageBoxes;
 import consulo.ui.annotation.RequiredUIAccess;
-import consulo.ui.ex.awt.GridBag;
-import consulo.ui.ex.awt.JBUI;
-import consulo.ui.ex.awt.Messages;
+import consulo.ui.layout.VerticalLayout;
 import consulo.util.collection.ContainerUtil;
 import consulo.util.lang.function.PairConsumer;
-import consulo.util.lang.xml.XmlStringUtil;
 import consulo.versionControlSystem.FilePath;
 import consulo.versionControlSystem.VcsException;
 import consulo.versionControlSystem.change.*;
 import consulo.versionControlSystem.checkin.CheckinEnvironment;
 import consulo.versionControlSystem.checkin.CheckinProjectPanel;
 import consulo.versionControlSystem.distributed.DistributedVersionControlHelper;
+import consulo.versionControlSystem.distributed.DvcsUtil;
 import consulo.versionControlSystem.distributed.ui.AmendComponent;
 import consulo.versionControlSystem.ui.RefreshableOnComponent;
 import consulo.versionControlSystem.util.VcsUtil;
@@ -52,10 +53,6 @@ import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.repo.HgRepositoryManager;
 import org.zmlx.hg4idea.util.HgUtil;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.*;
 import java.util.function.Function;
@@ -119,6 +116,9 @@ public class HgCheckinEnvironment implements CheckinEnvironment {
         @Nonnull Function<Object, Object> parametersHolder,
         Set<String> feedback
     ) {
+        boolean pushAfterCommit = myNextCommitIsPushed;
+        myNextCommitIsPushed = false;
+
         List<VcsException> exceptions = new LinkedList<>();
         Map<HgRepository, Set<HgFile>> repositoriesMap = getFilesByRepository(changes);
         addRepositoriesWithoutChanges(repositoriesMap);
@@ -175,13 +175,13 @@ public class HgCheckinEnvironment implements CheckinEnvironment {
         }
 
         // push if needed
-        if (myNextCommitIsPushed && exceptions.isEmpty()) {
+        if (pushAfterCommit && exceptions.isEmpty()) {
             List<HgRepository> preselectedRepositories = new ArrayList<>(repositoriesMap.keySet());
             Application application = myProject.getApplication();
             application.invokeLater(
                 () -> {
                     DistributedVersionControlHelper helper = application.getInstance(DistributedVersionControlHelper.class);
-                    helper.createPushDialog(myProject, preselectedRepositories, HgUtil.getCurrentRepository(myProject)).show();
+                    helper.showPushDialog(myProject, preselectedRepositories, HgUtil.getCurrentRepository(myProject));
                 },
                 application.getDefaultModalityState()
             );
@@ -216,16 +216,12 @@ public class HgCheckinEnvironment implements CheckinEnvironment {
         return filesNotIncluded;
     }
 
-    @RequiredUIAccess
     private boolean mayCommitEverything(String filesNotIncludedString) {
-        int[] choice = new int[1];
-        myProject.getApplication().invokeAndWait(() -> choice[0] = Messages.showOkCancelDialog(
-            myProject,
-            HgLocalize.hg4ideaCommitPartialMergeMessage(filesNotIncludedString).get(),
-            HgLocalize.hg4ideaCommitPartialMergeTitle().get(),
-            null
-        ));
-        return choice[0] == Messages.OK;
+        Boolean commit = DvcsUtil.showAndWait(myProject, () -> MessageBoxes.okCancel()
+            .title(HgLocalize.hg4ideaCommitPartialMergeTitle())
+            .text(HgLocalize.hg4ideaCommitPartialMergeMessage(filesNotIncludedString))
+            .showAsync(myProject));
+        return Boolean.TRUE.equals(commit);
     }
 
     @Override
@@ -337,37 +333,41 @@ public class HgCheckinEnvironment implements CheckinEnvironment {
      */
     public class HgCommitAdditionalComponent implements RefreshableOnComponent {
         @Nonnull
-        private final JPanel myPanel;
+        private final VerticalLayout myPanel;
         @Nonnull
         private final AmendComponent myAmend;
         @Nonnull
-        private final JCheckBox myCommitSubrepos;
+        private final CheckBox myCommitSubrepos;
 
+        @RequiredUIAccess
         HgCommitAdditionalComponent(@Nonnull Project project, @Nonnull CheckinProjectPanel panel) {
             HgVcs vcs = assertNotNull(HgVcs.getInstance(myProject));
 
-            myAmend = new MyAmendComponent(project, getRepositoryManager(project), panel, "Amend Commit (QRefresh)");
+            myAmend = new MyAmendComponent(project, getRepositoryManager(project), panel, HgLocalize.commitAmendQrefresh());
             myAmend.getComponent().setEnabled(vcs.getVersion().isAmendSupported());
 
-            myCommitSubrepos = new JCheckBox("Commit subrepositories", false);
-            myCommitSubrepos.setToolTipText(XmlStringUtil.wrapInHtml(
-                "Commit all subrepos for selected repositories.<br>" +
-                    " <code>hg ci <i><b>files</b></i> -S <i><b>subrepos</b></i></code>"));
-            myCommitSubrepos.setMnemonic('s');
+            myCommitSubrepos = CheckBox.create(HgLocalize.commitSubrepos());
+            myCommitSubrepos.setToolTipText(HgLocalize.commitSubreposTooltip());
             Collection<HgRepository> repos = HgActionUtil.collectRepositoriesFromFiles(getRepositoryManager(myProject), panel.getRoots());
             myCommitSubrepos.setVisible(ContainerUtil.exists(repos, HgRepository::hasSubrepos));
 
-            myCommitSubrepos.addActionListener(new MySelectionListener(myAmend.getCheckBox()));
-            myAmend.getCheckBox().addActionListener(new MySelectionListener(myCommitSubrepos));
+            myCommitSubrepos.addValueListener(event -> updateExclusive(event.getValue(), myAmend.getCheckBox()));
+            myAmend.getCheckBox().addValueListener(event -> updateExclusive(event.getValue(), myCommitSubrepos));
 
-            GridBag gb = new GridBag().
-                setDefaultInsets(JBUI.insets(2)).
-                setDefaultAnchor(GridBagConstraints.WEST).
-                setDefaultWeightX(1).
-                setDefaultFill(GridBagConstraints.HORIZONTAL);
-            myPanel = new JPanel(new GridBagLayout());
-            myPanel.add(myAmend.getComponent(), gb.nextLine().next());
-            myPanel.add(myCommitSubrepos, gb.nextLine().next());
+            myPanel = VerticalLayout.create();
+            myPanel.add(myAmend.getComponent());
+            myPanel.add(myCommitSubrepos);
+        }
+
+        @RequiredUIAccess
+        private void updateExclusive(@Nullable Boolean selected, @Nonnull CheckBox other) {
+            if (Boolean.TRUE.equals(selected)) {
+                other.setValue(false);
+                other.setEnabled(false);
+            }
+            else {
+                other.setEnabled(true);
+            }
         }
 
         @Override
@@ -379,7 +379,7 @@ public class HgCheckinEnvironment implements CheckinEnvironment {
         @Override
         public void saveState() {
             myNextCommitAmend = isAmend();
-            myShouldCommitSubrepos = myCommitSubrepos.isSelected();
+            myShouldCommitSubrepos = myCommitSubrepos.getValueOrError();
         }
 
         @Override
@@ -388,8 +388,10 @@ public class HgCheckinEnvironment implements CheckinEnvironment {
             myShouldCommitSubrepos = false;
         }
 
+        @Nonnull
         @Override
-        public JComponent getComponent() {
+        @RequiredUIAccess
+        public Component getUIComponent() {
             return myPanel;
         }
 
@@ -402,7 +404,7 @@ public class HgCheckinEnvironment implements CheckinEnvironment {
                 @Nonnull Project project,
                 @Nonnull HgRepositoryManager repoManager,
                 @Nonnull CheckinProjectPanel panel,
-                @Nonnull String title
+                @Nonnull LocalizeValue title
             ) {
                 super(project, repoManager, panel, title);
             }
@@ -424,26 +426,6 @@ public class HgCheckinEnvironment implements CheckinEnvironment {
                 args.add("{desc}");
                 HgCommandResult result = commandExecutor.executeInCurrentThread(repo, "log", args);
                 return result == null ? "" : result.getRawOutput();
-            }
-        }
-
-        private class MySelectionListener implements ActionListener {
-            private final JCheckBox myUnselectedComponent;
-
-            public MySelectionListener(JCheckBox unselectedComponent) {
-                myUnselectedComponent = unselectedComponent;
-            }
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JCheckBox source = (JCheckBox) e.getSource();
-                if (source.isSelected()) {
-                    myUnselectedComponent.setSelected(false);
-                    myUnselectedComponent.setEnabled(false);
-                }
-                else {
-                    myUnselectedComponent.setEnabled(true);
-                }
             }
         }
     }

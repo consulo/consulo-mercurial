@@ -15,6 +15,15 @@
  */
 package org.zmlx.hg4idea.execution;
 
+import consulo.localize.LocalizeValue;
+import consulo.project.Project;
+import consulo.ui.InputBoxBuilder;
+import consulo.versionControlSystem.distributed.DvcsUtil;
+
+import java.util.Arrays;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletionException;
+
 
 public class HgPromptChoice {
   private final String fullString;
@@ -32,6 +41,30 @@ public class HgPromptChoice {
     this.fullString = fullString;
     this.representation = fullString.replaceAll("&", "");
     this.chosenIndex = chosenIndex;
+  }
+
+  /**
+   * Asks from a background thread which choice to take; a dismissed box answers {@link #ABORT}.
+   */
+  public static HgPromptChoice ask(Project project,
+                                   LocalizeValue title,
+                                   String message,
+                                   HgPromptChoice[] choices,
+                                   HgPromptChoice defaultChoice) {
+    try {
+      return DvcsUtil.showAndWait(project, () -> InputBoxBuilder.items(Arrays.asList(choices))
+        .asQuestion()
+        .title(title)
+        .text(LocalizeValue.of(message))
+        .value(defaultChoice)
+        .setupComponent(comboBox -> comboBox.setTextRenderer(
+          choice -> choice == null ? LocalizeValue.empty() : LocalizeValue.of(choice.toString())
+        ))
+        .showAsync(project));
+    }
+    catch (CompletionException | CancellationException e) {
+      return ABORT;
+    }
   }
 
   @Override

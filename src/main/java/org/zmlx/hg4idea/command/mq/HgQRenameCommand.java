@@ -16,8 +16,11 @@
 package org.zmlx.hg4idea.command.mq;
 
 import consulo.logging.Logger;
+import consulo.mercurial.localize.HgLocalize;
 import consulo.project.Project;
-import consulo.ui.ex.awt.Messages;
+import consulo.ui.InputBoxBuilder;
+import consulo.ui.UIAccess;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.util.lang.function.Condition;
 import consulo.util.collection.ContainerUtil;
 import consulo.versionControlSystem.log.Hash;
@@ -45,6 +48,7 @@ public class HgQRenameCommand {
     myRepository = repository;
   }
 
+  @RequiredUIAccess
   public void execute(@Nonnull final Hash patchHash) {
     final Project project = myRepository.getProject();
     HgNameWithHashInfo patchInfo = ContainerUtil.find(myRepository.getMQAppliedPatches(), new Condition<HgNameWithHashInfo>() {
@@ -58,12 +62,17 @@ public class HgQRenameCommand {
       return;
     }
     final String oldName = patchInfo.getName();
-    final String newName = Messages.showInputDialog(project, String.format("Enter a new name for %s patch:", oldName),
-                                                    "Rename Patch", Messages.getQuestionIcon(), "", new HgPatchReferenceValidator(
-        myRepository));
-    if (newName != null) {
-      performPatchRename(myRepository, oldName, newName);
-    }
+    InputBoxBuilder.text()
+      .asQuestion()
+      .title(HgLocalize.hg4ideaMqPatchRenameTitle())
+      .text(HgLocalize.hg4ideaMqPatchRenamePrompt(oldName))
+      .validator(new HgPatchReferenceValidator(myRepository).toInputValidator())
+      .showAsync(project)
+      .whenCompleteAsync((newName, error) -> {
+        if (newName != null) {
+          performPatchRename(myRepository, oldName, newName);
+        }
+      }, UIAccess.current());
   }
 
   public static void performPatchRename(@Nonnull final HgRepository repository,

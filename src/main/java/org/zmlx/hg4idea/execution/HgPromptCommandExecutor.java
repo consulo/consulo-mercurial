@@ -15,19 +15,17 @@
  */
 package org.zmlx.hg4idea.execution;
 
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
-import consulo.ui.ex.awt.Messages;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.util.collection.ContainerUtil;
 
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
-import java.awt.*;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.net.Socket;
 import java.util.List;
 
@@ -42,7 +40,7 @@ public class HgPromptCommandExecutor extends HgCommandExecutor {
   public HgCommandResult executeInCurrentThread(@Nullable final VirtualFile repo,
                                                 @Nonnull final String operation,
                                                 @Nullable final List<String> arguments) {
-    SocketServer promptServer = new SocketServer(new PromptReceiver(new HgDeleteModifyPromptHandler()));
+    SocketServer promptServer = new SocketServer(new PromptReceiver(myProject, new HgDeleteModifyPromptHandler(myProject)));
     try {
       int promptPort = promptServer.start();
       return super.executeInCurrentThread(repo, operation, prepareArguments(arguments, promptPort));
@@ -71,10 +69,13 @@ public class HgPromptCommandExecutor extends HgCommandExecutor {
   }
 
   private static class PromptReceiver extends SocketServer.Protocol {
+    @Nonnull
+    private final Project myProject;
     @Nullable
-    HgPromptHandler myHandler;
+    private final HgPromptHandler myHandler;
 
-    public PromptReceiver(@Nullable HgPromptHandler handler) {
+    public PromptReceiver(@Nonnull Project project, @Nullable HgPromptHandler handler) {
+      myProject = project;
       myHandler = handler;
     }
 
@@ -91,38 +92,11 @@ public class HgPromptCommandExecutor extends HgCommandExecutor {
       }
       int defaultChoiceInt = dataInput.readInt();
       final HgPromptChoice defaultChoice = choices[defaultChoiceInt];
-      if (myHandler != null && myHandler.shouldHandle(message)) {
-        int chosen = myHandler.promptUser(message, choices, defaultChoice).getChosenIndex();
-        sendChoiceToHg(out, chosen);
-        return true;
-      }
-      final int[] index = new int[]{-1};
-      try {
-        EventQueue.invokeAndWait(new Runnable() {
-          public void run() {
-            String[] choicePresentationArray = new String[choices.length];
-            for (int i = 0; i < choices.length; ++i) {
-              choicePresentationArray[i] = choices[i].toString();
-            }
-            index[0] = Messages
-              .showDialog(message, "Mercurial Prompt Message",
-                          choicePresentationArray,
-                          defaultChoice.getChosenIndex(), Messages.getQuestionIcon());
-          }
-        });
-
-        int chosen = index[0];
-        sendChoiceToHg(out, chosen);
-        return true;
-      }
-      catch (InterruptedException e) {
-        //do nothing
-        return true;
-      }
-      catch (InvocationTargetException e) {
-        //shouldn't happen
-        throw new RuntimeException(e);
-      }
+      HgPromptChoice chosen = myHandler != null && myHandler.shouldHandle(message)
+        ? myHandler.promptUser(message, choices, defaultChoice)
+        : HgPromptChoice.ask(myProject, LocalizeValue.localizeTODO("Mercurial Prompt Message"), message, choices, defaultChoice);
+      sendChoiceToHg(out, chosen.getChosenIndex());
+      return true;
     }
 
     private static void sendChoiceToHg(@Nonnull DataOutputStream outStream, int choice) throws IOException {

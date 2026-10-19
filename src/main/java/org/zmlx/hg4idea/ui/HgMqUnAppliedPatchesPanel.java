@@ -22,11 +22,13 @@ import consulo.application.progress.ProgressManager;
 import consulo.application.progress.Task;
 import consulo.dataContext.DataProvider;
 import consulo.language.editor.CommonDataKeys;
+import consulo.localize.LocalizeValue;
 import consulo.logging.Logger;
 import consulo.project.Project;
+import consulo.ui.MessageBoxes;
+import consulo.ui.UIAccess;
 import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.*;
-import consulo.ui.ex.awt.Messages;
 import consulo.ui.ex.awt.PopupHandler;
 import consulo.ui.ex.awt.ScrollPaneFactory;
 import consulo.ui.ex.awt.speedSearch.TableSpeedSearch;
@@ -255,19 +257,23 @@ public class HgMqUnAppliedPatchesPanel extends JPanel implements DataProvider, H
       final List<String> names = getSelectedPatchNames();
       if (names.isEmpty()) return;
 
-      if (Messages.showOkCancelDialog(myRepository.getProject(), String
-                                        .format("You are going to delete selected %s. Would you like to continue?",
-                                                StringUtil.pluralize("patch", names.size())),
-                                      "Delete Confirmation", Messages.getWarningIcon()) == Messages.OK) {
-        Runnable deleteTask = new Runnable() {
-          @Override
-          public void run() {
-            ProgressManager.getInstance().getProgressIndicator().setText("Deleting patches...");
-            new HgQDeleteCommand(myRepository).executeInCurrentThread(names);
+      Project project = myRepository.getProject();
+      MessageBoxes.okCancel()
+        .asWarning()
+        .title(LocalizeValue.localizeTODO("Delete Confirmation"))
+        .text(LocalizeValue.localizeTODO(String.format(
+          "You are going to delete selected %s. Would you like to continue?",
+          StringUtil.pluralize("patch", names.size())
+        )))
+        .showAsync(project)
+        .whenCompleteAsync((ok, error) -> {
+          if (Boolean.TRUE.equals(ok)) {
+            updatePatchSeriesInBackground(() -> {
+              ProgressManager.getInstance().getProgressIndicator().setText("Deleting patches...");
+              new HgQDeleteCommand(myRepository).executeInCurrentThread(names);
+            });
           }
-        };
-        updatePatchSeriesInBackground(deleteTask);
-      }
+        }, UIAccess.current());
     }
 
     @Override

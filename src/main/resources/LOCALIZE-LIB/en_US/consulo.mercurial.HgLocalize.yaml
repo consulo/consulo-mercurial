@@ -73,6 +73,8 @@ hg4idea.branch.branches.in.repo.separator:
     text: Branches in {0}
 hg4idea.branch.branches.separator:
     text: Branches
+hg4idea.branch.new.name.prompt:
+    text: 'Enter the name of new branch:'
 hg4idea.branches.error.description:
     text: Couldn't collect information about branches and tags
 hg4idea.changelist.column.branch:
@@ -213,6 +215,10 @@ hg4idea.merge.please.commit:
     text: Merged heads, please commit repository "{0}"
 hg4idea.move.progress:
     text: Moving files in the VCS...
+hg4idea.mq.patch.rename.prompt:
+    text: 'Enter a new name for {0} patch:'
+hg4idea.mq.patch.rename.title:
+    text: Rename Patch
 hg4idea.mq.progress.goto:
     text: Goto {0}...
 hg4idea.mq.progress.pop:
@@ -303,3 +309,9 @@ hg4idea.widget.tooltip.title.status.changesets:
     text: '{0} changesets'
 no.changes.available:
     text: No changes available
+commit.amend.qrefresh:
+    text: Amend Commit (QRefresh)
+commit.subrepos:
+    text: Commit _subrepositories
+commit.subrepos.tooltip:
+    text: 'Commit all subrepos for selected repositories: hg ci <files> -S <subrepos>'

@@ -29,6 +29,7 @@ import consulo.project.Project;
 import consulo.project.ui.notification.Notification;
 import consulo.project.ui.notification.event.NotificationListener;
 import consulo.ui.annotation.RequiredUIAccess;
+import consulo.ui.event.HyperlinkEvent;
 import consulo.versionControlSystem.*;
 import consulo.versionControlSystem.annotate.AnnotationProvider;
 import consulo.versionControlSystem.change.ChangeProvider;
@@ -59,7 +60,6 @@ import org.zmlx.hg4idea.status.ui.HgWidgetUpdater;
 import org.zmlx.hg4idea.util.HgUtil;
 import org.zmlx.hg4idea.util.HgVersion;
 
-import javax.swing.event.HyperlinkEvent;
 import java.io.File;
 import java.util.*;
 import java.util.function.Function;
@@ -392,9 +392,9 @@ public class HgVcs extends AbstractVcs<CommittedChangeList> {
     VcsNotifier vcsNotifier = VcsNotifier.getInstance(myProject);
     final String SETTINGS_LINK = "settings";
     final String UPDATE_LINK = "update";
-    NotificationListener linkAdapter = new NotificationListener.Adapter() {
+    NotificationListener linkAdapter = new NotificationListener() {
       @Override
-      protected void hyperlinkActivated(@Nonnull Notification notification, @Nonnull HyperlinkEvent e) {
+      public void hyperlinkActivated(@Nonnull Notification notification, @Nonnull HyperlinkEvent e) {
         if (SETTINGS_LINK.equals(e.getDescription())) {
           ShowSettingsUtil.getInstance().showSettingsDialog(myProject, getConfigurable().getDisplayName().get());
         }

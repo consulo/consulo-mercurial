@@ -19,6 +19,8 @@ import consulo.application.progress.ProgressIndicator;
 import consulo.application.progress.Task;
 import consulo.document.FileDocumentManager;
 import consulo.project.Project;
+import consulo.ui.UIAccess;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.versionControlSystem.log.Hash;
 import jakarta.annotation.Nonnull;
 
@@ -33,12 +35,15 @@ import static org.zmlx.hg4idea.util.HgUtil.getNewBranchNameFromUser;
 
 public class HgCreateNewBranchFromLogAction extends HgLogSingleCommitAction {
   @Override
+  @RequiredUIAccess
   protected void actionPerformed(@Nonnull final HgRepository repository, @Nonnull final Hash commit) {
     final Project project = repository.getProject();
     FileDocumentManager.getInstance().saveAllDocuments();
     String shortHash = commit.toShortString();
-    final String name = getNewBranchNameFromUser(repository, "Create New Branch From " + shortHash);
-    if (name != null) {
+    getNewBranchNameFromUser(repository, "Create New Branch From " + shortHash).whenCompleteAsync((name, error) -> {
+      if (name == null) {
+        return;
+      }
       new Task.Backgroundable(project, HgVcsMessages.message("hg4idea.progress.updatingTo", shortHash)) {
         @Override
         public void run(@Nonnull ProgressIndicator indicator) {
@@ -48,6 +53,6 @@ public class HgCreateNewBranchFromLogAction extends HgLogSingleCommitAction {
           }
         }
       }.queue();
-    }
+    }, UIAccess.current());
   }
 }

@@ -17,6 +17,7 @@ import consulo.logging.Logger;
 import consulo.project.Project;
 import consulo.project.ui.notification.Notification;
 import consulo.project.ui.notification.event.NotificationListener;
+import consulo.ui.event.HyperlinkEvent;
 import consulo.util.collection.ContainerUtil;
 import consulo.util.lang.StringUtil;
 import consulo.util.lang.function.Condition;
@@ -28,7 +29,6 @@ import org.zmlx.hg4idea.action.HgCommandResultNotifier;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 
 import jakarta.annotation.Nullable;
-import javax.swing.event.HyperlinkEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -118,9 +118,9 @@ public final class HgErrorUtil {
 
   @Nonnull
   public static NotificationListener getMappingErrorNotificationListener(@Nonnull final Project project) {
-    return new NotificationListener.Adapter() {
+    return new NotificationListener() {
       @Override
-      protected void hyperlinkActivated(@Nonnull Notification notification,
+      public void hyperlinkActivated(@Nonnull Notification notification,
                                         @Nonnull HyperlinkEvent e) {
         if (SETTINGS_LINK.equals(e.getDescription())) {
           ShowSettingsUtil.getInstance()

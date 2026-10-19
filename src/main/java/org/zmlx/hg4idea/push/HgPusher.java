@@ -88,7 +88,7 @@ public class HgPusher extends Pusher<HgRepository, HgPushSource, HgTarget> {
       VcsNotifier.getInstance(project).notifySuccess(successTitle, successDescription);
     }
     else if (result.getExitValue() == NOTHING_TO_PUSH_EXIT_VALUE) {
-      VcsNotifier.getInstance(project).notifySuccess("Nothing to push");
+      VcsNotifier.getInstance(project).notifyInfo("Nothing to push");
     }
     else {
       new HgCommandResultNotifier(project).notifyError(result, "Push failed",

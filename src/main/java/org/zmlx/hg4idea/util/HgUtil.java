@@ -15,10 +15,12 @@ package org.zmlx.hg4idea.util;
 import consulo.application.ApplicationManager;
 import consulo.application.WriteAction;
 import consulo.ide.ServiceManager;
+import consulo.localize.LocalizeValue;
 import consulo.logging.Logger;
+import consulo.mercurial.localize.HgLocalize;
 import consulo.project.Project;
+import consulo.ui.InputBoxBuilder;
 import consulo.ui.annotation.RequiredUIAccess;
-import consulo.ui.ex.awt.Messages;
 import consulo.util.collection.ArrayUtil;
 import consulo.util.collection.ContainerUtil;
 import consulo.util.io.CharsetToolkit;
@@ -59,6 +61,7 @@ import org.zmlx.hg4idea.repo.HgRepositoryManager;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -268,13 +271,18 @@ public abstract class HgUtil {
   /**
    * Shows a message dialog to enter the name of new branch.
    *
-   * @return name of new branch or {@code null} if user has cancelled the dialog.
+   * @return name of new branch; the result fails if user has cancelled the dialog.
    */
-  @Nullable
-  public static String getNewBranchNameFromUser(@Nonnull HgRepository repository,
-                                                @Nonnull String dialogTitle) {
-    return Messages.showInputDialog(repository.getProject(), "Enter the name of new branch:", dialogTitle, Messages.getQuestionIcon(), "",
-                                    new HgBranchReferenceValidator(repository));
+  @Nonnull
+  @RequiredUIAccess
+  public static CompletableFuture<String> getNewBranchNameFromUser(@Nonnull HgRepository repository,
+                                                                   @Nonnull String dialogTitle) {
+    return InputBoxBuilder.text()
+      .asQuestion()
+      .title(LocalizeValue.of(dialogTitle))
+      .text(HgLocalize.hg4ideaBranchNewNamePrompt())
+      .validator(new HgBranchReferenceValidator(repository).toInputValidator())
+      .showAsync(repository.getProject());
   }
 
   /**

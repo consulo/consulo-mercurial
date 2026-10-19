@@ -20,6 +20,9 @@ import static org.zmlx.hg4idea.util.HgUtil.TIP_REFERENCE;
 import java.util.regex.Pattern;
 
 import jakarta.annotation.Nullable;
+import consulo.localize.LocalizeValue;
+import consulo.ui.InputProblem;
+import consulo.ui.InputValidator;
 import consulo.ui.ex.InputValidatorEx;
 import consulo.util.lang.StringUtil;
 import jakarta.annotation.Nonnull;
@@ -64,6 +67,10 @@ public class HgReferenceValidator implements InputValidatorEx
       return true;
     }
     return false;
+  }
+
+  public InputValidator<String> toInputValidator() {
+    return value -> checkInput(value) ? null : InputProblem.error(LocalizeValue.ofNullable(getErrorText(value)));
   }
 
   @Override

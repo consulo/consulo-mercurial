@@ -15,6 +15,7 @@
  */
 package org.zmlx.hg4idea.push;
 
+import consulo.localize.LocalizeValue;
 import consulo.logging.Logger;
 import consulo.project.Project;
 import consulo.util.lang.StringUtil;
@@ -55,14 +56,14 @@ public class HgOutgoingCommitsProvider extends OutgoingCommitsProvider<HgReposit
     HgTarget hgTarget = pushSpec.getTarget();
     List<VcsError> errors = new ArrayList<>();
     if (StringUtil.isEmptyOrSpaces(hgTarget.myTarget)) {
-      errors.add(new VcsError("Hg push path could not be empty."));
+      errors.add(new VcsError(LocalizeValue.localizeTODO("Hg push path could not be empty.")));
       return new OutgoingResult(Collections.<VcsFullCommitDetails>emptyList(), errors);
     }
     HgCommandResult result = hgOutgoingCommand
       .execute(repository.getRoot(), HgChangesetUtil.makeTemplate(templates), pushSpec.getSource().getPresentation(),
                hgTarget.myTarget, initial);
     if (result == null) {
-      errors.add(new VcsError("Couldn't execute hg outgoing command for " + repository));
+      errors.add(new VcsError(LocalizeValue.localizeTODO("Couldn't execute hg outgoing command for " + repository)));
       return new OutgoingResult(Collections.<VcsFullCommitDetails>emptyList(), errors);
     }
     List<String> resultErrors = result.getErrorLines();
@@ -71,7 +72,7 @@ public class HgOutgoingCommitsProvider extends OutgoingCommitsProvider<HgReposit
         if (HgErrorUtil.isAbortLine(error)) {
           if (HgErrorUtil.isAuthorizationError(error)) {
             VcsError authorizationError =
-              new VcsError(error + "<a href='authenticate'>" + LOGIN_AND_REFRESH_LINK + "</a>", new VcsErrorHandler() {
+              new VcsError(LocalizeValue.of(error), LocalizeValue.localizeTODO(LOGIN_AND_REFRESH_LINK), new VcsErrorHandler() {
                 public void handleError(@Nonnull CommitLoader commitLoader) {
                   commitLoader.reloadCommits();
                 }
@@ -79,7 +80,7 @@ public class HgOutgoingCommitsProvider extends OutgoingCommitsProvider<HgReposit
             errors.add(authorizationError);
           }
           else {
-            errors.add(new VcsError(error));
+            errors.add(new VcsError(LocalizeValue.of(error)));
           }
         }
       }

@@ -15,7 +15,9 @@
  */
 package org.zmlx.hg4idea.log;
 
-import consulo.ui.ex.JBColor;
+import consulo.ui.color.ColorValue;
+import consulo.ui.color.RGBColor;
+import consulo.ui.util.LightDarkColorValue;
 import consulo.util.collection.ContainerUtil;
 import consulo.util.collection.MultiMap;
 import consulo.versionControlSystem.log.*;
@@ -24,7 +26,6 @@ import consulo.versionControlSystem.log.base.SingletonRefGroup;
 import consulo.versionControlSystem.log.util.VcsLogUtil;
 import jakarta.annotation.Nonnull;
 
-import java.awt.*;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -33,9 +34,9 @@ import java.util.*;
 import java.util.function.Function;
 
 public class HgRefManager implements VcsLogRefManager {
-    private static final Color CLOSED_BRANCH_COLOR = new JBColor(new Color(0x823139), new Color(0xff5f6f));
-    private static final Color LOCAL_TAG_COLOR = new JBColor(new Color(0x009090), new Color(0x00f3f3));
-    private static final Color MQ_TAG_COLOR = new JBColor(new Color(0x002f90), new Color(0x0055ff));
+    private static final ColorValue CLOSED_BRANCH_COLOR = new LightDarkColorValue(RGBColor.fromRGBValue(0x823139), RGBColor.fromRGBValue(0xff5f6f));
+    private static final ColorValue LOCAL_TAG_COLOR = new LightDarkColorValue(RGBColor.fromRGBValue(0x009090), RGBColor.fromRGBValue(0x00f3f3));
+    private static final ColorValue MQ_TAG_COLOR = new LightDarkColorValue(RGBColor.fromRGBValue(0x002f90), RGBColor.fromRGBValue(0x0055ff));
 
     public static final VcsRefType TIP = new SimpleRefType("TIP", true, VcsLogStandardColors.Refs.TIP);
     public static final VcsRefType HEAD = new SimpleRefType("HEAD", true, VcsLogStandardColors.Refs.LEAF);
@@ -151,10 +152,10 @@ public class HgRefManager implements VcsLogRefManager {
         return ContainerUtil.sorted(refs, getLabelsOrderComparator());
     }
 
-    private static record SimpleRefType(@Nonnull String name, boolean isBranch, @Nonnull Color color) implements VcsRefType {
+    private static record SimpleRefType(@Nonnull String name, boolean isBranch, @Nonnull ColorValue color) implements VcsRefType {
         @Nonnull
         @Override
-        public Color getBackgroundColor() {
+        public ColorValue getBackgroundColor() {
             return color;
         }
     }

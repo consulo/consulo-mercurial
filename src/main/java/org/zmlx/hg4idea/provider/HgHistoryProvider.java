@@ -15,7 +15,6 @@ package org.zmlx.hg4idea.provider;
 import consulo.project.Project;
 import consulo.ui.ex.action.ActionManager;
 import consulo.ui.ex.action.AnAction;
-import consulo.ui.ex.awt.ColumnInfo;
 import consulo.util.io.FileUtil;
 import consulo.versionControlSystem.FilePath;
 import consulo.versionControlSystem.VcsConfiguration;
@@ -40,7 +39,6 @@ import org.zmlx.hg4idea.util.HgChangesetUtil;
 import org.zmlx.hg4idea.util.HgUtil;
 import org.zmlx.hg4idea.util.HgVersion;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -53,11 +51,8 @@ public class HgHistoryProvider implements VcsHistoryProvider {
     }
 
     @Override
-    public VcsDependentHistoryComponents getUICustomization(
-        VcsHistorySession session,
-        JComponent forShortcutRegistration
-    ) {
-        return VcsDependentHistoryComponents.createOnlyColumns(ColumnInfo.EMPTY_ARRAY);
+    public VcsDependentHistoryComponents getUICustomization(VcsHistorySession session) {
+        return VcsDependentHistoryComponents.empty();
     }
 
     @Override

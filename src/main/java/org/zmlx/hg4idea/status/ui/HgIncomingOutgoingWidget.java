@@ -12,6 +12,9 @@ import consulo.mercurial.localize.HgLocalize;
 import consulo.platform.base.icon.PlatformIconGroup;
 import consulo.project.ui.wm.StatusBarWidget;
 import consulo.project.ui.wm.StatusBarWidgetFactory;
+import consulo.ui.Component;
+import consulo.ui.event.ClickEvent;
+import consulo.ui.event.ComponentEventListener;
 import consulo.ui.image.Image;
 import consulo.ui.image.ImageEffects;
 import consulo.versionControlSystem.distributed.repository.VcsRepositoryMappingListener;
@@ -23,9 +26,6 @@ import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.HgVcsMessages;
 import org.zmlx.hg4idea.status.HgChangesetStatus;
 import org.zmlx.hg4idea.status.HgRemoteStatusUpdater;
-
-import java.awt.event.MouseEvent;
-import java.util.function.Consumer;
 
 final class HgIncomingOutgoingWidget extends EditorBasedWidget implements StatusBarWidget.IconPresentation, StatusBarWidget.Multiframe {
     @Nonnull
@@ -92,9 +92,8 @@ final class HgIncomingOutgoingWidget extends EditorBasedWidget implements Status
     }
 
     @Override
-    // Updates branch information on click
-    public Consumer<MouseEvent> getClickConsumer() {
-        return mouseEvent -> updateLater();
+    public ComponentEventListener<Component, ClickEvent> getClickListener() {
+        return event -> updateLater();
     }
 
     public void updateLater() {

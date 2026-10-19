@@ -20,6 +20,7 @@ import consulo.logging.Logger;
 import consulo.project.Project;
 import consulo.project.ui.notification.Notification;
 import consulo.project.ui.notification.event.NotificationListener;
+import consulo.ui.event.HyperlinkEvent;
 import consulo.virtualFileSystem.VirtualFile;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
@@ -32,7 +33,6 @@ import org.zmlx.hg4idea.status.ui.HgWidgetUpdater;
 import org.zmlx.hg4idea.util.HgErrorUtil;
 import org.zmlx.hg4idea.util.HgUtil;
 
-import javax.swing.event.HyperlinkEvent;
 import java.util.List;
 
 /**
@@ -81,7 +81,7 @@ public abstract class HgRemoteChangesetsCommand extends HgChangesetsCommand {
                                                        "<br/>You may enable checking for changes <a href='#'>in the Settings</a>.",
                                                        new NotificationListener() {
                                                          @Override
-                                                         public void hyperlinkUpdate(@Nonnull Notification notification,
+                                                         public void hyperlinkActivated(@Nonnull Notification notification,
                                                                                      @Nonnull HyperlinkEvent event) {
                                                            ShowSettingsUtil.getInstance()
                                                              .showSettingsDialog(project, vcs.getConfigurable().getDisplayName().get());

@@ -12,10 +12,12 @@
 // limitations under the License.
 package org.zmlx.hg4idea.ui;
 
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
+import consulo.ui.MessageBoxes;
 import consulo.ui.ex.awt.JBCheckBox;
-import consulo.ui.ex.awt.Messages;
 import consulo.ui.ex.awt.TextFieldWithBrowseButton;
+import consulo.ui.ex.awtUnsafe.TargetAWT;
 import consulo.versionControlSystem.distributed.DvcsBundle;
 import consulo.versionControlSystem.distributed.branch.DvcsSyncSettings;
 import jakarta.annotation.Nonnull;
@@ -54,12 +56,14 @@ public class HgConfigurationProjectPanel {
           version = HgVersion.identifyVersion(executable);
         }
         catch (Exception exception) {
-          Messages.showErrorDialog(myMainPanel, exception.getMessage(), HgVcsMessages.message("hg4idea.run.failed.title"));
+          MessageBoxes.okError(LocalizeValue.of(exception.getMessage()))
+            .title(LocalizeValue.of(HgVcsMessages.message("hg4idea.run.failed.title")))
+            .showAsync(TargetAWT.from(myMainPanel));
           return;
         }
-        Messages.showInfoMessage(myMainPanel, String.format("Mercurial version is %s", version.toString()),
-                                 HgVcsMessages.message("hg4idea.run.success.title")
-        );
+        MessageBoxes.okInfo(LocalizeValue.localizeTODO(String.format("Mercurial version is %s", version.toString())))
+          .title(LocalizeValue.of(HgVcsMessages.message("hg4idea.run.success.title")))
+          .showAsync(TargetAWT.from(myMainPanel));
       }
     });
     if (!project.isDefault()) {

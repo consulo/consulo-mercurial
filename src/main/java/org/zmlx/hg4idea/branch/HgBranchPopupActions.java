@@ -21,6 +21,7 @@ import consulo.application.progress.Task;
 import consulo.mercurial.localize.HgLocalize;
 import consulo.platform.base.icon.PlatformIconGroup;
 import consulo.project.Project;
+import consulo.ui.UIAccess;
 import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.*;
 import consulo.util.collection.ArrayUtil;
@@ -126,16 +127,17 @@ public class HgBranchPopupActions {
         @Override
         @RequiredUIAccess
         public void actionPerformed(@Nonnull AnActionEvent e) {
-            final String name = getNewBranchNameFromUser(myPreselectedRepo, "Create New Branch");
-            if (name == null) {
-                return;
-            }
-            new Task.Backgroundable(myProject, "Creating " + StringUtil.pluralize("Branch", myRepositories.size()) + "...") {
-                @Override
-                public void run(@Nonnull ProgressIndicator indicator) {
-                    createNewBranchInCurrentThread(name);
+            getNewBranchNameFromUser(myPreselectedRepo, "Create New Branch").whenCompleteAsync((name, error) -> {
+                if (name == null) {
+                    return;
                 }
-            }.queue();
+                new Task.Backgroundable(myProject, "Creating " + StringUtil.pluralize("Branch", myRepositories.size()) + "...") {
+                    @Override
+                    public void run(@Nonnull ProgressIndicator indicator) {
+                        createNewBranchInCurrentThread(name);
+                    }
+                }.queue();
+            }, UIAccess.current());
         }
 
         public void createNewBranchInCurrentThread(@Nonnull String name) {

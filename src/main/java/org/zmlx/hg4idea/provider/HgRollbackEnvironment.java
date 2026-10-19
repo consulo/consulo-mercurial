@@ -14,7 +14,6 @@ package org.zmlx.hg4idea.provider;
 
 import consulo.application.AccessToken;
 import consulo.project.Project;
-import consulo.ui.ex.awt.Messages;
 import consulo.versionControlSystem.FilePath;
 import consulo.versionControlSystem.VcsException;
 import consulo.versionControlSystem.change.Change;
@@ -133,12 +132,11 @@ public class HgRollbackEnvironment implements RollbackEnvironment {
         HgCommandResult revertResult = new HgRevertCommand(project).execute(repo, chunk, revisionNumber, false);
         if (HgErrorUtil.hasUncommittedChangesConflict(revertResult)) {
 
-          String message = String.format("<html>Revert failed due to uncommitted merge.<br>" +
-                                         "Would you like to discard all changes for repository <it><b>%s</b></it>?</html>",
+          String message = String.format("Revert failed due to uncommitted merge.<br>" +
+                                         "Would you like to discard all changes for repository <it><b>%s</b></it>?",
                                          repo.getPresentableName());
 
-          int exitCode = HgUpdateCommand.showDiscardChangesConfirmation(project, message);
-          if (exitCode == Messages.OK) {
+          if (HgUpdateCommand.confirmDiscardChanges(project, message)) {
             //discard all changes for this repository//
             HgUpdateCommand updateCommand = new HgUpdateCommand(project, repo);
             updateCommand.setClean(true);
