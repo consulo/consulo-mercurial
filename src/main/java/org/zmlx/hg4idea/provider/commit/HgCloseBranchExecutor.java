@@ -16,19 +16,31 @@
 package org.zmlx.hg4idea.provider.commit;
 
 import consulo.localize.LocalizeValue;
+import consulo.util.dataholder.Key;
+import consulo.versionControlSystem.change.CommitContext;
 import consulo.versionControlSystem.change.CommitExecutorBase;
 import consulo.versionControlSystem.change.CommitSession;
 import jakarta.annotation.Nonnull;
 import org.zmlx.hg4idea.repo.HgRepository;
 
 import java.util.Collection;
+import java.util.List;
 
 public class HgCloseBranchExecutor extends CommitExecutorBase {
-    @Nonnull
-    private final HgCheckinEnvironment myCheckinEnvironment;
+    private static final Key<Boolean> IS_CLOSE_BRANCH_KEY = Key.create("Hg.Commit.IsCloseBranch");
+    private static final Key<Collection<HgRepository>> COMMIT_WITHOUT_CHANGES_REPOSITORIES_KEY =
+        Key.create("Hg.Commit.CommitWithoutChangesRepositories");
 
-    public HgCloseBranchExecutor(@Nonnull HgCheckinEnvironment environment) {
-        myCheckinEnvironment = environment;
+    @Nonnull
+    private Collection<HgRepository> myRepositories = List.of();
+
+    static boolean isCloseBranch(CommitContext commitContext) {
+        return commitContext.getExecutorProperty(IS_CLOSE_BRANCH_KEY, Boolean.FALSE);
+    }
+
+    @Nonnull
+    static Collection<HgRepository> getCommitWithoutChangesRepositories(CommitContext commitContext) {
+        return commitContext.getExecutorProperty(COMMIT_WITHOUT_CHANGES_REPOSITORIES_KEY, List.of());
     }
 
     @Override
@@ -44,12 +56,13 @@ public class HgCloseBranchExecutor extends CommitExecutorBase {
 
     @Nonnull
     @Override
-    public CommitSession createCommitSession() {
-        myCheckinEnvironment.setCloseBranch(true);
+    public CommitSession createCommitSession(@Nonnull CommitContext commitContext) {
+        commitContext.putExecutorProperty(IS_CLOSE_BRANCH_KEY, Boolean.TRUE);
+        commitContext.putExecutorProperty(COMMIT_WITHOUT_CHANGES_REPOSITORIES_KEY, myRepositories);
         return CommitSession.VCS_COMMIT;
     }
 
     public void setRepositories(@Nonnull Collection<HgRepository> repositories) {
-        myCheckinEnvironment.setRepos(repositories);
+        myRepositories = List.copyOf(repositories);
     }
 }

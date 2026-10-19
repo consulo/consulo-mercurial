@@ -16,6 +16,8 @@
 package org.zmlx.hg4idea.provider.commit;
 
 import consulo.localize.LocalizeValue;
+import consulo.util.dataholder.Key;
+import consulo.versionControlSystem.change.CommitContext;
 import consulo.versionControlSystem.change.CommitExecutor;
 import consulo.versionControlSystem.change.CommitSession;
 import jakarta.annotation.Nonnull;
@@ -24,10 +26,10 @@ import jakarta.annotation.Nonnull;
  * @author Kirill Likhodedov
  */
 public class HgCommitAndPushExecutor implements CommitExecutor {
-    private final HgCheckinEnvironment myCheckinEnvironment;
+    private static final Key<Boolean> IS_PUSH_AFTER_COMMIT_KEY = Key.create("Hg.Commit.IsPushAfterCommit");
 
-    public HgCommitAndPushExecutor(HgCheckinEnvironment checkinEnvironment) {
-        myCheckinEnvironment = checkinEnvironment;
+    static boolean isPushAfterCommit(CommitContext commitContext) {
+        return commitContext.getExecutorProperty(IS_PUSH_AFTER_COMMIT_KEY, Boolean.FALSE);
     }
 
     @Nonnull
@@ -38,8 +40,8 @@ public class HgCommitAndPushExecutor implements CommitExecutor {
 
     @Nonnull
     @Override
-    public CommitSession createCommitSession() {
-        myCheckinEnvironment.setNextCommitIsPushed();
+    public CommitSession createCommitSession(@Nonnull CommitContext commitContext) {
+        commitContext.putExecutorProperty(IS_PUSH_AFTER_COMMIT_KEY, Boolean.TRUE);
         return CommitSession.VCS_COMMIT;
     }
 }

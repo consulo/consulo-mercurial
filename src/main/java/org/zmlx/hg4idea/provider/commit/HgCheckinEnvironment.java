@@ -55,7 +55,6 @@ import org.zmlx.hg4idea.util.HgUtil;
 
 import java.util.List;
 import java.util.*;
-import java.util.function.Function;
 
 import static consulo.util.lang.ObjectUtil.assertNotNull;
 import static org.zmlx.hg4idea.util.HgUtil.getRepositoryManager;
@@ -63,13 +62,8 @@ import static org.zmlx.hg4idea.util.HgUtil.getRepositoryManager;
 public class HgCheckinEnvironment implements CheckinEnvironment {
     @Nonnull
     private final Project myProject;
-    private boolean myNextCommitIsPushed;
     private boolean myNextCommitAmend; // If true, the next commit is amended
     private boolean myShouldCommitSubrepos;
-    private boolean myMqNewPatch;
-    private boolean myCloseBranch;
-    @Nullable
-    private Collection<HgRepository> myRepos;
 
     public HgCheckinEnvironment(@Nonnull Project project) {
         myProject = project;
@@ -85,11 +79,7 @@ public class HgCheckinEnvironment implements CheckinEnvironment {
     }
 
     private void reset() {
-        myNextCommitIsPushed = false;
         myShouldCommitSubrepos = false;
-        myCloseBranch = false;
-        myMqNewPatch = false;
-        myRepos = null;
     }
 
     @Override
@@ -113,20 +103,20 @@ public class HgCheckinEnvironment implements CheckinEnvironment {
     public List<VcsException> commit(
         List<Change> changes,
         String preparedComment,
-        @Nonnull Function<Object, Object> parametersHolder,
+        @Nonnull CommitContext commitContext,
         Set<String> feedback
     ) {
-        boolean pushAfterCommit = myNextCommitIsPushed;
-        myNextCommitIsPushed = false;
+        boolean mqNewPatch = HgMQNewExecutor.isMqNewPatch(commitContext);
+        boolean closeBranch = HgCloseBranchExecutor.isCloseBranch(commitContext);
 
         List<VcsException> exceptions = new LinkedList<>();
         Map<HgRepository, Set<HgFile>> repositoriesMap = getFilesByRepository(changes);
-        addRepositoriesWithoutChanges(repositoriesMap);
+        addRepositoriesWithoutChanges(repositoriesMap, HgCloseBranchExecutor.getCommitWithoutChangesRepositories(commitContext));
         for (Map.Entry<HgRepository, Set<HgFile>> entry : repositoriesMap.entrySet()) {
             HgRepository repo = entry.getKey();
             Set<HgFile> selectedFiles = entry.getValue();
-            HgCommitTypeCommand command = myMqNewPatch ? new HgQNewCommand(myProject, repo, preparedComment, myNextCommitAmend) :
-                new HgCommitCommand(myProject, repo, preparedComment, myNextCommitAmend, myCloseBranch,
+            HgCommitTypeCommand command = mqNewPatch ? new HgQNewCommand(myProject, repo, preparedComment, myNextCommitAmend) :
+                new HgCommitCommand(myProject, repo, preparedComment, myNextCommitAmend, closeBranch,
                     myShouldCommitSubrepos && !selectedFiles.isEmpty()
                 );
 
@@ -175,7 +165,7 @@ public class HgCheckinEnvironment implements CheckinEnvironment {
         }
 
         // push if needed
-        if (pushAfterCommit && exceptions.isEmpty()) {
+        if (HgCommitAndPushExecutor.isPushAfterCommit(commitContext) && exceptions.isEmpty()) {
             List<HgRepository> preselectedRepositories = new ArrayList<>(repositoriesMap.keySet());
             Application application = myProject.getApplication();
             application.invokeLater(
@@ -222,12 +212,6 @@ public class HgCheckinEnvironment implements CheckinEnvironment {
             .text(HgLocalize.hg4ideaCommitPartialMergeMessage(filesNotIncludedString))
             .showAsync(myProject));
         return Boolean.TRUE.equals(commit);
-    }
-
-    @Override
-    @RequiredUIAccess
-    public List<VcsException> commit(List<Change> changes, String preparedComment) {
-        return commit(changes, preparedComment, o -> null, null);
     }
 
     @Override
@@ -301,27 +285,11 @@ public class HgCheckinEnvironment implements CheckinEnvironment {
         hgFiles.add(new HgFile(repo.getRoot(), filePath));
     }
 
-    public void setNextCommitIsPushed() {
-        myNextCommitIsPushed = true;
-    }
-
-    public void setMqNew() {
-        myMqNewPatch = true;
-    }
-
-    public void setCloseBranch(boolean closeBranch) {
-        myCloseBranch = closeBranch;
-    }
-
-    public void setRepos(@Nonnull Collection<HgRepository> repos) {
-        myRepos = repos;
-    }
-
-    private void addRepositoriesWithoutChanges(@Nonnull Map<HgRepository, Set<HgFile>> repositoryMap) {
-        if (myRepos == null) {
-            return;
-        }
-        for (HgRepository repository : myRepos) {
+    private void addRepositoriesWithoutChanges(
+        @Nonnull Map<HgRepository, Set<HgFile>> repositoryMap,
+        @Nonnull Collection<HgRepository> repositories
+    ) {
+        for (HgRepository repository : repositories) {
             if (!repositoryMap.keySet().contains(repository)) {
                 repositoryMap.put(repository, Collections.<HgFile>emptySet());
             }

@@ -16,17 +16,18 @@
 package org.zmlx.hg4idea.provider.commit;
 
 import consulo.localize.LocalizeValue;
+import consulo.util.dataholder.Key;
+import consulo.versionControlSystem.change.CommitContext;
 import consulo.versionControlSystem.change.CommitExecutor;
 import consulo.versionControlSystem.change.CommitSession;
 import jakarta.annotation.Nonnull;
 
 public class HgMQNewExecutor implements CommitExecutor {
     //todo:should be moved to create patch dialog as an EP -> create patch with...  MQ
-    @Nonnull
-    private final HgCheckinEnvironment myCheckinEnvironment;
+    private static final Key<Boolean> IS_MQ_NEW_PATCH_KEY = Key.create("Hg.Commit.IsMqNewPatch");
 
-    public HgMQNewExecutor(@Nonnull HgCheckinEnvironment checkinEnvironment) {
-        myCheckinEnvironment = checkinEnvironment;
+    static boolean isMqNewPatch(CommitContext commitContext) {
+        return commitContext.getExecutorProperty(IS_MQ_NEW_PATCH_KEY, Boolean.FALSE);
     }
 
     @Nonnull
@@ -37,8 +38,8 @@ public class HgMQNewExecutor implements CommitExecutor {
 
     @Nonnull
     @Override
-    public CommitSession createCommitSession() {
-        myCheckinEnvironment.setMqNew();
+    public CommitSession createCommitSession(@Nonnull CommitContext commitContext) {
+        commitContext.putExecutorProperty(IS_MQ_NEW_PATCH_KEY, Boolean.TRUE);
         return CommitSession.VCS_COMMIT;
     }
 }
