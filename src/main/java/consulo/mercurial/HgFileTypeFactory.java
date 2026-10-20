@@ -1,12 +1,13 @@
 package consulo.mercurial;
 
 import consulo.annotation.component.ExtensionImpl;
-import consulo.language.plain.PlainTextFileType;
 import consulo.virtualFileSystem.fileType.FileNameMatcherFactory;
 import consulo.virtualFileSystem.fileType.FileTypeConsumer;
 import consulo.virtualFileSystem.fileType.FileTypeFactory;
 import jakarta.annotation.Nonnull;
 import jakarta.inject.Inject;
+import org.zmlx.hg4idea.ignore.lang.HgIgnoreFileType;
+import org.zmlx.hg4idea.ignore.lang.HgIgnoreLanguage;
 import org.zmlx.hg4idea.repo.HgRepositoryFiles;
 
 /**
@@ -24,6 +25,7 @@ public class HgFileTypeFactory extends FileTypeFactory {
 
     @Override
     public void createFileTypes(@Nonnull FileTypeConsumer fileTypeConsumer) {
-        fileTypeConsumer.consume(PlainTextFileType.INSTANCE, myFileNameMatcherFactory.createExactFileNameMatcher(HgRepositoryFiles.HGIGNORE));
+        fileTypeConsumer.consume(HgIgnoreFileType.INSTANCE, myFileNameMatcherFactory.createExactFileNameMatcher(HgRepositoryFiles.HGIGNORE));
+        fileTypeConsumer.consume(HgIgnoreFileType.INSTANCE, HgIgnoreLanguage.INSTANCE.getExtension());
     }
 }

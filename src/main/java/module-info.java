@@ -18,6 +18,7 @@ open module consulo.mercurial {
   requires consulo.language.api;
   requires consulo.language.editor.api;
   requires consulo.language.editor.ui.api;
+  requires consulo.language.ignore.api;
   requires consulo.localize.api;
   requires consulo.logging.api;
   requires consulo.platform.api;
