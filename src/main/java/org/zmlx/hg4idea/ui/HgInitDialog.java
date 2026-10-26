@@ -17,7 +17,6 @@ package org.zmlx.hg4idea.ui;
 
 import consulo.configurable.ConfigurationException;
 import consulo.fileChooser.FileChooserDescriptor;
-import consulo.fileChooser.IdeaFileChooser;
 import consulo.mercurial.localize.HgLocalize;
 import consulo.project.Project;
 import consulo.ui.annotation.RequiredUIAccess;
@@ -30,6 +29,9 @@ import org.zmlx.hg4idea.action.HgInit;
 import org.zmlx.hg4idea.util.HgUtil;
 
 import javax.swing.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
 
 /**
  * The HgInitDialog appears when user wants to create new Mercurial repository, in response to the
@@ -61,9 +63,10 @@ public class HgInitDialog extends DialogWrapper {
 
         myFileDescriptor = new FileChooserDescriptor(false, true, false, false, false, false) {
             @Override
-            public void validateSelectedFiles(VirtualFile[] files) throws Exception {
-                if (HgUtil.isHgRoot(files[0])) {
-                    throw new ConfigurationException(HgLocalize.hg4ideaInitThisIsHgRoot(files[0].getPresentableUrl()).get());
+            public void validateSelectedPaths(List<Path> paths) throws Exception {
+                Path path = paths.get(0);
+                if (Files.isDirectory(path.resolve(HgUtil.DOT_HG))) {
+                    throw new ConfigurationException(HgLocalize.hg4ideaInitThisIsHgRoot(path.toString()).get());
                 }
                 updateEverything();
             }
@@ -100,22 +103,14 @@ public class HgInitDialog extends DialogWrapper {
     }
 
     /**
-     * Show the dialog OR show a FileChooser to select target directory.
+     * Whether the options are shown - otherwise the target directory is chosen with {@link #getFileDescriptor()} at once.
      */
-    @Override
-    @RequiredUIAccess
-    public void show() {
-        if (myShowDialog) {
-            super.show();
-        }
-        else {
-            mySelectedDir = IdeaFileChooser.chooseFile(myFileDescriptor, myProject, null);
-        }
+    public boolean isShowDialog() {
+        return myShowDialog;
     }
 
-    @Override
-    public boolean isOK() {
-        return myShowDialog ? super.isOK() : mySelectedDir != null;
+    public FileChooserDescriptor getFileDescriptor() {
+        return myFileDescriptor;
     }
 
     @Override

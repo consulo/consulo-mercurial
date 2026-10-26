@@ -3,7 +3,6 @@ package org.zmlx.hg4idea.ui;
 import consulo.configurable.ConfigurationException;
 import consulo.fileChooser.FileChooserDescriptor;
 import consulo.ui.ex.awt.TextFieldWithBrowseButton;
-import consulo.virtualFileSystem.VirtualFile;
 import org.zmlx.hg4idea.HgProjectSettings;
 import org.zmlx.hg4idea.HgVcsMessages;
 import org.zmlx.hg4idea.util.HgUtil;
@@ -11,6 +10,8 @@ import org.zmlx.hg4idea.util.HgUtil;
 import java.awt.event.ActionListener;
 import java.util.HashSet;
 import java.util.Set;
+import java.nio.file.Path;
+import java.util.List;
 
 /**
  * HgSetExecutablePathPanel is a {@link TextFieldWithBrowseButton}, which opens a file chooser for hg executable
@@ -22,8 +23,9 @@ class HgSetExecutablePathPanel extends TextFieldWithBrowseButton {
 
   HgSetExecutablePathPanel(final HgProjectSettings projectSettings) {
     FileChooserDescriptor descriptor = new FileChooserDescriptor(true, false, false, false, false, false) {
-      public void validateSelectedFiles(VirtualFile[] files) throws Exception {
-        String path = files[0].getPath();
+      @Override
+      public void validateSelectedPaths(List<Path> paths) throws Exception {
+        String path = paths.get(0).toString();
         if (!HgUtil.isExecutableValid(path)) {
           throw new ConfigurationException(HgVcsMessages.message("hg4idea.configuration.executable.error", path));
         }

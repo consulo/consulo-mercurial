@@ -26,6 +26,7 @@ import consulo.versionControlSystem.VcsNotifier;
 import consulo.versionControlSystem.util.VcsUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.virtualFileSystem.util.VirtualFileUtil;
+import consulo.fileChooser.FileChooserFactory;
 import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.command.HgInitCommand;
 import org.zmlx.hg4idea.ui.HgInitAlreadyUnderHgDialog;
@@ -52,6 +53,19 @@ public class HgInit extends DumbAwareAction {
 
         // provide window to select the root directory
         final HgInitDialog hgInitDialog = new HgInitDialog(myProject);
+        if (!hgInitDialog.isShowDialog()) {
+            FileChooserFactory.getInstance()
+                .newBuilder(hgInitDialog.getFileDescriptor())
+                .project(myProject)
+                .showSingleAsVirtualFile()
+                .whenComplete((selectedRoot, error) -> {
+                    if (error == null) {
+                        init(selectedRoot);
+                    }
+                });
+            return;
+        }
+
         if (!hgInitDialog.showAndGet()) {
             return;
         }
@@ -59,7 +73,11 @@ public class HgInit extends DumbAwareAction {
         if (selectedRoot == null) {
             return;
         }
+        init(selectedRoot);
+    }
 
+    @RequiredUIAccess
+    private void init(VirtualFile selectedRoot) {
         // check if the selected folder is not yet under mercurial and provide some options in that case
         final VirtualFile vcsRoot = HgUtil.getNearestHgRoot(selectedRoot);
         VirtualFile mapRoot = selectedRoot;

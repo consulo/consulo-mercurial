@@ -30,6 +30,8 @@ import consulo.versionControlSystem.change.ChangeListManager;
 import consulo.versionControlSystem.change.ContentRevision;
 import consulo.versionControlSystem.change.CurrentContentRevision;
 import consulo.versionControlSystem.log.*;
+import consulo.versionControlSystem.log.base.VcsChangesLazilyParsedDetails;
+import consulo.versionControlSystem.log.base.VcsFileStatusInfo;
 import consulo.versionControlSystem.util.VcsFileUtil;
 import consulo.versionControlSystem.util.VcsUtil;
 import consulo.virtualFileSystem.VirtualFile;
@@ -38,8 +40,8 @@ import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.*;
 import org.zmlx.hg4idea.command.HgLogCommand;
+import org.zmlx.hg4idea.command.HgStatusCommand;
 import org.zmlx.hg4idea.execution.HgCommandResult;
-import org.zmlx.hg4idea.provider.HgChangeProvider;
 import org.zmlx.hg4idea.util.HgChangesetUtil;
 import org.zmlx.hg4idea.util.HgUtil;
 import org.zmlx.hg4idea.util.HgVersion;
@@ -142,40 +144,113 @@ public class HgHistoryUtil {
       getCommitRecords(project, result, new HgFileRevisionLogParser(project, getOriginalHgFile(project, root), version), silent);
     List<VcsFullCommitDetails> vcsFullCommitDetailsList = new ArrayList<>();
     for (HgFileRevision revision : hgRevisions) {
-
-      HgRevisionNumber vcsRevisionNumber = revision.getRevisionNumber();
-      List<HgRevisionNumber> parents = vcsRevisionNumber.getParents();
-      HgRevisionNumber firstParent = parents.isEmpty() ? null : parents.get(0); // can have no parents if it is a root
-      List<Hash> parentsHash = new SmartList<>();
-      for (HgRevisionNumber parent : parents) {
-        parentsHash.add(factory.createHash(parent.getChangeset()));
-      }
-
-      final Collection<Change> changes = new ArrayList<>();
-      for (String file : revision.getModifiedFiles()) {
-        changes.add(createChange(project, root, file, firstParent, file, vcsRevisionNumber, FileStatus.MODIFIED));
-      }
-      for (String file : revision.getAddedFiles()) {
-        changes.add(createChange(project, root, null, null, file, vcsRevisionNumber, FileStatus.ADDED));
-      }
-      for (String file : revision.getDeletedFiles()) {
-        changes.add(createChange(project, root, file, firstParent, null, vcsRevisionNumber, FileStatus.DELETED));
-      }
-      for (Map.Entry<String, String> copiedFile : revision.getMovedFiles().entrySet()) {
-        changes.add(createChange(project, root, copiedFile.getKey(), firstParent, copiedFile.getValue(), vcsRevisionNumber,
-                                 HgChangeProvider.RENAMED));
-      }
-
-      vcsFullCommitDetailsList.add(factory.createFullDetails(factory.createHash(vcsRevisionNumber.getChangeset()), parentsHash,
-                                                             revision.getRevisionDate().getTime(), root,
-                                                             vcsRevisionNumber.getSubject(),
-                                                             vcsRevisionNumber.getName(), vcsRevisionNumber.getEmail(),
-                                                             vcsRevisionNumber.getCommitMessage(), vcsRevisionNumber.getName(),
-                                                             vcsRevisionNumber.getEmail(), revision.getRevisionDate().getTime(),
-                                                             () -> changes
-      ));
+      vcsFullCommitDetailsList.add(createDetails(project, root, factory, revision));
     }
     return vcsFullCommitDetailsList;
+  }
+
+  public static VcsFullCommitDetails createDetails(Project project,
+                                                   VirtualFile root,
+                                                   VcsLogObjectsFactory factory,
+                                                   HgFileRevision revision) {
+    List<List<VcsFileStatusInfo>> reportedChanges = new ArrayList<>();
+    reportedChanges.add(getStatusInfo(revision));
+
+    HgRevisionNumber vcsRevisionNumber = revision.getRevisionNumber();
+    List<? extends HgRevisionNumber> parents = vcsRevisionNumber.getParents();
+    for (HgRevisionNumber parent : parents.stream().skip(1).toList()) {
+      reportedChanges.add(getChangesFromParent(project, root, vcsRevisionNumber, parent));
+    }
+
+    Hash hash = factory.createHash(vcsRevisionNumber.getChangeset());
+    List<Hash> parentsHashes = ContainerUtil.map(parents, p -> factory.createHash(p.getChangeset()));
+    long time = revision.getRevisionDate().getTime();
+    VcsUser author = factory.createUser(vcsRevisionNumber.getName(), vcsRevisionNumber.getEmail());
+    return new VcsChangesLazilyParsedDetails(project, hash, parentsHashes, time, root, vcsRevisionNumber.getSubject(), author,
+                                             vcsRevisionNumber.getCommitMessage(), author,
+                                             time, reportedChanges, new HgChangesParser(vcsRevisionNumber));
+  }
+
+  private static List<VcsFileStatusInfo> getChangesFromParent(Project project, VirtualFile root,
+                                                              HgRevisionNumber commit, HgRevisionNumber parent) {
+    HgStatusCommand status = new HgStatusCommand.Builder(true).ignored(false).unknown(false).copySource(true)
+      .baseRevision(parent).targetRevision(commit).build(project);
+    return convertHgChanges(status.executeInCurrentThread(root));
+  }
+
+  private static List<VcsFileStatusInfo> getStatusInfo(HgFileRevision revision) {
+    List<VcsFileStatusInfo> firstParentChanges = new ArrayList<>();
+    for (String file : revision.getModifiedFiles()) {
+      firstParentChanges.add(new VcsFileStatusInfo(Change.Type.MODIFICATION, file, null));
+    }
+    for (String file : revision.getAddedFiles()) {
+      firstParentChanges.add(new VcsFileStatusInfo(Change.Type.NEW, file, null));
+    }
+    for (String file : revision.getDeletedFiles()) {
+      firstParentChanges.add(new VcsFileStatusInfo(Change.Type.DELETED, file, null));
+    }
+    for (Map.Entry<String, String> copiedFile : revision.getMovedFiles().entrySet()) {
+      firstParentChanges.add(new VcsFileStatusInfo(Change.Type.MOVED, copiedFile.getKey(), copiedFile.getValue()));
+    }
+    return firstParentChanges;
+  }
+
+  private static List<VcsFileStatusInfo> convertHgChanges(Set<HgChange> changes) {
+    Set<String> deleted = new HashSet<>();
+    Set<String> copied = new HashSet<>();
+
+    for (HgChange change : changes) {
+      Change.Type type = getType(change.getStatus());
+      if (Change.Type.DELETED.equals(type)) {
+        deleted.add(change.beforeFile().getRelativePath());
+      }
+      else if (Change.Type.MOVED.equals(type)) {
+        copied.add(change.beforeFile().getRelativePath());
+      }
+    }
+
+    List<VcsFileStatusInfo> result = new ArrayList<>();
+    for (HgChange change : changes) {
+      Change.Type type = getType(change.getStatus());
+      LOG.assertTrue(type != null, "Unsupported status for change " + change);
+
+      String firstPath;
+      String secondPath;
+      switch (type) {
+        case DELETED -> {
+          firstPath = change.beforeFile().getRelativePath();
+          secondPath = null;
+          if (copied.contains(firstPath)) continue; // file was renamed
+        }
+        case MOVED -> {
+          firstPath = change.beforeFile().getRelativePath();
+          secondPath = change.afterFile().getRelativePath();
+          if (!deleted.contains(firstPath)) {
+            type = Change.Type.NEW; // file was copied, treating it like an addition
+            firstPath = change.afterFile().getRelativePath();
+            secondPath = null;
+          }
+        }
+        //case MODIFICATION, NEW ->
+        default -> {
+          firstPath = change.afterFile().getRelativePath();
+          secondPath = null;
+        }
+      }
+      result.add(new VcsFileStatusInfo(type, Objects.requireNonNull(firstPath), secondPath));
+    }
+    return result;
+  }
+
+  @Nullable
+  private static Change.Type getType(HgFileStatusEnum status) {
+    return switch (status) {
+      case ADDED -> Change.Type.NEW;
+      case MODIFIED -> Change.Type.MODIFICATION;
+      case DELETED -> Change.Type.DELETED;
+      case COPY -> Change.Type.MOVED;
+      case UNVERSIONED, MISSING, UNMODIFIED, IGNORED -> null;
+    };
   }
 
 

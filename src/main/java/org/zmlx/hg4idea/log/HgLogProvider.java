@@ -215,10 +215,33 @@ public class HgLogProvider implements VcsLogProvider {
   public List<TimedVcsCommit> getCommitsMatchingFilter(@Nonnull final VirtualFile root,
                                                        @Nonnull VcsLogFilterCollection filterCollection,
                                                        int maxCount) throws VcsException {
+    VcsLogRangeFilter rangeFilter = filterCollection.getRangeFilter();
+    if (rangeFilter == null) {
+      return getCommitsMatchingFilter(root, filterCollection, null);
+    }
+
+    Set<TimedVcsCommit> commits = new LinkedHashSet<>();
+    if (filterCollection.getBranchFilter() != null) {
+      commits.addAll(getCommitsMatchingFilter(root, filterCollection, null));
+    }
+    for (VcsLogRangeFilter.RefRange range : rangeFilter.getRanges()) {
+      commits.addAll(getCommitsMatchingFilter(root, filterCollection, range));
+    }
+    return new ArrayList<>(commits);
+  }
+
+  private List<TimedVcsCommit> getCommitsMatchingFilter(VirtualFile root,
+                                                        VcsLogFilterCollection filterCollection,
+                                                        @Nullable VcsLogRangeFilter.RefRange range) throws VcsException {
     List<String> filterParameters = ContainerUtil.newArrayList();
 
+    if (range != null) {
+      filterParameters.add("-r");
+      filterParameters.add("only('" + range.inclusiveRef() + "', '" + range.exclusiveRef() + "')");
+    }
+
     // branch filter and user filter may be used several times without delimiter
-    VcsLogBranchFilter branchFilter = filterCollection.getBranchFilter();
+    VcsLogBranchFilter branchFilter = range == null ? filterCollection.getBranchFilter() : null;
     if (branchFilter != null) {
       HgRepository repository = myRepositoryManager.getRepositoryForRoot(root);
       if (repository == null) {
