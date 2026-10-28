@@ -18,26 +18,40 @@ package org.zmlx.hg4idea;
 import consulo.annotation.component.ComponentScope;
 import consulo.annotation.component.ServiceAPI;
 import consulo.annotation.component.ServiceImpl;
+import consulo.application.Application;
 import consulo.component.persist.PersistentStateComponent;
+import consulo.component.persist.RoamingType;
 import consulo.component.persist.State;
 import consulo.component.persist.Storage;
-import consulo.component.persist.StoragePathMacros;
 import consulo.ide.ServiceManager;
 import consulo.versionControlSystem.distributed.DvcsRememberedInputs;
+import consulo.versionControlSystem.distributed.DvcsRememberedInputsState;
 import jakarta.inject.Singleton;
 
 /**
  * @author Nadya Zabrodina
  */
 @State(
-  name = "HgRememberedInputs",
-  storages = @Storage(file = StoragePathMacros.APP_CONFIG + "/vcs.xml")
+    name = "HgRememberedInputs",
+    storages = @Storage(value = "vcs-inputs", roamingType = RoamingType.DISABLED)
 )
 @ServiceAPI(ComponentScope.APPLICATION)
 @ServiceImpl
 @Singleton
-public class HgRememberedInputs extends DvcsRememberedInputs implements PersistentStateComponent<DvcsRememberedInputs.State> {
-  public static DvcsRememberedInputs getInstance() {
-    return ServiceManager.getService(HgRememberedInputs.class);
-  }
+public class HgRememberedInputs extends DvcsRememberedInputs implements PersistentStateComponent<DvcsRememberedInputsState> {
+    public static DvcsRememberedInputs getInstance() {
+        return Application.get().getInstance(HgRememberedInputs.class);
+    }
+
+    private DvcsRememberedInputsState myState = new DvcsRememberedInputsState();
+
+    @Override
+    public void loadState(DvcsRememberedInputsState state) {
+        myState = state;
+    }
+
+    @Override
+    public DvcsRememberedInputsState getState() {
+        return myState;
+    }
 }
