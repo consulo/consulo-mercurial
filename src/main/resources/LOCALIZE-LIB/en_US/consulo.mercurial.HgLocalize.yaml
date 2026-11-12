@@ -135,6 +135,8 @@ hg4idea.commit.partial.merge.title:
     text: Partial Merge Commit
 hg4idea.commit.success:
     text: Repository "{0}" committed
+hg4idea.configuration.check.incoming.outgoing:
+    text: Check for &incoming and outgoing changesets
 hg4idea.configuration.description:
     text: Specify the full path to hg executable
 hg4idea.configuration.executable.error:

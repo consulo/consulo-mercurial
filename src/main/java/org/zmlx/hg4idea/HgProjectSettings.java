@@ -12,6 +12,7 @@
 // limitations under the License.
 package org.zmlx.hg4idea;
 
+import org.zmlx.hg4idea.status.ui.HgWidgetUpdater;
 import consulo.annotation.component.ComponentScope;
 import consulo.annotation.component.ServiceAPI;
 import consulo.annotation.component.ServiceImpl;
@@ -104,7 +105,13 @@ public class HgProjectSettings implements PersistentStateComponent<HgProjectSett
   }
 
   public void setCheckIncomingOutgoing(boolean checkIncomingOutgoing) {
-    myState.CHECK_INCOMING_OUTGOING = checkIncomingOutgoing;
+    if (isCheckIncomingOutgoing() != checkIncomingOutgoing) {
+      myState.CHECK_INCOMING_OUTGOING = checkIncomingOutgoing;
+      myProject.getMessageBus().syncPublisher(HgWidgetUpdater.class).updateVisibility();
+    }
+    else {
+      myState.CHECK_INCOMING_OUTGOING = checkIncomingOutgoing;
+    }
   }
 
   public void setIgnoreWhitespacesInAnnotations(boolean ignoreWhitespacesInAnnotations) {

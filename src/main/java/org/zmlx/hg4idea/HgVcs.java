@@ -139,7 +139,8 @@ public class HgVcs extends AbstractVcs<CommittedChangeList> {
   }
 
   public Configurable getConfigurable() {
-    return new HgProjectConfigurable(getProject(), projectSettings);
+    // the page is an extension - HgProjectConfigurable
+    return null;
   }
 
   @Nonnull
@@ -396,7 +397,7 @@ public class HgVcs extends AbstractVcs<CommittedChangeList> {
       @Override
       public void hyperlinkActivated(@Nonnull Notification notification, @Nonnull HyperlinkEvent e) {
         if (SETTINGS_LINK.equals(e.getDescription())) {
-          ShowSettingsUtil.getInstance().showSettingsDialog(myProject, getConfigurable().getDisplayName().get());
+          ShowSettingsUtil.getInstance().showAndSelect(myProject, HgProjectConfigurable.class);
         }
         else if (UPDATE_LINK.equals(e.getDescription())) {
           Platform.current().openInBrowser("http://mercurial.selenic.com");

@@ -2,7 +2,9 @@ package org.zmlx.hg4idea;
 
 import consulo.annotation.component.ExtensionImpl;
 import consulo.localize.LocalizeValue;
+import consulo.mercurial.icon.MercurialIconGroup;
 import consulo.project.Project;
+import consulo.ui.image.Image;
 import consulo.versionControlSystem.AbstractVcs;
 import consulo.versionControlSystem.ProjectLevelVcsManager;
 import consulo.versionControlSystem.VcsFactory;
@@ -44,6 +46,11 @@ public class HgVcsFactory implements VcsFactory {
   @Override
   public LocalizeValue getDisplayName() {
     return Mercurial;
+  }
+
+  @Override
+  public Image getIcon() {
+    return MercurialIconGroup.mercurial();
   }
 
   @Nonnull
