@@ -12,10 +12,11 @@
 // limitations under the License.
 package org.zmlx.hg4idea.provider;
 
+import java.nio.file.Path;
+import consulo.virtualFileSystem.VirtualFileManager;
 import consulo.versionControlSystem.change.ContentRevision;
 import consulo.versionControlSystem.change.CurrentContentRevision;
 import consulo.versionControlSystem.history.VcsRevisionNumber;
-import consulo.versionControlSystem.util.VcsUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import jakarta.annotation.Nonnull;
 import org.zmlx.hg4idea.HgFile;
@@ -35,7 +36,8 @@ class HgCurrentContentRevision extends CurrentContentRevision {
   }
 
   public static ContentRevision create(@Nonnull HgFile hgFile, @Nonnull HgRevisionNumber revision) {
-    VirtualFile virtualFile = VcsUtil.getVirtualFile(hgFile.getFile());
+    Path path = hgFile.toFilePath().getNioPath();
+    VirtualFile virtualFile = path == null ? null : VirtualFileManager.getInstance().findFileByNioPath(path);
     if (virtualFile == null) {
       return null;
     }

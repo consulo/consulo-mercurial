@@ -12,6 +12,7 @@
 // limitations under the License.
 package org.zmlx.hg4idea.provider;
 
+import consulo.virtualFileSystem.VirtualFileManager;
 import consulo.application.progress.ProgressIndicator;
 import consulo.document.FileDocumentManager;
 import consulo.localize.LocalizeValue;
@@ -40,6 +41,8 @@ import org.zmlx.hg4idea.repo.HgRepository;
 import org.zmlx.hg4idea.util.HgUtil;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 public class HgChangeProvider implements ChangeProvider
@@ -236,7 +239,8 @@ public class HgChangeProvider implements ChangeProvider
       void process(Project project, VcsKey vcsKey, ChangelistBuilder builder,
         HgRevisionNumber currentNumber, HgRevisionNumber parentRevision,
         HgFile beforeFile, HgFile afterFile) {
-        if (beforeFile.getFile().exists()) {
+        Path beforePath = beforeFile.toFilePath().getNioPath();
+        if (beforePath != null && Files.exists(beforePath)) {
           // The original file exists so this is a duplication of the file.
           // Don't create the before ContentRevision or IDEA will think
           // this was a rename.
@@ -290,7 +294,11 @@ public class HgChangeProvider implements ChangeProvider
       void process(Project project, VcsKey vcsKey, ChangelistBuilder builder,
         HgRevisionNumber currentNumber, HgRevisionNumber parentRevision,
         HgFile beforeFile, HgFile afterFile) {
-        builder.processUnversionedFile(VcsUtil.getVirtualFile(afterFile.getFile()));
+        Path afterPath = afterFile.toFilePath().getNioPath();
+        VirtualFile file = afterPath == null ? null : VirtualFileManager.getInstance().findFileByNioPath(afterPath);
+        if (file != null) {
+          builder.processUnversionedFile(file);
+        }
       }
     };
 

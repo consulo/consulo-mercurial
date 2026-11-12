@@ -22,7 +22,6 @@ import consulo.versionControlSystem.history.VcsFileRevision;
 import consulo.versionControlSystem.history.VcsRevisionNumber;
 import consulo.versionControlSystem.util.VcsUtil;
 import consulo.virtualFileSystem.VirtualFile;
-import consulo.virtualFileSystem.util.VirtualFileUtil;
 import jakarta.annotation.Nonnull;
 import org.zmlx.hg4idea.HgFile;
 import org.zmlx.hg4idea.HgFileRevision;
@@ -55,7 +54,7 @@ public class HgAnnotationProvider implements AnnotationProviderEx {
       throw new VcsException("vcs root is null for " + file);
     }
     HgRevisionNumber revisionNumber = revision != null ? (HgRevisionNumber)revision.getRevisionNumber() : null;
-    final HgFile hgFile = new HgFile(vcsRoot, VirtualFileUtil.virtualToIoFile(file));
+    final HgFile hgFile = new HgFile(vcsRoot, VcsUtil.getFilePath(file));
     HgFile fileToAnnotate = revision instanceof HgFileRevision
                             ? HgUtil.getFileNameInTargetRevision(myProject, revisionNumber, hgFile)
                             : new HgFile(vcsRoot,

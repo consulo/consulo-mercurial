@@ -12,6 +12,8 @@
 // limitations under the License.
 package org.zmlx.hg4idea.provider;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import consulo.project.Project;
 import consulo.versionControlSystem.FilePath;
 import consulo.versionControlSystem.change.ChangeListManager;
@@ -70,7 +72,8 @@ public class HgDiffProvider implements DiffProvider {
       return null;
     }
 
-    boolean fileExists = filePath.getIOFile().exists();
+    Path path = filePath.getNioPath();
+    boolean fileExists = path != null && Files.exists(path);
     if (currentRevision.isWorkingVersion()) {
       return new ItemLatestState(command.firstParent(vcsRoot), fileExists, true);
     }

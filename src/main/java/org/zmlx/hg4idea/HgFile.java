@@ -18,32 +18,34 @@ import consulo.util.io.FileUtil;
 import consulo.versionControlSystem.FilePath;
 import consulo.versionControlSystem.util.VcsUtil;
 import consulo.virtualFileSystem.VirtualFile;
-import consulo.virtualFileSystem.util.VirtualFileUtil;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.util.HgUtil;
 
-import java.io.File;
 import java.util.Objects;
 
 public class HgFile {
 
   private final VirtualFile vcsRoot;
-  private final File file;
+  // of the machine of the repository - the local one, or a remote one
+  private final FilePath filePath;
 
   private String relativePath;
 
-  public HgFile(@Nonnull VirtualFile vcsRoot, File file) {
+  public HgFile(@Nonnull VirtualFile vcsRoot, FilePath filePath) {
     this.vcsRoot = vcsRoot;
-    this.file = file;
+    this.filePath = filePath;
   }
 
-  public HgFile(@Nonnull VirtualFile vcsRoot, FilePath filePath) {
-    this(vcsRoot, filePath.getIOFile());
+  /**
+   * A file of the repository by its path relative to the root, as hg prints it.
+   */
+  public HgFile(@Nonnull VirtualFile vcsRoot, @Nonnull String relativePath) {
+    this(vcsRoot, VcsUtil.getFilePath(vcsRoot, relativePath, false));
   }
 
   public HgFile(@Nonnull Project project, @Nonnull VirtualFile file) {
-    this(HgUtil.getHgRootOrNull(project, file), VcsUtil.getFilePath(file.getPath()));
+    this(HgUtil.getHgRootOrNull(project, file), VcsUtil.getFilePath(file));
   }
 
   @Nonnull
@@ -51,22 +53,17 @@ public class HgFile {
     return vcsRoot;
   }
 
-  public File getFile() {
-    return file;
-  }
-
   @Nullable
   public String getRelativePath() {
     if (relativePath == null) {
-      //For configuration like "d:/.hg" File.getParent method has minimal prefix length, so vcsRoot will be "d:", getParent will be "d:/".
-      relativePath = FileUtil.getRelativePath(VirtualFileUtil.virtualToIoFile(vcsRoot), file);
+      relativePath = FileUtil.getRelativePath(vcsRoot.getPath(), filePath.getPath(), '/');
     }
     return relativePath;
   }
 
   @Nonnull
   public FilePath toFilePath() {
-    return VcsUtil.getFilePath(file);
+    return filePath;
   }
 
   @Override
@@ -83,23 +80,19 @@ public class HgFile {
     if (!vcsRoot.equals(that.vcsRoot)) {
       return false;
     }
-    if (file != null ? !FileUtil.filesEqual(file, that.file) : that.file != null) {
-      return false;
-    }
-
-    return true;
+    return Objects.equals(filePath.getPath(), that.filePath.getPath());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(vcsRoot, file);
+    return Objects.hash(vcsRoot, filePath.getPath());
   }
 
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(HgFile.class)
       .add("repo", vcsRoot)
-      .add("file", file)
+      .add("file", filePath)
       .add("relativePath", getRelativePath())
       .toString();
   }

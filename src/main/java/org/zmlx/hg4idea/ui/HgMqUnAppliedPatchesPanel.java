@@ -35,10 +35,8 @@ import consulo.ui.ex.awt.speedSearch.TableSpeedSearch;
 import consulo.ui.ex.awt.table.JBTable;
 import consulo.util.collection.ContainerUtil;
 import consulo.util.dataholder.Key;
-import consulo.util.io.FileUtil;
 import consulo.util.lang.StringUtil;
 import consulo.virtualFileSystem.VirtualFile;
-import consulo.virtualFileSystem.util.VirtualFileUtil;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.HgStatusUpdater;
@@ -56,8 +54,9 @@ import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,14 +80,14 @@ public class HgMqUnAppliedPatchesPanel extends JPanel implements DataProvider, H
   private final VirtualFile myMqPatchDir;
   private volatile boolean myNeedToUpdateFileContent;
   @Nullable
-  private final File mySeriesFile;
+  private final Path mySeriesFile;
 
   public HgMqUnAppliedPatchesPanel(@Nonnull HgRepository repository) {
     super(new BorderLayout());
     myRepository = repository;
     myProject = myRepository.getProject();
     myMqPatchDir = myRepository.getHgDir().findChild("patches");
-    mySeriesFile = myMqPatchDir != null ? new File(myMqPatchDir.getPath(), "series") : null;
+    mySeriesFile = myMqPatchDir != null ? myMqPatchDir.toNioPath().resolve("series") : null;
 
     myPatchTable = new MyPatchTable(new MyPatchModel(myRepository.getUnappliedPatchNames()));
     myPatchTable.addFocusListener(new FocusAdapter() {
@@ -152,9 +151,9 @@ public class HgMqUnAppliedPatchesPanel extends JPanel implements DataProvider, H
   }
 
   private void writeSeriesFile(@Nonnull String newContent) {
-    if (mySeriesFile == null || !mySeriesFile.exists()) return;
+    if (mySeriesFile == null || !Files.exists(mySeriesFile)) return;
     try {
-      FileUtil.writeToFile(mySeriesFile, newContent);
+      Files.writeString(mySeriesFile, newContent);
     }
     catch (IOException e1) {
       LOG.error("Could not modify mq series file", e1);
@@ -202,7 +201,7 @@ public class HgMqUnAppliedPatchesPanel extends JPanel implements DataProvider, H
   private VirtualFile getSelectedPatchFile() {
     if (myMqPatchDir == null || myPatchTable.getSelectedRowCount() != 1) return null;
     String patchName = getPatchName(myPatchTable.getSelectedRow());
-    return VirtualFileUtil.findFileByIoFile(new File(myMqPatchDir.getPath(), patchName), true);
+    return myMqPatchDir.getFileSystem().refreshAndFindFileByPath(myMqPatchDir.getPath() + "/" + patchName);
   }
 
   @Nonnull
@@ -313,7 +312,7 @@ public class HgMqUnAppliedPatchesPanel extends JPanel implements DataProvider, H
 
     private void readMqPatchesDetails() {
       for (String name : myPatches) {
-        File patchFile = myMqPatchDir != null ? new File(myMqPatchDir.getPath(), name) : null;
+        Path patchFile = myMqPatchDir != null ? myMqPatchDir.toNioPath().resolve(name) : null;
         myPatchesWithDetails.put(name, HgMqAdditionalPatchReader.readMqPatchInfo(myRepository.getRoot(), patchFile));
       }
     }

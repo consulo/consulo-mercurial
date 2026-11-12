@@ -34,7 +34,8 @@ import org.zmlx.hg4idea.execution.HgCommandResult;
 import org.zmlx.hg4idea.util.HgErrorUtil;
 import org.zmlx.hg4idea.util.HgUtil;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 public class HgRollbackEnvironment implements RollbackEnvironment {
@@ -77,12 +78,10 @@ public class HgRollbackEnvironment implements RollbackEnvironment {
       for (FilePath file : toDelete) {
         listener.accept(file);
         try {
-          final File ioFile = file.getIOFile();
-          if (ioFile.exists()) {
-            if (!ioFile.delete()) {
-              //noinspection ThrowableInstanceNeverThrown
-              vcsExceptions.add(new VcsException("Unable to delete file: " + file));
-            }
+          // on the machine of the repository
+          Path path = file.getNioPath();
+          if (path != null) {
+            Files.deleteIfExists(path);
           }
         }
         catch (Exception e) {

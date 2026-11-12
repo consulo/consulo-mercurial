@@ -17,11 +17,13 @@ import consulo.util.io.CharsetToolkit;
 import consulo.versionControlSystem.FilePath;
 import consulo.versionControlSystem.VcsException;
 import consulo.versionControlSystem.change.ByteBackedContentRevision;
-import consulo.versionControlSystem.util.VcsUtil;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.util.HgUtil;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Objects;
 
 public class HgContentRevision implements ByteBackedContentRevision
@@ -52,15 +54,35 @@ public class HgContentRevision implements ByteBackedContentRevision
   @Override
   public String getContent() throws VcsException
   {
-    if (myRevisionNumber.isWorkingVersion()) return VcsUtil.getFileContent(myHgFile.getFile().getPath());
+    if (myRevisionNumber.isWorkingVersion()) {
+      byte[] bytes = readWorkingContent();
+      return bytes == null ? null : CharsetToolkit.bytesToString(bytes, getFile().getCharset());
+    }
     final HgFile fileToCat = HgUtil.getFileNameInTargetRevision(myProject, myRevisionNumber, myHgFile);
     return CharsetToolkit.bytesToString(HgUtil.loadContent(myProject, myRevisionNumber, fileToCat), getFile().getCharset());
   }
 
   public byte[] getContentAsBytes() {
-    if (myRevisionNumber.isWorkingVersion()) return VcsUtil.getFileByteContent(myHgFile.getFile());
+    if (myRevisionNumber.isWorkingVersion()) return readWorkingContent();
     final HgFile fileToCat = HgUtil.getFileNameInTargetRevision(myProject, myRevisionNumber, myHgFile);
     return HgUtil.loadContent(myProject, myRevisionNumber, fileToCat);
+  }
+
+  /**
+   * The file as it is now - on the machine of the repository.
+   */
+  @Nullable
+  private byte[] readWorkingContent() {
+    Path path = myHgFile.toFilePath().getNioPath();
+    if (path == null) {
+      return null;
+    }
+    try {
+      return Files.readAllBytes(path);
+    }
+    catch (IOException e) {
+      return null;
+    }
   }
 
   @Nonnull

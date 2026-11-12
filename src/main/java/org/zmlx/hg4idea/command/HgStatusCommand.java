@@ -30,7 +30,6 @@ import org.zmlx.hg4idea.HgRevisionNumber;
 import org.zmlx.hg4idea.execution.HgCommandExecutor;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 
-import java.io.File;
 import java.util.*;
 
 public class HgStatusCommand {
@@ -224,14 +223,14 @@ public class HgStatusCommand {
         LOG.error("Unknown status [" + statusChar + "] in line [" + line + "]" + "\n with arguments " + args);
         continue;
       }
-      File ioFile = new File(repo.getPath(), line.substring(2));
+      String relativePath = line.substring(2);
       if (HgFileStatusEnum.COPY == status && previous != null
         && previous.getStatus() == HgFileStatusEnum.ADDED) {
         previous.setStatus(HgFileStatusEnum.COPY);
-        previous.setBeforeFile(new HgFile(repo, ioFile));
+        previous.setBeforeFile(new HgFile(repo, relativePath));
         previous = null;
       } else {
-        previous = new HgChange(new HgFile(repo, ioFile), status);
+        previous = new HgChange(new HgFile(repo, relativePath), status);
         changes.add(previous);
       }
     }

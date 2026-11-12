@@ -12,6 +12,7 @@
 // limitations under the License.
 package org.zmlx.hg4idea.provider.update;
 
+import consulo.versionControlSystem.FilePath;
 import consulo.application.ApplicationManager;
 import consulo.project.Project;
 import consulo.util.collection.ContainerUtil;
@@ -26,7 +27,7 @@ import org.zmlx.hg4idea.HgVcs;
 import org.zmlx.hg4idea.command.HgResolveCommand;
 import org.zmlx.hg4idea.command.HgResolveStatusEnum;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -51,12 +52,15 @@ public final class HgConflictResolver {
 
   public void resolve(final VirtualFile repo) {
     final Map<HgFile, HgResolveStatusEnum> resolves = new HgResolveCommand(myProject).getListSynchronously(repo);
-    final List<File> conflictFiles = new ArrayList<>();
+    final List<Path> conflictFiles = new ArrayList<>();
 
     for (HgFile hgFile : resolves.keySet()) {
-      File file = hgFile.getFile();
+      FilePath file = hgFile.toFilePath();
       if (resolves.get(hgFile) == HgResolveStatusEnum.UNRESOLVED) {
-        conflictFiles.add(file);
+        Path path = file.getNioPath();
+        if (path != null) {
+          conflictFiles.add(path);
+        }
         updateUpdatedFiles(file, true);
       }
       else {
@@ -75,12 +79,12 @@ public final class HgConflictResolver {
     });
   }
 
-  private void updateUpdatedFiles(@Nonnull File file, boolean unresolved) {
+  private void updateUpdatedFiles(@Nonnull FilePath file, boolean unresolved) {
     if (updatedFiles != null) {
-      updatedFiles.getGroupById(FileGroup.UPDATED_ID).remove(file.getAbsolutePath());
+      updatedFiles.getGroupById(FileGroup.UPDATED_ID).remove(file.getPresentableUrl());
       //TODO get the correct revision to pass to the UpdatedFiles
       updatedFiles.getGroupById(unresolved ? FileGroup.MERGED_WITH_CONFLICT_ID : FileGroup.MERGED_ID)
-        .add(file.getPath(), HgVcs.VCS_ID, null);
+        .add(file.getPresentableUrl(), HgVcs.VCS_ID, null);
     }
   }
 

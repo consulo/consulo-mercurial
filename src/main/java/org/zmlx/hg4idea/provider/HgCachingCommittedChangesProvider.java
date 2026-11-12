@@ -46,7 +46,6 @@ import org.zmlx.hg4idea.util.HgUtil;
 import java.awt.datatransfer.StringSelection;
 import java.io.DataInput;
 import java.io.DataOutput;
-import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -104,7 +103,7 @@ public class HgCachingCommittedChangesProvider implements CachingCommittedChange
 
         if (!StringUtil.isEmpty(revisionPath)) {
             VirtualFile root = ((HgRepositoryLocation) repositoryLocation).getRoot();
-            return HgContentRevision.create(project, new HgFile(root, new File(revisionPath)), revisionNumber);
+            return HgContentRevision.create(project, new HgFile(root, VcsUtil.getFilePath(revisionPath, false)), revisionNumber);
         }
         else {
             return null;
@@ -117,7 +116,7 @@ public class HgCachingCommittedChangesProvider implements CachingCommittedChange
             writeRevisionNumber(dataOutput, HgRevisionNumber.getInstance("", ""));
         }
         else {
-            dataOutput.writeUTF(revision.getFile().getIOFile().toString());
+            dataOutput.writeUTF(revision.getFile().getPath());
             writeRevisionNumber(dataOutput, revision.getRevisionNumber());
         }
     }
@@ -290,9 +289,9 @@ public class HgCachingCommittedChangesProvider implements CachingCommittedChange
     ) {
 
         HgContentRevision beforeRevision = fileBefore == null ? null
-            : HgContentRevision.create(project, new HgFile(root, new File(root.getPath(), fileBefore)), revisionBefore);
+            : HgContentRevision.create(project, new HgFile(root, fileBefore), revisionBefore);
         HgContentRevision afterRevision = fileAfter == null ? null
-            : HgContentRevision.create(project, new HgFile(root, new File(root.getPath(), fileAfter)), revisionAfter);
+            : HgContentRevision.create(project, new HgFile(root, fileAfter), revisionAfter);
         return new Change(beforeRevision, afterRevision, aStatus);
     }
 

@@ -15,16 +15,16 @@
  */
 package org.zmlx.hg4idea.mq;
 
+import consulo.virtualFileSystem.VirtualFileManager;
 import consulo.util.collection.ContainerUtil;
 import consulo.util.lang.StringUtil;
 import consulo.versionControlSystem.distributed.DvcsUtil;
 import consulo.virtualFileSystem.VirtualFile;
-import consulo.virtualFileSystem.util.VirtualFileUtil;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.util.HgUtil;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Date;
@@ -40,10 +40,10 @@ public class HgMqAdditionalPatchReader {
   private static final String DIFF_INFO = "diff -";
 
   @Nonnull
-  public static MqPatchDetails readMqPatchInfo(@Nullable VirtualFile root, @Nullable File patchFile) {
+  public static MqPatchDetails readMqPatchInfo(@Nullable VirtualFile root, @Nullable Path patchFile) {
     if (patchFile == null) return MqPatchDetails.EMPTY_PATCH_DETAILS;
     String context = DvcsUtil.tryLoadFileOrReturn(patchFile, "");
-    return parseAdditionalMqInfo(root == null ? HgUtil.getNearestHgRoot(VirtualFileUtil.findFileByIoFile(patchFile, true)) : root, context);
+    return parseAdditionalMqInfo(root == null ? HgUtil.getNearestHgRoot(VirtualFileManager.getInstance().refreshAndFindFileByNioPath(patchFile)) : root, context);
   }
 
   @Nonnull
@@ -99,7 +99,7 @@ public class HgMqAdditionalPatchReader {
 
   @SuppressWarnings("unused")
   // for future custom additional patch reader implementation
-  public boolean isMqPatch(@Nonnull File file) {
+  public boolean isMqPatch(@Nonnull Path file) {
     return DvcsUtil.tryLoadFileOrReturn(file, "").startsWith("# HG changeset patch");
   }
 }

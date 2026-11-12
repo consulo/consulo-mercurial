@@ -25,7 +25,6 @@ import org.zmlx.hg4idea.execution.HgCommandExecutor;
 import org.zmlx.hg4idea.execution.HgCommandResult;
 import org.zmlx.hg4idea.execution.HgCommandResultHandler;
 
-import java.io.File;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -79,8 +78,7 @@ public class HgResolveCommand {
       }
       final HgResolveStatusEnum status = HgResolveStatusEnum.valueOf(line.charAt(0));
       if (status != null) {
-        File ioFile = new File(repo.getPath(), line.substring(2));
-        resolveStatus.put(new HgFile(repo, ioFile), status);
+        resolveStatus.put(new HgFile(repo, line.substring(2)), status);
       }
     }
     return resolveStatus;

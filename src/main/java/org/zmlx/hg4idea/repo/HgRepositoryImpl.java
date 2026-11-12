@@ -29,7 +29,6 @@ import consulo.versionControlSystem.change.ChangesViewManager;
 import consulo.versionControlSystem.distributed.repository.RepositoryImpl;
 import consulo.versionControlSystem.log.Hash;
 import consulo.virtualFileSystem.VirtualFile;
-import consulo.virtualFileSystem.util.VirtualFileUtil;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import org.zmlx.hg4idea.HgNameWithHashInfo;
@@ -71,7 +70,7 @@ public class HgRepositoryImpl extends RepositoryImpl implements HgRepository {
         myVcs = vcs;
         myHgDir = rootDir.findChild(HgUtil.DOT_HG);
         assert myHgDir != null : ".hg directory wasn't found under " + rootDir.getPresentableUrl();
-        myReader = new HgRepositoryReader(vcs, VirtualFileUtil.virtualToIoFile(myHgDir));
+        myReader = new HgRepositoryReader(vcs, myHgDir.toNioPath());
         myConfig = HgConfig.getInstance(getProject(), rootDir);
         myLocalIgnoredHolder = new HgLocalIgnoredHolder(this);
         Disposer.register(this, myLocalIgnoredHolder);

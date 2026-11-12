@@ -16,6 +16,7 @@
  */
 package org.zmlx.hg4idea.provider.annotate;
 
+import consulo.virtualFileSystem.VirtualFileManager;
 import consulo.localize.LocalizeValue;
 import consulo.mercurial.localize.HgLocalize;
 import consulo.project.Project;
@@ -26,7 +27,6 @@ import consulo.versionControlSystem.annotate.LineAnnotationAspect;
 import consulo.versionControlSystem.annotate.LineAnnotationAspectAdapter;
 import consulo.versionControlSystem.history.VcsFileRevision;
 import consulo.versionControlSystem.history.VcsRevisionNumber;
-import consulo.virtualFileSystem.LocalFileSystem;
 import consulo.virtualFileSystem.VirtualFile;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
@@ -34,6 +34,7 @@ import org.zmlx.hg4idea.HgFile;
 import org.zmlx.hg4idea.HgFileRevision;
 import org.zmlx.hg4idea.HgVcs;
 
+import java.nio.file.Path;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -224,6 +225,7 @@ public class HgAnnotation extends FileAnnotation {
 
     @Override
     public VirtualFile getFile() {
-        return LocalFileSystem.getInstance().refreshAndFindFileByIoFile(myFile.getFile());
+        Path path = myFile.toFilePath().getNioPath();
+        return path == null ? null : VirtualFileManager.getInstance().refreshAndFindFileByNioPath(path);
     }
 }

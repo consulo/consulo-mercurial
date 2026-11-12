@@ -46,7 +46,6 @@ import org.zmlx.hg4idea.util.HgChangesetUtil;
 import org.zmlx.hg4idea.util.HgUtil;
 import org.zmlx.hg4idea.util.HgVersion;
 
-import java.io.File;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -410,19 +409,19 @@ public class HgHistoryUtil {
     HgContentRevision beforeRevision =
       fileBefore == null || aStatus == FileStatus.ADDED ? null
         : HgContentRevision
-        .create(project, new HgFile(root, new File(root.getPath(), fileBefore)), revisionBefore);
+        .create(project, new HgFile(root, fileBefore), revisionBefore);
     ContentRevision afterRevision;
     if (aStatus == FileStatus.DELETED) {
       afterRevision = null;
     }
     else if (revisionAfter == null && fileBefore != null) {
       afterRevision =
-        CurrentContentRevision.create(new HgFile(root, new File(root.getPath(), fileAfter != null ? fileAfter : fileBefore)).toFilePath());
+        CurrentContentRevision.create(new HgFile(root, fileAfter != null ? fileAfter : fileBefore).toFilePath());
     }
     else {
       assert revisionAfter != null;
       afterRevision = fileAfter == null ? null :
-        HgContentRevision.create(project, new HgFile(root, new File(root.getPath(), fileAfter)), revisionAfter);
+        HgContentRevision.create(project, new HgFile(root, fileAfter), revisionAfter);
     }
     return new Change(beforeRevision, afterRevision, aStatus);
   }
