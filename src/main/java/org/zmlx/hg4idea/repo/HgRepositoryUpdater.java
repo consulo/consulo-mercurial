@@ -24,7 +24,7 @@ import consulo.ui.ex.awt.util.Update;
 import consulo.versionControlSystem.change.VcsDirtyScopeManager;
 import consulo.versionControlSystem.distributed.DvcsUtil;
 import consulo.versionControlSystem.util.VcsUtil;
-import consulo.virtualFileSystem.LocalFileSystem;
+import consulo.virtualFileSystem.FileWatchService;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.virtualFileSystem.event.BulkFileListener;
 import consulo.virtualFileSystem.event.VFileEvent;
@@ -51,7 +51,7 @@ final class HgRepositoryUpdater implements Disposable, BulkFileListener {
   @Nullable
   private VirtualFile myMqDir;
   @Nullable
-  private final LocalFileSystem.WatchRequest myWatchRequest;
+  private final FileWatchService.WatchRequest myWatchRequest;
   @Nonnull
   private final MergingUpdateQueue myUpdateConfigQueue;
   private final HgRepository myRepository;
@@ -61,7 +61,7 @@ final class HgRepositoryUpdater implements Disposable, BulkFileListener {
   HgRepositoryUpdater(@Nonnull final HgRepository repository) {
     myRepository = repository;
     VirtualFile hgDir = myRepository.getHgDir();
-    myWatchRequest = LocalFileSystem.getInstance().addRootToWatch(hgDir.getPath(), true);
+    myWatchRequest = FileWatchService.getInstance().addRootToWatch(hgDir.toNioPath(), true);
     myRepositoryFiles = HgRepositoryFiles.getInstance(hgDir);
     DvcsUtil.visitVcsDirVfs(hgDir, HgRepositoryFiles.getSubDirRelativePaths());
 
@@ -84,7 +84,7 @@ final class HgRepositoryUpdater implements Disposable, BulkFileListener {
   @Override
   public void dispose() {
     if (myWatchRequest != null) {
-      LocalFileSystem.getInstance().removeWatchedRoot(myWatchRequest);
+      FileWatchService.getInstance().removeWatchedRoot(myWatchRequest);
     }
     myUpdateQueue.cancelAllUpdates();
     myUpdateConfigQueue.cancelAllUpdates();
